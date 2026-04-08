@@ -1,0 +1,44 @@
+.booking-header {
+  --background: transparent;
+  background:
+    radial-gradient(120% 80% at 15% 5%, #6f43ff 0%, rgba(111, 67, 255, 0) 60%),
+    linear-gradient(125deg, #4f2dff 0%, #7a2fda 55%, #ef4d75 100%);
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+  overflow: hidden;
+}
+
+.booking-header ion-toolbar {
+  --background: transparent;
+  --border-width: 0;
+  --color: #ffffff;
+}
+
+.booking-header ion-toolbar::part(container) {
+  min-height: 84px;
+  padding-top: calc(env(safe-area-inset-top) + 10px);
+  padding-bottom: 18px;
+  padding-inline: 12px;
+}
+
+.booking-header ion-title {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.booking-header ion-back-button {
+  --color: #ffffff;
+}
+
+.booking-content {
+  --background: #f3f4f9;
+  font-family:
+    'Nunito Sans',
+    'Avenir Next',
+    'Segoe UI',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+}

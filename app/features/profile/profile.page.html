@@ -1,0 +1,144 @@
+<ion-content class="profile-page">
+  <section class="hero">
+    <div class="hero__title">Profile</div>
+
+    <div class="hero__info">
+      <div class="avatar">R</div>
+      <div class="details">
+        <div class="name-row">
+          <div class="name">Ramesh Patel</div>
+          <button class="edit-btn" aria-label="Edit profile">
+            <ion-icon [icon]="icons.createOutline"></ion-icon>
+          </button>
+        </div>
+        <div class="contact">
+          <div class="contact-row">
+            <ion-icon [icon]="icons.callOutline"></ion-icon>
+            <span>+91 98765 43210</span>
+          </div>
+          <div class="contact-row">
+            <ion-icon [icon]="icons.mailOutline"></ion-icon>
+            <span>ramesh&#64;email.com</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-card">
+    <div class="stat">
+      <div class="stat-icon success">
+        <ion-icon [icon]="icons.checkmarkCircleOutline"></ion-icon>
+      </div>
+      <div class="stat-value">1</div>
+      <div class="stat-label">COMPLETED</div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon warning">
+        <ion-icon [icon]="icons.timeOutline"></ion-icon>
+      </div>
+      <div class="stat-value">1</div>
+      <div class="stat-label">PENDING</div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon star">
+        <ion-icon [icon]="icons.starOutline"></ion-icon>
+      </div>
+      <div class="stat-value">4.9</div>
+      <div class="stat-label">RATING</div>
+    </div>
+  </section>
+
+  <section class="menu">
+    <div class="menu-card">
+      <div class="menu-item">
+      <div class="item-left">
+        <div class="item-icon amber">
+          <ion-icon [icon]="icons.locationOutline"></ion-icon>
+        </div>
+        <div class="item-text">
+          <div class="item-title">Saved Addresses</div>
+          <div class="item-sub">1 address(es)</div>
+        </div>
+      </div>
+      <ion-icon class="chev" [icon]="icons.chevronForwardOutline"></ion-icon>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-left">
+        <div class="item-icon violet">
+          <ion-icon [icon]="icons.timeOutline"></ion-icon>
+        </div>
+        <div class="item-text">
+          <div class="item-title">Request History</div>
+          <div class="item-sub">3 total</div>
+        </div>
+      </div>
+      <ion-icon class="chev" [icon]="icons.chevronForwardOutline"></ion-icon>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-left">
+        <div class="item-icon orange">
+          <ion-icon [icon]="icons.globeOutline"></ion-icon>
+        </div>
+        <div class="item-text">
+          <div class="item-title">Language</div>
+          <div class="item-sub">English</div>
+        </div>
+      </div>
+      <ion-icon class="chev" [icon]="icons.chevronForwardOutline"></ion-icon>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-left">
+        <div class="item-icon blue">
+          <ion-icon [icon]="icons.helpCircleOutline"></ion-icon>
+        </div>
+        <div class="item-text">
+          <div class="item-title">Help &amp; Support</div>
+          <div class="item-sub">FAQs, contact us</div>
+        </div>
+      </div>
+      <ion-icon class="chev" [icon]="icons.chevronForwardOutline"></ion-icon>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-left">
+        <div class="item-icon green">
+          <ion-icon [icon]="icons.shieldCheckmarkOutline"></ion-icon>
+        </div>
+        <div class="item-text">
+          <div class="item-title">Privacy &amp; Security</div>
+          <div class="item-sub">Manage your data</div>
+        </div>
+      </div>
+      <ion-icon class="chev" [icon]="icons.chevronForwardOutline"></ion-icon>
+    </div>
+
+    <div class="menu-item">
+      <div class="item-left">
+        <div class="item-icon pink">
+          <ion-icon [icon]="icons.heartOutline"></ion-icon>
+        </div>
+        <div class="item-text">
+          <div class="item-title">About DoItNow</div>
+          <div class="item-sub">Version 1.0.0</div>
+        </div>
+      </div>
+      <ion-icon class="chev" [icon]="icons.chevronForwardOutline"></ion-icon>
+    </div>
+    </div>
+  </section>
+
+  <section class="logout-card">
+    <div class="item-left">
+      <div class="item-icon red">
+        <ion-icon [icon]="icons.logOutOutline"></ion-icon>
+      </div>
+      <div class="item-text">
+        <div class="item-title logout-text">Log Out</div>
+      </div>
+    </div>
+  </section>
+</ion-content>

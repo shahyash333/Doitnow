@@ -1,0 +1,141 @@
+<section class="booking-form-shell">
+  <ion-card class="step-card">
+    <ion-card-header class="step-title">
+      <div class="step-title__left">
+        <span class="step-badge">
+          <ion-icon [icon]="icons.calendarOutline"></ion-icon>
+        </span>
+        <div class="step-copy">
+          <ion-card-title>Step 1</ion-card-title>
+          <ion-card-subtitle>Select date</ion-card-subtitle>
+        </div>
+      </div>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-item
+        class="date-trigger"
+        button
+        detail="true"
+        lines="none"
+        (click)="isDatePickerOpen = true"
+      >
+        <ion-icon slot="start" [icon]="icons.calendarOutline"></ion-icon>
+        <ion-label>
+          <h3>{{ selectedDateLabel }}</h3>
+          <p>Tap to change</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-popover
+        cssClass="date-popover"
+        [isOpen]="isDatePickerOpen"
+        (didDismiss)="isDatePickerOpen = false"
+        showBackdrop="true"
+        dismissOnSelect="true"
+        side="bottom"
+        alignment="start"
+      >
+        <ng-template>
+          <ion-content class="date-popover__content">
+            <ion-datetime
+              presentation="date"
+              [min]="minDateIso"
+              [value]="selectedDateIso"
+              (ionChange)="onDateSelected($event)"
+            ></ion-datetime>
+          </ion-content>
+        </ng-template>
+      </ion-popover>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="step-card">
+    <ion-card-header class="step-title">
+      <div class="step-title__left">
+        <span class="step-badge amber">
+          <ion-icon [icon]="icons.timeOutline"></ion-icon>
+        </span>
+        <div class="step-copy">
+          <ion-card-title>Step 2</ion-card-title>
+          <ion-card-subtitle>Select time</ion-card-subtitle>
+        </div>
+      </div>
+      <ion-note class="step-note">When should we arrive?</ion-note>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-segment
+        class="time-segment"
+        [value]="selectedTimeSlotId"
+        (ionChange)="selectTimeSlot($any($event.detail.value))"
+      >
+        <ion-segment-button *ngFor="let slot of timeSlots" [value]="slot.id">
+          <ion-label>{{ slot.label }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <div class="time-detail" *ngIf="selectedTimeSlot as slot">
+        <strong>{{ slot.timeText }}</strong>
+        <span *ngIf="slot.description">{{ slot.description }}</span>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="step-card">
+    <ion-card-header class="step-title">
+      <div class="step-title__left">
+        <span class="step-badge mint">
+          <ion-icon [icon]="icons.homeOutline"></ion-icon>
+        </span>
+        <div class="step-copy">
+          <ion-card-title>Step 3</ion-card-title>
+          <ion-card-subtitle>Confirm address</ion-card-subtitle>
+        </div>
+      </div>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-item
+        *ngIf="selectedAddress as address"
+        class="address-item"
+        lines="none"
+      >
+        <ion-icon slot="start" [icon]="icons.locationOutline"></ion-icon>
+        <ion-label>
+          <h3>
+            {{ address.label }}
+            <ion-text *ngIf="address.isDefault" color="medium">
+              <small> (Default)</small>
+            </ion-text>
+          </h3>
+          <p>{{ address.fullAddress }}</p>
+        </ion-label>
+        <ion-button slot="end" fill="clear" (click)="openAddressChange()">Change</ion-button>
+      </ion-item>
+
+      <ion-item class="summary-item" lines="none">
+        <ion-label>
+          <h3>Summary</h3>
+          <p>{{ selectedDateLabel }} • {{ selectedTimeSlot?.label }} • {{ selectedAddress?.label }}</p>
+        </ion-label>
+        <ion-note slot="end">₹{{ startingPrice }}</ion-note>
+      </ion-item>
+
+      <ion-item class="note-item" lines="none">
+        <ion-label position="stacked">Any special note? (optional)</ion-label>
+        <ion-textarea
+          [value]="note"
+          (ionInput)="note = $any($event.target).value || ''"
+          placeholder="e.g. Call on arrival, bring ladder, building gate code..."
+          autoGrow="true"
+        ></ion-textarea>
+      </ion-item>
+
+      <ion-button class="request-btn" expand="block" size="large" (click)="submitRequest()">
+        Request service
+      </ion-button>
+      <p class="starting-price">Starting from ₹{{ startingPrice }}</p>
+    </ion-card-content>
+  </ion-card>
+</section>

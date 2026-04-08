@@ -1,0 +1,34 @@
+<ion-content class="alerts-content">
+  <section class="alerts-header">
+    <div class="header-top">
+      <div class="header-title">
+        <h1>Notifications</h1>
+        <p class="unread-count" *ngIf="unreadCount > 0">{{ unreadCount }} unread</p>
+      </div>
+      <button class="read-all-btn" type="button" *ngIf="unreadCount > 0" (click)="readAll()">
+        <ion-icon [icon]="icons.checkmarkDoneOutline"></ion-icon>
+        Read all
+      </button>
+    </div>
+  </section>
+
+  <section class="notifications-list">
+    <article
+      class="notification-card"
+      *ngFor="let notification of notifications"
+      [class.unread]="notification.isUnread"
+    >
+      <div class="icon-circle" [ngClass]="notification.colorClass">
+        <ion-icon [icon]="icons[notification.icon]"></ion-icon>
+      </div>
+      <div class="notification-text">
+        <div class="notification-title-row">
+          <h3 class="notification-title">{{ notification.title }}</h3>
+          <span class="unread-dot" *ngIf="notification.isUnread"></span>
+        </div>
+        <p class="notification-description">{{ notification.description }}</p>
+        <span class="notification-time">{{ notification.timestamp }}</span>
+      </div>
+    </article>
+  </section>
+</ion-content>

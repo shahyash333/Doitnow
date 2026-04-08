@@ -1,0 +1,16 @@
+<ion-header class="booking-header ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home/home" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ serviceName }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="booking-content">
+  <app-service-booking-form
+    [serviceName]="serviceName"
+    [startingPrice]="startingPrice"
+    (requestService)="onRequestService($event)"
+  ></app-service-booking-form>
+</ion-content>

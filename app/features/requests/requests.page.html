@@ -1,0 +1,84 @@
+<ion-header class="requests-header">
+  <ion-toolbar>
+    <ion-title>My Requests</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="requests-content">
+
+  <div class="tabs-container">
+    <button class="tab-button" [class.active]="activeTab === 'all'" (click)="selectTab('all')">
+      All
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'pending'"
+      (click)="selectTab('pending')"
+    >
+      Pending
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'approved'"
+      (click)="selectTab('approved')"
+    >
+      Approved
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'completed'"
+      (click)="selectTab('completed')"
+    >
+      Completed
+    </button>
+  </div>
+
+  <div class="requests-list">
+    <article class="request-card" *ngFor="let request of filteredRequests">
+      <div class="request-top">
+        <div class="icon-circle" [ngClass]="request.colorClass">
+          <ion-icon [icon]="icons[request.icon]"></ion-icon>
+        </div>
+        <div class="request-main">
+          <div class="request-title-row">
+            <h2>{{ request.title }}</h2>
+            <ion-icon class="chev" [icon]="icons.chevronForwardOutline"></ion-icon>
+          </div>
+          <p>{{ request.description }}</p>
+          <div class="status-pill" [ngClass]="request.status">
+            <ion-icon [icon]="icons[request.statusIcon]"></ion-icon>
+            <span>{{ request.statusLabel }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="request-divider"></div>
+
+      <div class="request-actions" [ngClass]="request.status">
+        <button
+          class="btn secondary"
+          *ngIf="request.status === 'pending'"
+          (click)="performAction(request)"
+        >
+          Cancel Request
+        </button>
+        <button
+          class="btn outline"
+          *ngIf="request.status === 'completed'"
+          (click)="performAction(request)"
+        >
+          <ion-icon [icon]="icons.starOutline"></ion-icon>
+          Rate Service
+        </button>
+        <button class="btn primary" (click)="viewDetails(request)">
+          View Details
+        </button>
+      </div>
+    </article>
+
+    <div *ngIf="filteredRequests.length === 0" class="empty-state">
+      <ion-icon name="document-outline"></ion-icon>
+      <p>No requests found</p>
+    </div>
+  </div>
+</ion-content>

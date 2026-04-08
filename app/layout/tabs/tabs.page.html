@@ -1,0 +1,27 @@
+<ion-tabs>
+
+  <ion-router-outlet id="main"></ion-router-outlet>
+
+  <ion-tab-bar slot="bottom" [class.hidden]="hideTabBar">
+    <ion-tab-button tab="home" href="/home/home">
+      <ion-icon [icon]="icons.homeOutline"></ion-icon>
+      <ion-label>Home</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="requests" href="/home/requests">
+      <ion-icon [icon]="icons.receiptOutline"></ion-icon>
+      <ion-label>Requests</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="alerts" href="/home/alerts">
+      <ion-icon [icon]="icons.notificationsOutline"></ion-icon>
+      <ion-label>Alerts</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="profile" href="/home/profile">
+      <ion-icon [icon]="icons.personOutline"></ion-icon>
+      <ion-label>Profile</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+
+</ion-tabs>

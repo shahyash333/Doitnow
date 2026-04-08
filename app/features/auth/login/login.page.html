@@ -1,0 +1,34 @@
+<ion-content class="login-page" fullscreen="true">
+  <div class="login-container">
+    <section class="login-header">
+      <div class="brand-chip">D</div>
+      <h1 class="app-name">DoItNow</h1>
+      <p class="subtitle">Home services for your loved ones, just a tap away.</p>
+    </section>
+
+    <section class="login-card">
+      <div class="login-card__main">
+        <h2 class="title">Sign in</h2>
+
+        <button class="google-btn" type="button" (click)="signInWithGoogle()">
+          <img src="assets/google.png" alt="Google" />
+          <span>Continue with Google</span>
+        </button>
+
+        <div class="security-text">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          <p>Your account safety is our priority. Fast, secure, and trusted login.</p>
+        </div>
+      </div>
+
+      <div class="login-card__footer">
+        <p class="privacy">We prioritize your privacy. No extra account details are shared.</p>
+
+        <p class="terms">
+          By continuing, you agree to our <span>Terms of Service</span> and
+          <span>Privacy Policy</span>
+        </p>
+      </div>
+    </section>
+  </div>
+</ion-content>

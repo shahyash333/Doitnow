@@ -1,0 +1,243 @@
+.login-page {
+  --background: transparent;
+  font-family:
+    'Nunito Sans',
+    'Avenir Next',
+    'Segoe UI',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+}
+
+.login-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background:
+    radial-gradient(120% 80% at 12% 4%, #6f43ff 0%, rgba(111, 67, 255, 0) 62%),
+    linear-gradient(125deg, #4f2dff 0%, #7a2fda 56%, #ef4d75 100%);
+}
+
+.login-header {
+  flex: 0 0 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  padding: calc(env(safe-area-inset-top) + 36px) 26px 22px;
+  color: #fff;
+}
+
+.brand-chip {
+  width: 76px;
+  height: 76px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  margin-bottom: 0;
+}
+
+.app-name {
+  margin: 0;
+  font-size: 42px;
+  line-height: 1.05;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.tagline {
+  margin: 6px 0 14px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 28ch;
+  font-size: 18px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.login-card {
+  flex: 0 0 40%;
+  background: #ffffff;
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  padding: 26px 22px calc(20px + env(safe-area-inset-bottom));
+  text-align: center;
+  box-shadow: 0 -12px 32px rgba(20, 19, 41, 0.16);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-card__main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-card__footer {
+  flex: 0 0 auto;
+  padding-top: 8px;
+}
+
+.login-card__footer::before {
+  content: '';
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: rgba(15, 23, 42, 0.08);
+  margin: 0 0 12px;
+}
+
+.title {
+  margin: 0 0 16px;
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 800;
+  color: #1d2433;
+}
+
+.google-btn {
+  width: 100%;
+  min-height: 56px;
+  border-radius: 26px;
+  border: none;
+  background: linear-gradient(135deg, #5d3fff, #d946ef);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 10px 22px rgba(93, 63, 255, 0.28);
+  margin-bottom: 16px;
+  transition: transform 0.16s ease;
+}
+
+.google-btn:active {
+  transform: scale(0.98);
+}
+
+.google-btn img {
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  padding: 3px;
+}
+
+.security-text {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  color: #505872;
+}
+
+.security-text ion-icon {
+  font-size: 16px;
+  color: #5d3fff;
+  margin-top: 2px;
+}
+
+.security-text p {
+  margin: 0;
+  max-width: 32ch;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.privacy {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: #727b94;
+  line-height: 1.45;
+}
+
+.terms {
+  margin: 0;
+  font-size: 12px;
+  color: #4d556f;
+  line-height: 1.52;
+}
+
+.terms span {
+  color: #5d3fff;
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .login-header {
+    padding: calc(env(safe-area-inset-top) + 24px) 20px 18px;
+    gap: 8px;
+  }
+
+  .brand-chip {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    font-size: 30px;
+    margin-bottom: 0;
+  }
+
+  .app-name {
+    font-size: 36px;
+  }
+
+  .tagline {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    line-height: 1.42;
+  }
+
+  .login-card {
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    padding: 22px 16px calc(16px + env(safe-area-inset-bottom));
+  }
+
+  .title {
+    font-size: 21px;
+  }
+
+  .google-btn {
+    font-size: 16px;
+    min-height: 54px;
+  }
+
+  .google-btn img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .security-text p {
+    font-size: 13px;
+  }
+
+  .privacy,
+  .terms {
+    font-size: 11px;
+  }
+}

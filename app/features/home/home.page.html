@@ -1,0 +1,108 @@
+<ion-content class="home-content">
+  <section class="hero">
+    <div class="hero-top">
+      <button
+        class="location-pill"
+        type="button"
+        aria-label="Location"
+        (click)="openLocation()"
+      >
+        <ion-icon [icon]="icons.locationOutline"></ion-icon>
+        <span class="location-name">{{ selectedLocation }}</span>
+        <ion-icon class="location-chevron" [icon]="icons.chevronDownOutline"></ion-icon>
+      </button>
+
+      <button
+        class="notification-btn"
+        type="button"
+        aria-label="Notifications"
+        (click)="openNotifications()"
+      >
+        <ion-icon [icon]="icons.notificationsOutline"></ion-icon>
+      </button>
+    </div>
+
+    <div class="hero-main">
+      <div class="hero-copy">
+        <h1>How can we help you today?</h1>
+        <p class="subtext">Pick a service and we’ll take care of the rest.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="search-shell">
+    <ion-icon [icon]="icons.searchOutline"></ion-icon>
+    <input
+      type="text"
+      [value]="searchQuery"
+      (input)="onSearchInput($any($event.target).value || '')"
+      (keydown.enter)="triggerSearch()"
+      placeholder="Search services (e.g. plumber, cleaning, cook)"
+    />
+  </div>
+
+  <section class="section-wrap popular-section">
+    <div class="section-head section-head-with-controls">
+      <h2>Popular Services</h2>
+    </div>
+
+    <div #popularScroller class="popular-row" (scroll)="onPopularScroll()">
+      <article
+        class="popular-card"
+        *ngFor="let service of filteredPopularServices"
+        role="button"
+        tabindex="0"
+        (click)="openPopularService(service)"
+        (keyup.enter)="openPopularService(service)"
+      >
+        <div class="popular-media">
+          <span *ngIf="service.badge" class="service-badge">{{ service.badge }}</span>
+          <img [src]="service.image" [alt]="service.title" />
+        </div>
+        <div class="popular-card-body">
+          <h3>{{ service.title }}</h3>
+          <p>{{ service.subtitle }}</p>
+          <div class="popular-card-footer">
+            <span class="rating"><ion-icon [icon]="icons.star"></ion-icon> {{ service.rating }}</span>
+            <strong>{{ service.priceText }}</strong>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="popular-dots" aria-hidden="true">
+      <span
+        class="dot"
+        *ngFor="let _service of filteredPopularServices; let i = index"
+        [class.active]="i === activePopularIndex"
+      ></span>
+    </div>
+  </section>
+
+  <section class="section-wrap all-services">
+    <div class="section-head all-services-title">
+      <h2><ion-icon [icon]="icons.sparklesOutline"></ion-icon> All Services</h2>
+    </div>
+
+    <div class="service-grid">
+      <article
+        class="service-card"
+        *ngFor="let service of filteredAllServices"
+        [class.featured]="service.featured"
+        role="button"
+        tabindex="0"
+        (click)="openServiceCard(service)"
+        (keyup.enter)="openServiceCard(service)"
+      >
+        <div class="service-icon" [ngClass]="service.colorClass">
+          <ion-icon [icon]="icons[service.icon]"></ion-icon>
+        </div>
+        <h3>{{ service.title }}</h3>
+        <p>{{ service.subtitle }}</p>
+        <span class="service-price" [ngClass]="service.colorClass" style="background: none;">
+          {{ service.priceText }}
+        </span>
+      </article>
+    </div>
+  </section>
+</ion-content>
