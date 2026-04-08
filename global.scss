@@ -19,3 +19,45 @@ ion-tab,
   min-width: 0;
   min-height: 0;
 }
+
+.app-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  transition: opacity 200ms ease;
+}
+
+.app-splash__content {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  padding: 24px;
+}
+
+.app-splash__logo {
+  width: 96px;
+  height: 96px;
+}
+
+.app-splash__spinner {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 3px solid rgba(0, 0, 0, 0.15);
+  border-top-color: rgba(0, 0, 0, 0.55);
+  animation: app-splash-spin 900ms linear infinite;
+}
+
+.app-splash--hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes app-splash-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

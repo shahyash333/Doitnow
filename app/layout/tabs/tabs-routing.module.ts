@@ -9,14 +9,13 @@ const routes: Routes = [
     component: TabsPage,
     children: [
       {
-        path: '',
-        pathMatch: 'full',
+        path: 'home',
         loadChildren: () =>
           import('../../features/home/home.module').then((module) => module.HomeModule),
       },
       {
-        path: 'home',
-        redirectTo: '',
+        path: '',
+        redirectTo: 'home',
         pathMatch: 'full',
       },
       {
@@ -40,6 +39,11 @@ const routes: Routes = [
         path: 'booking',
         loadChildren: () =>
           import('../../features/booking/booking.module').then((module) => module.BookingPageModule),
+      },
+      {
+        path: 'location',
+        loadChildren: () =>
+          import('../../features/location/location.module').then((module) => module.LocationPageModule),
       },
     ],
   },

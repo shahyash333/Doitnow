@@ -34,6 +34,7 @@ export interface ServiceBookingPayload {
   addressLabel: string;
   addressText: string;
   price: number;
+  note?: string;
 }
 
 @Component({
@@ -48,8 +49,8 @@ export class ServiceBookingFormComponent implements OnInit {
   @Input() timeSlots: TimeSlotOption[] = [
     { id: 'morning', label: 'Morning', timeText: '8 AM - 11 AM' },
     { id: 'afternoon', label: 'Afternoon', timeText: '12 PM - 3 PM' },
-    { id: 'asap', label: 'ASAP', timeText: 'As soon as possible', description: 'Priority arrival' },
     { id: 'evening', label: 'Evening', timeText: '4 PM - 7 PM' },
+    { id: 'asap', label: 'ASAP', timeText: 'As soon as possible', description: 'Priority arrival' },
   ];
 
   @Input() addresses: AddressOption[] = [
@@ -81,6 +82,7 @@ export class ServiceBookingFormComponent implements OnInit {
   selectedTimeSlotId = 'asap';
   selectedAddressId = '';
   isDatePickerOpen = false;
+  note = '';
 
   constructor(
     private readonly actionSheetController: ActionSheetController,
@@ -133,16 +135,17 @@ export class ServiceBookingFormComponent implements OnInit {
     return this.toInputDate(new Date());
   }
 
-  onDateSelected(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    if (!target.value) {
+  onDateSelected(event: any): void {
+    const value = event?.detail?.value;
+    if (typeof value !== 'string' || !value) {
       return;
     }
-    this.selectedDateIso = target.value;
+    this.selectedDateIso = value.slice(0, 10);
     this.isDatePickerOpen = false;
   }
 
-  selectTimeSlot(slotId: string): void {
+  selectTimeSlot(slotId: any): void {
+    if (typeof slotId !== 'string' || !slotId) return;
     this.selectedTimeSlotId = slotId;
   }
 
@@ -186,6 +189,7 @@ export class ServiceBookingFormComponent implements OnInit {
       addressLabel: selectedAddress.label,
       addressText: selectedAddress.fullAddress,
       price: this.startingPrice,
+      note: this.note.trim() ? this.note.trim() : undefined,
     });
   }
 
