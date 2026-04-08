@@ -24,9 +24,8 @@ export class BookingPage {
   }
 
   async onRequestService(payload: ServiceBookingPayload): Promise<void> {
-    const noteSuffix = payload.note ? ` Note: ${payload.note}` : '';
     const toast = await this.toastController.create({
-      message: `Request sent for ${payload.serviceName} on ${payload.dateLabel} (${payload.timeSlotLabel}).${noteSuffix}`,
+      message: `Request sent for ${payload.serviceName} on ${payload.dateLabel} (${payload.timeSlotLabel}).`,
       duration: 2200,
       position: 'bottom',
       color: 'success',

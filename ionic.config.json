@@ -1,0 +1,7 @@
+{
+  "name": "homehelp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

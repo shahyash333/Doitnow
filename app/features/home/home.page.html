@@ -1,44 +1,30 @@
 <ion-content class="home-content">
   <section class="hero">
     <div class="hero-top">
-      <button
-        class="location-pill"
-        type="button"
-        aria-label="Location"
-        (click)="openLocation()"
-      >
+      <button class="location-pill" type="button">
         <ion-icon [icon]="icons.locationOutline"></ion-icon>
-        <span class="location-name">{{ selectedLocation }}</span>
-        <ion-icon class="location-chevron" [icon]="icons.chevronDownOutline"></ion-icon>
+        <span class="location-name">Satellite, Ahmedabad</span>
       </button>
 
-      <button
-        class="notification-btn"
-        type="button"
-        aria-label="Notifications"
-        (click)="openNotifications()"
-      >
+      <button class="notification-btn" type="button" aria-label="Notifications">
         <ion-icon [icon]="icons.notificationsOutline"></ion-icon>
       </button>
     </div>
 
     <div class="hero-main">
       <div class="hero-copy">
+        <p class="greeting">GOOD MORNING, RAMESH <span class="wave">👋</span></p>
         <h1>How can we help you today?</h1>
-        <p class="subtext">Pick a service and we’ll take care of the rest.</p>
       </div>
     </div>
   </section>
 
   <div class="search-shell">
     <ion-icon [icon]="icons.searchOutline"></ion-icon>
-    <input
-      type="text"
-      [value]="searchQuery"
-      (input)="onSearchInput($any($event.target).value || '')"
-      (keydown.enter)="triggerSearch()"
-      placeholder="Search services (e.g. plumber, cleaning, cook)"
-    />
+    <input type="text" placeholder="Search services (e.g. plumber, cleaning, cook)" />
+    <button class="search-btn" type="button" aria-label="Search">
+      <ion-icon [icon]="icons.searchOutline"></ion-icon>
+    </button>
   </div>
 
   <section class="section-wrap popular-section">
@@ -49,7 +35,7 @@
     <div #popularScroller class="popular-row" (scroll)="onPopularScroll()">
       <article
         class="popular-card"
-        *ngFor="let service of filteredPopularServices"
+        *ngFor="let service of popularServices"
         role="button"
         tabindex="0"
         (click)="openPopularService(service)"
@@ -73,7 +59,7 @@
     <div class="popular-dots" aria-hidden="true">
       <span
         class="dot"
-        *ngFor="let _service of filteredPopularServices; let i = index"
+        *ngFor="let _service of popularServices; let i = index"
         [class.active]="i === activePopularIndex"
       ></span>
     </div>
@@ -87,7 +73,7 @@
     <div class="service-grid">
       <article
         class="service-card"
-        *ngFor="let service of filteredAllServices"
+        *ngFor="let service of allServices"
         [class.featured]="service.featured"
         role="button"
         tabindex="0"

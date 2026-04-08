@@ -1,10 +1,7 @@
-<ion-header class="requests-header">
-  <ion-toolbar>
-    <ion-title>My Requests</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content class="requests-content">
+  <header class="requests-header">
+    <h1>My Requests</h1>
+  </header>
 
   <div class="tabs-container">
     <button class="tab-button" [class.active]="activeTab === 'all'" (click)="selectTab('all')">
