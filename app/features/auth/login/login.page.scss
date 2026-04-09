@@ -20,11 +20,12 @@
 }
 
 .login-header {
-  flex: 1 1 auto;
+  flex: 0 0 60%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   text-align: center;
   padding: calc(env(safe-area-inset-top) + 36px) 26px 22px;
   color: #fff;
@@ -43,7 +44,7 @@
   font-size: 36px;
   font-weight: 900;
   letter-spacing: 0.01em;
-  margin-bottom: 16px;
+  margin-bottom: 0;
 }
 
 .app-name {
@@ -71,12 +72,37 @@
 }
 
 .login-card {
+  flex: 0 0 40%;
   background: #ffffff;
   border-top-left-radius: 28px;
   border-top-right-radius: 28px;
   padding: 26px 22px calc(20px + env(safe-area-inset-bottom));
   text-align: center;
   box-shadow: 0 -12px 32px rgba(20, 19, 41, 0.16);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-card__main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-card__footer {
+  flex: 0 0 auto;
+  padding-top: 8px;
+}
+
+.login-card__footer::before {
+  content: '';
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: rgba(15, 23, 42, 0.08);
+  margin: 0 0 12px;
 }
 
 .title {
@@ -161,6 +187,7 @@
 @media (max-width: 480px) {
   .login-header {
     padding: calc(env(safe-area-inset-top) + 24px) 20px 18px;
+    gap: 8px;
   }
 
   .brand-chip {
@@ -168,7 +195,7 @@
     height: 64px;
     border-radius: 20px;
     font-size: 30px;
-    margin-bottom: 12px;
+    margin-bottom: 0;
   }
 
   .app-name {

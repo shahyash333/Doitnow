@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
   arrowForwardOutline,
@@ -78,11 +78,29 @@ export class HomePage {
     star,
   };
 
-  constructor(private readonly router: Router) {
+  constructor(
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+  ) {
     addIcons(this.icons);
+
+    const locationFromQuery = this.route.snapshot.queryParamMap.get('location');
+    if (locationFromQuery) {
+      this.selectedLocation = locationFromQuery;
+    }
   }
 
   activePopularIndex = 0;
+
+  searchQuery = '';
+
+  selectedLocation = 'Satellite, Ahmedabad';
+
+  openLocation(): void {
+    this.router.navigate(['/home/location'], {
+      queryParams: { current: this.selectedLocation },
+    });
+  }
 
   readonly popularServices: PopularService[] = [
     {
@@ -213,6 +231,36 @@ export class HomePage {
     this.openBookingPage(service.title, service.priceText);
   }
 
+  openNotifications(): void {
+    this.router.navigate(['/home/alerts']);
+  }
+
+  onSearchInput(value: string): void {
+    this.searchQuery = value;
+    this.activePopularIndex = 0;
+
+    const scroller = this.popularScroller?.nativeElement;
+    if (scroller) {
+      scroller.scrollTo({ left: 0, behavior: 'smooth' });
+    }
+  }
+
+  triggerSearch(): void {
+    // Keeping it in-page for now; filtering happens via getters below.
+  }
+
+  get filteredPopularServices(): PopularService[] {
+    const q = this.normalizedQuery(this.searchQuery);
+    if (!q) return this.popularServices;
+    return this.popularServices.filter((s) => this.matchesQuery(q, s.title, s.subtitle));
+  }
+
+  get filteredAllServices(): ServiceItem[] {
+    const q = this.normalizedQuery(this.searchQuery);
+    if (!q) return this.allServices;
+    return this.allServices.filter((s) => this.matchesQuery(q, s.title, s.subtitle));
+  }
+
   private openBookingPage(serviceName: string, priceText: string): void {
     this.router.navigate(['/home/booking'], {
       queryParams: {
@@ -225,5 +273,13 @@ export class HomePage {
   private extractPrice(priceText: string): number {
     const numericPrice = Number(priceText.replace(/[^\d]/g, ''));
     return Number.isFinite(numericPrice) && numericPrice > 0 ? numericPrice : 299;
+  }
+
+  private normalizedQuery(input: string): string {
+    return input.trim().toLowerCase();
+  }
+
+  private matchesQuery(q: string, ...fields: Array<string | undefined>): boolean {
+    return fields.some((f) => (f ?? '').toLowerCase().includes(q));
   }
 }

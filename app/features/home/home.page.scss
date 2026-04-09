@@ -26,6 +26,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  margin-top: 24px;
   margin-bottom: 14px;
 }
 
@@ -33,22 +34,41 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
   border-radius: 999px;
-  padding: 8px 14px;
+  padding: 0px 12px;
+  min-height: 30px;
   flex: 0 0 auto;
   max-width: 50%;
   min-width: 0;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .location-pill:active {
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.5);
+}
+
+.location-pill ion-icon {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.92);
+  flex: 0 0 auto;
+}
+
+.location-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.location-chevron {
+  font-size: 16px;
+  opacity: 0.95;
 }
 
 .location-copy {
@@ -58,17 +78,9 @@
   min-width: 0;
 }
 
-.location-name {
-  font-weight: 600;
-  font-size: 13px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .notification-btn {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   background: rgba(255, 255, 255, 0.1);
@@ -85,7 +97,7 @@
 }
 
 .notification-btn ion-icon {
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .hero-main {
@@ -95,21 +107,13 @@
   gap: 0;
 }
 
-.greeting {
-  margin: 0 0 8px;
-  font-size: 11px;
-  letter-spacing: 0.07em;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.76);
-}
-
 .hero-copy h1 {
   margin: 0;
-  font-size: clamp(1.65rem, 5.2vw, 2.1rem);
-  line-height: 1.1;
+  font-size: clamp(1.8rem, 5.8vw, 2.35rem);
+  line-height: 1.06;
   letter-spacing: -0.02em;
   font-weight: 900;
-  max-width: 12ch;
+  max-width: 14ch;
 }
 
 .subtext {
@@ -224,28 +228,14 @@
   outline: none;
   flex: 1;
   min-width: 0;
-  font-size: 14px;
+  font-size: 18px;
   color: #182136;
   background: transparent;
 }
 
 .search-shell input::placeholder {
   color: #7a8095;
-}
-
-.search-btn {
-  border: 0;
-  width: 46px;
-  height: 46px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  color: #fff;
-  background: linear-gradient(135deg, #5f38ff 0%, #7f3cff 100%);
-}
-
-.search-btn ion-icon {
-  font-size: 22px;
+  font-size: 17px;
 }
 
 .section-wrap {
@@ -620,29 +610,27 @@
 
   .hero-top {
     gap: 8px;
+    margin-top: 20px;
     margin-bottom: 16px;
   }
 
   .location-pill {
-    padding: 7px 12px;
-    font-size: 12px;
-  }
-
-  .location-name {
-    font-size: 12px;
+    padding: 0px 12px;
+    min-height: 30px;
+    font-size: 13px;
   }
 
   .notification-btn {
-    width: 34px;
-    height: 34px;
+    width: 40px;
+    height: 40px;
   }
 
   .notification-btn ion-icon {
-    font-size: 18px;
+    font-size: 21px;
   }
 
   .hero-copy h1 {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
   .subtext {

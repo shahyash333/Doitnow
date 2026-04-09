@@ -1,0 +1,29 @@
+<ion-header class="location-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button type="button" (click)="back()" aria-label="Back">
+        <ion-icon [icon]="icons.chevronBackOutline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Select location</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="location-content">
+  <div class="location-shell">
+    <p class="hint">Choose the area you want services in.</p>
+
+    <ion-list lines="none">
+      <ion-item
+        button
+        detail="false"
+        *ngFor="let loc of locations"
+        (click)="choose(loc)"
+      >
+        <ion-label>{{ loc }}</ion-label>
+        <ion-icon *ngIf="loc === selected" slot="end" [icon]="icons.checkmarkOutline"></ion-icon>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>
+
