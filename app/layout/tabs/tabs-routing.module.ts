@@ -9,14 +9,10 @@ const routes: Routes = [
     component: TabsPage,
     children: [
       {
-        path: 'home',
+        path: '',
+        pathMatch: 'full',
         loadChildren: () =>
           import('../../features/home/home.module').then((module) => module.HomeModule),
-      },
-      {
-        path: '',
-        redirectTo: 'home',
-        pathMatch: 'full',
       },
       {
         path: 'requests',

@@ -1,234 +1,91 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { addIcons } from 'ionicons';
 import {
-  arrowForwardOutline,
-  chevronBackOutline,
   chevronDownOutline,
-  chevronForwardOutline,
-  constructOutline,
-  fastFoodOutline,
-  flashOutline,
-  hammerOutline,
   locationOutline,
-  medicalOutline,
   notificationsOutline,
-  pawOutline,
-  restaurantOutline,
   searchOutline,
-  shieldCheckmarkOutline,
-  sparklesOutline,
-  star,
 } from 'ionicons/icons';
 
-type ServiceIcon =
-  | 'constructOutline'
-  | 'fastFoodOutline'
-  | 'flashOutline'
-  | 'hammerOutline'
-  | 'medicalOutline'
-  | 'pawOutline'
-  | 'restaurantOutline'
-  | 'sparklesOutline';
-
-interface PopularService {
-  title: string;
-  subtitle: string;
-  priceText: string;
-  rating: string;
-  icon: ServiceIcon;
-  badge?: string;
-  image: string;
-}
-
-interface ServiceItem {
-  title: string;
-  subtitle: string;
-  icon: ServiceIcon;
-  colorClass: string;
-  featured?: boolean;
-  priceText: string;
-}
+import { CatalogService, CatalogServiceItem } from '../../core/services/catalog.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
   @ViewChild('popularScroller') popularScroller?: ElementRef<HTMLDivElement>;
 
   readonly icons = {
-    arrowForwardOutline,
-    chevronBackOutline,
     chevronDownOutline,
-    chevronForwardOutline,
-    constructOutline,
-    fastFoodOutline,
-    flashOutline,
-    hammerOutline,
     locationOutline,
-    medicalOutline,
     notificationsOutline,
-    pawOutline,
-    restaurantOutline,
     searchOutline,
-    shieldCheckmarkOutline,
-    sparklesOutline,
-    star,
+  };
+
+  activePopularIndex = 0;
+  searchQuery = '';
+  selectedLocation = 'Satellite, Ahmedabad';
+  isCatalogLoading = true;
+  catalogLoadError = '';
+
+  popularServices: CatalogServiceItem[] = [];
+  otherServices: CatalogServiceItem[] = [];
+  private readonly defaultServiceTheme = {
+    bg: '#eef2ff',
+    text: '#435497',
+  };
+
+  private readonly colorThemeMap: Record<string, { bg: string; text: string }> = {
+    amber: { bg: '#fef3c7', text: '#92400e' },
+    blue: { bg: '#dbeafe', text: '#1e40af' },
+    cyan: { bg: '#cffafe', text: '#155e75' },
+    emerald: { bg: '#d1fae5', text: '#065f46' },
+    gray: { bg: '#f3f4f6', text: '#1f2937' },
+    green: { bg: '#dcfce7', text: '#166534' },
+    indigo: { bg: '#e0e7ff', text: '#3730a3' },
+    lime: { bg: '#ecfccb', text: '#3f6212' },
+    mint: { bg: '#e0f3ef', text: '#2aab8e' },
+    neutral: { bg: '#f5f5f5', text: '#262626' },
+    orange: { bg: '#ffedd5', text: '#9a3412' },
+    peach: { bg: '#fff0e3', text: '#ee8a26' },
+    purple: { bg: '#f3e8ff', text: '#6b21a8' },
+    red: { bg: '#fee2e2', text: '#991b1b' },
+    rose: { bg: '#ffe4e6', text: '#9f1239' },
+    sky: { bg: '#e0f2fe', text: '#075985' },
+    slate: { bg: '#e2e8f0', text: '#0f172a' },
+    steel: { bg: '#e7effc', text: '#417cc8' },
+    teal: { bg: '#ccfbf1', text: '#115e59' },
+    violet: { bg: '#ede9fe', text: '#5b21b6' },
+    yellow: { bg: '#fef9c3', text: '#854d0e' },
   };
 
   constructor(
     private readonly router: Router,
     private readonly route: ActivatedRoute,
+    private readonly catalogService: CatalogService,
   ) {
     addIcons(this.icons);
-
-    const locationFromQuery = this.route.snapshot.queryParamMap.get('location');
-    if (locationFromQuery) {
-      this.selectedLocation = locationFromQuery;
-    }
   }
 
-  activePopularIndex = 0;
+  ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      const locationFromQuery = typeof params['location'] === 'string' ? params['location'].trim() : '';
+      if (locationFromQuery) {
+        this.selectedLocation = locationFromQuery;
+      }
+    });
 
-  searchQuery = '';
-
-  selectedLocation = 'Satellite, Ahmedabad';
+    void this.loadCatalog();
+  }
 
   openLocation(): void {
     this.router.navigate(['/home/location'], {
       queryParams: { current: this.selectedLocation },
     });
-  }
-
-  readonly popularServices: PopularService[] = [
-    {
-      title: 'Home Cleaning',
-      subtitle: 'Deep & regular cleaning',
-      priceText: 'From ₹399',
-      rating: '4.8 (1.2K)',
-      icon: 'sparklesOutline',
-      badge: 'Popular',
-      image: 'assets/imgs/homeCleaning.png',
-    },
-    {
-      title: 'Cook at Home',
-      subtitle: 'Fresh meals at home',
-      priceText: 'From ₹249',
-      rating: '4.7 (956)',
-      icon: 'restaurantOutline',
-      badge: 'Fast',
-      image: 'assets/imgs/cooking.png',
-    },
-    {
-      title: 'Plumbing',
-      subtitle: 'Repairs & fittings',
-      priceText: 'From ₹299',
-      rating: '4.6 (812)',
-      icon: 'constructOutline',
-      image: 'assets/imgs/plumbing.png',
-    },
-    {
-      title: 'Electrician',
-      subtitle: 'Wiring & repairs',
-      priceText: 'From ₹299',
-      rating: '4.7 (732)',
-      icon: 'flashOutline',
-      badge: 'Top Rated',
-      image: 'assets/imgs/electrician.png',
-    },
-  ];
-
-  readonly allServices: ServiceItem[] = [
-    {
-      title: 'Medicine Pickup',
-      subtitle: 'Pickup & delivery of medicines',
-      icon: 'medicalOutline',
-      colorClass: 'mint',
-      priceText: 'From ₹29',
-    },
-    {
-      title: 'Food Pickup',
-      subtitle: 'From local shops & restaurants',
-      icon: 'fastFoodOutline',
-      colorClass: 'peach',
-      priceText: 'From ₹49',
-    },
-    {
-      title: 'Dog Walking',
-      subtitle: 'Daily walks for your pet',
-      icon: 'pawOutline',
-      colorClass: 'lavender',
-      featured: true,
-      priceText: 'From ₹199',
-    },
-    {
-      title: 'Home Cleaning',
-      subtitle: 'Deep & regular cleaning',
-      icon: 'sparklesOutline',
-      colorClass: 'blue',
-      priceText: 'From ₹399',
-    },
-    {
-      title: 'Household Chores',
-      subtitle: 'General household help',
-      icon: 'hammerOutline',
-      colorClass: 'rose',
-      priceText: 'From ₹149',
-    },
-    {
-      title: 'Cooking',
-      subtitle: '1-2 hours of meal prep',
-      icon: 'restaurantOutline',
-      colorClass: 'orange',
-      priceText: 'From ₹249',
-    },
-    {
-      title: 'Plumbing',
-      subtitle: 'Leaks, taps & pipe work',
-      icon: 'constructOutline',
-      colorClass: 'steel',
-      priceText: 'From ₹299',
-    },
-    {
-      title: 'Electrical',
-      subtitle: 'Switches, wiring & repairs',
-      icon: 'flashOutline',
-      colorClass: 'amber',
-      priceText: 'From ₹299',
-    },
-  ];
-
-  scrollPopular(direction: -1 | 1): void {
-    const scroller = this.popularScroller?.nativeElement;
-    if (!scroller) {
-      return;
-    }
-
-    const step = Math.max(scroller.clientWidth * 0.82, 220);
-    scroller.scrollBy({ left: direction * step, behavior: 'smooth' });
-  }
-
-  onPopularScroll(): void {
-    const scroller = this.popularScroller?.nativeElement;
-    if (!scroller) {
-      return;
-    }
-
-    const firstCard = scroller.querySelector<HTMLElement>('.popular-card');
-    const cardStep = (firstCard?.offsetWidth ?? 220) + 12;
-    const approximateIndex = Math.round(scroller.scrollLeft / cardStep);
-    const maxIndex = Math.max(this.popularServices.length - 1, 0);
-    this.activePopularIndex = Math.max(0, Math.min(approximateIndex, maxIndex));
-  }
-
-  openPopularService(service: PopularService): void {
-    this.openBookingPage(service.title, service.priceText);
-  }
-
-  openServiceCard(service: ServiceItem): void {
-    this.openBookingPage(service.title, service.priceText);
   }
 
   openNotifications(): void {
@@ -246,40 +103,164 @@ export class HomePage {
   }
 
   triggerSearch(): void {
-    // Keeping it in-page for now; filtering happens via getters below.
+    // Search filtering is handled by computed getters.
   }
 
-  get filteredPopularServices(): PopularService[] {
+  onPopularScroll(): void {
+    const scroller = this.popularScroller?.nativeElement;
+    if (!scroller) {
+      return;
+    }
+
+    const firstCard = scroller.querySelector<HTMLElement>('.popular-card');
+    const cardStep = (firstCard?.offsetWidth ?? 220) + 12;
+    const approximateIndex = Math.round(scroller.scrollLeft / cardStep);
+    const maxIndex = Math.max(this.filteredPopularServices.length - 1, 0);
+    this.activePopularIndex = Math.max(0, Math.min(approximateIndex, maxIndex));
+  }
+
+  openPopularService(service: CatalogServiceItem): void {
+    this.openBookingPage(service);
+  }
+
+  openServiceCard(service: CatalogServiceItem): void {
+    this.openBookingPage(service);
+  }
+
+  retryCatalogLoad(): void {
+    void this.loadCatalog(true);
+  }
+
+  get filteredPopularServices(): CatalogServiceItem[] {
     const q = this.normalizedQuery(this.searchQuery);
-    if (!q) return this.popularServices;
-    return this.popularServices.filter((s) => this.matchesQuery(q, s.title, s.subtitle));
+    if (!q) {
+      return this.popularServices;
+    }
+
+    return this.popularServices.filter((service) =>
+      this.matchesQuery(q, service.title, service.subtitle, service.description, service.tag),
+    );
   }
 
-  get filteredAllServices(): ServiceItem[] {
+  get filteredAllServices(): CatalogServiceItem[] {
     const q = this.normalizedQuery(this.searchQuery);
-    if (!q) return this.allServices;
-    return this.allServices.filter((s) => this.matchesQuery(q, s.title, s.subtitle));
+    if (!q) {
+      return this.otherServices;
+    }
+
+    return this.otherServices.filter((service) =>
+      this.matchesQuery(q, service.title, service.subtitle, service.description, service.tag),
+    );
   }
 
-  private openBookingPage(serviceName: string, priceText: string): void {
+  getCardImage(service: CatalogServiceItem): string {
+    return service.imageUrl ?? service.iconUrl ?? '';
+  }
+
+  getServiceIcon(service: CatalogServiceItem): string {
+    return service.iconUrl ?? service.imageUrl ?? '';
+  }
+
+  getServiceTheme(service: CatalogServiceItem): Record<string, string> {
+    const theme = this.resolveServiceTheme(service.colorClass);
+    return {
+      '--service-accent-bg': theme.bg,
+      '--service-accent-fg': theme.text,
+    };
+  }
+
+  getInitials(input: string): string {
+    const words = input
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((word) => word[0]?.toUpperCase() ?? '');
+
+    return words.join('') || 'SV';
+  }
+
+  trackByServiceId(_index: number, service: CatalogServiceItem): string {
+    return service.id;
+  }
+
+  private async loadCatalog(forceRefresh = false): Promise<void> {
+    this.isCatalogLoading = true;
+    this.catalogLoadError = '';
+
+    try {
+      const response = await firstValueFrom(this.catalogService.getCatalog(forceRefresh));
+      this.popularServices = response.popular ?? [];
+      this.otherServices = response.others ?? [];
+      this.activePopularIndex = 0;
+
+      const scroller = this.popularScroller?.nativeElement;
+      if (scroller) {
+        scroller.scrollTo({ left: 0, behavior: 'auto' });
+      }
+    } catch {
+      this.popularServices = [];
+      this.otherServices = [];
+      this.catalogLoadError = 'Unable to load services right now. Please try again.';
+    } finally {
+      this.isCatalogLoading = false;
+    }
+  }
+
+  private openBookingPage(service: CatalogServiceItem): void {
     this.router.navigate(['/home/booking'], {
       queryParams: {
-        service: serviceName,
-        price: this.extractPrice(priceText),
+        serviceId: service.id,
+        slug: service.slug,
+        service: service.title,
+        price: service.startingPrice,
+      },
+      state: {
+        service,
       },
     });
-  }
-
-  private extractPrice(priceText: string): number {
-    const numericPrice = Number(priceText.replace(/[^\d]/g, ''));
-    return Number.isFinite(numericPrice) && numericPrice > 0 ? numericPrice : 299;
   }
 
   private normalizedQuery(input: string): string {
     return input.trim().toLowerCase();
   }
 
-  private matchesQuery(q: string, ...fields: Array<string | undefined>): boolean {
-    return fields.some((f) => (f ?? '').toLowerCase().includes(q));
+  private matchesQuery(q: string, ...fields: Array<string | null | undefined>): boolean {
+    return fields.some((field) => (field ?? '').toLowerCase().includes(q));
+  }
+
+  private resolveServiceTheme(colorClass: string | null): { bg: string; text: string } {
+    const normalized = (colorClass ?? '').trim().toLowerCase();
+    if (!normalized) {
+      return this.defaultServiceTheme;
+    }
+
+    const parts = normalized.split(/\s+/);
+    const bgToken = parts.find((part) => part.startsWith('bg-'));
+    const textToken = parts.find((part) => part.startsWith('text-'));
+    const bgKey = this.extractColorKey(bgToken, 'bg');
+    const textKey = this.extractColorKey(textToken, 'text');
+    const directMatchKey = parts.find((part) => this.colorThemeMap[part]);
+    const key = bgKey ?? textKey ?? directMatchKey ?? null;
+
+    if (!key) {
+      return this.defaultServiceTheme;
+    }
+
+    return this.colorThemeMap[key] ?? this.defaultServiceTheme;
+  }
+
+  private extractColorKey(token: string | undefined, prefix: 'bg' | 'text'): string | null {
+    if (!token) {
+      return null;
+    }
+
+    const segments = token.split('-');
+    if (segments.length < 3 || segments[0] !== prefix) {
+      return null;
+    }
+
+    const key = segments[1];
+    return this.colorThemeMap[key] ? key : null;
   }
 }

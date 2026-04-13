@@ -238,6 +238,40 @@
   font-size: 17px;
 }
 
+.home-feedback {
+  margin: 0 16px 12px;
+  border-radius: 14px;
+  border: 1px solid #e7eaf4;
+  background: #fff;
+  color: #5b6278;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.home-feedback p {
+  margin: 0;
+}
+
+.home-feedback.error {
+  border-color: #ffd2d2;
+  background: #fff6f6;
+  color: #a83a3a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.home-feedback.error button {
+  border: 0;
+  border-radius: 10px;
+  padding: 6px 12px;
+  background: #ffdfdf;
+  color: #9c2626;
+  font-weight: 700;
+}
+
 .section-wrap {
   padding: 28px 16px 12px;
 }
@@ -393,10 +427,6 @@
   gap: 3px;
 }
 
-.popular-card-footer ion-icon {
-  color: #ffb020;
-}
-
 .popular-card-footer strong {
   color: #252d40;
   font-weight: 800;
@@ -434,14 +464,6 @@
   font-size: 32px;
 }
 
-.all-services-title h2 ion-icon {
-  color: #f86b1f;
-  font-size: 22px;
-  background: #ffece3;
-  padding: 7px;
-  border-radius: 50%;
-}
-
 .service-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -449,6 +471,8 @@
 }
 
 .service-card {
+  --service-accent-bg: #eef2ff;
+  --service-accent-fg: #435497;
   background: #fff;
   border-radius: 22px;
   padding: 18px 16px 16px;
@@ -490,6 +514,23 @@
 .popular-media img {
   width: 100%;
   height: 100%;
+  object-fit: cover;
+}
+
+.popular-media.empty {
+  background: #eef2ff;
+}
+
+.media-fallback {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  background: #d8e2ff;
+  color: #42569d;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  font-weight: 800;
 }
 
 .popular-card-body {
@@ -501,20 +542,31 @@
 .service-icon {
   width: 64px;
   height: 64px;
-  border-radius: 50%;
+  border-radius: 16px;
+  background: var(--service-accent-bg);
+  color: var(--service-accent-fg);
   display: grid;
   place-items: center;
   margin-bottom: 4px;
+  overflow: hidden;
 }
 
-.service-icon ion-icon {
-  font-size: 28px;
+.service-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 12px;
+}
+
+.service-icon span {
+  font-size: 20px;
+  font-weight: 800;
 }
 
 .service-price {
   font-size: 13px;
   font-weight: 700;
-  color: #1aa97b;
+  color: var(--service-accent-fg);
 }
 
 .mint {
@@ -557,6 +609,14 @@
   color: #dfab1d;
 }
 
+.no-services {
+  margin: 8px 0 0;
+  color: #737b90;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
 @media (min-width: 640px) {
   .hero {
     padding-left: 24px;
@@ -576,6 +636,11 @@
   .section-wrap {
     padding-left: 24px;
     padding-right: 24px;
+  }
+
+  .home-feedback {
+    margin-left: 24px;
+    margin-right: 24px;
   }
 
   .popular-row {
@@ -649,6 +714,11 @@
     padding-top: 24px;
   }
 
+  .home-feedback {
+    margin-left: 14px;
+    margin-right: 14px;
+  }
+
   .section-head h2 {
     font-size: 24px;
   }
@@ -690,10 +760,6 @@
     width: 60px;
     height: 60px;
     border-radius: 18px;
-  }
-
-  .service-icon ion-icon {
-    font-size: 26px;
   }
 }
 

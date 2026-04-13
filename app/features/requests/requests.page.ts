@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
   buildOutline,
@@ -84,24 +85,27 @@ export class RequestsPage {
     },
   ];
 
-  constructor() {
-    addIcons(this.icons);
-  }
-
   get filteredRequests(): Request[] {
     if (this.activeTab === 'all') {
       return this.requests;
     }
-    return this.requests.filter(req => req.status === this.activeTab);
+    return this.requests.filter((req) => req.status === this.activeTab);
   }
 
   selectTab(tab: string): void {
     this.activeTab = tab;
   }
 
+  constructor(private readonly router: Router) {
+    addIcons(this.icons);
+  }
+
   viewDetails(request: Request): void {
-    console.log('View details for:', request);
-    // Navigate to details page or open modal
+    this.router.navigate(['/home/booking'], {
+      queryParams: {
+        service: request.title,
+      },
+    });
   }
 
   performAction(request: Request): void {

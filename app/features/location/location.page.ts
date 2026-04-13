@@ -32,12 +32,11 @@ export class LocationPage {
   }
 
   back(): void {
-    this.router.navigate(['/home/home']);
+    this.router.navigate(['/home']);
   }
 
   choose(loc: string): void {
     this.selected = loc;
-    this.router.navigate(['/home/home'], { queryParams: { location: loc } });
+    this.router.navigate(['/home'], { queryParams: { location: loc } });
   }
 }
-

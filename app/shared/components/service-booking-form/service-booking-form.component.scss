@@ -139,6 +139,45 @@
   margin-bottom: 12px;
 }
 
+.phone-item {
+  --background: #ffffff;
+  --border-radius: 16px;
+  border: 1px solid #e2e6f3;
+  border-radius: 16px;
+  margin-bottom: 8px;
+}
+
+.phone-item ion-label {
+  font-weight: 800;
+  color: #1b2240;
+}
+
+.phone-item ion-input {
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+  font-size: 15px;
+}
+
+.phone-helper {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #6c7490;
+}
+
+.phone-error {
+  margin: 0 2px 10px;
+  color: #c02626;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.address-error {
+  margin: 0 2px 10px;
+  color: #c02626;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .note-item {
   --background: #ffffff;
   --border-radius: 16px;

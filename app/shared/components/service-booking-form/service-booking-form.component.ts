@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ActionSheetController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import {
@@ -25,6 +25,8 @@ export interface TimeSlotOption {
 }
 
 export interface ServiceBookingPayload {
+  serviceId?: string;
+  serviceSlug?: string;
   serviceName: string;
   dateIso: string;
   dateLabel: string;
@@ -34,7 +36,8 @@ export interface ServiceBookingPayload {
   addressLabel: string;
   addressText: string;
   price: number;
-  note?: string;
+  phone: string;
+  notes?: string;
 }
 
 @Component({
@@ -42,15 +45,18 @@ export interface ServiceBookingPayload {
   templateUrl: './service-booking-form.component.html',
   styleUrls: ['./service-booking-form.component.scss'],
 })
-export class ServiceBookingFormComponent implements OnInit {
+export class ServiceBookingFormComponent implements OnInit, OnChanges {
+  @Input() serviceId: string | null = null;
+  @Input() serviceSlug: string | null = null;
   @Input() serviceName = 'Service';
   @Input() startingPrice = 299;
+  @Input() initialPhone: string | null = null;
+  @Input() isSubmitting = false;
 
   @Input() timeSlots: TimeSlotOption[] = [
     { id: 'morning', label: 'Morning', timeText: '8 AM - 11 AM' },
     { id: 'afternoon', label: 'Afternoon', timeText: '12 PM - 3 PM' },
     { id: 'evening', label: 'Evening', timeText: '4 PM - 7 PM' },
-    { id: 'asap', label: 'ASAP', timeText: 'As soon as possible', description: 'Priority arrival' },
   ];
 
   @Input() addresses: AddressOption[] = [
@@ -79,10 +85,12 @@ export class ServiceBookingFormComponent implements OnInit {
   };
 
   selectedDateIso = '';
-  selectedTimeSlotId = 'asap';
+  selectedTimeSlotId = 'morning';
   selectedAddressId = '';
   isDatePickerOpen = false;
-  note = '';
+  notes = '';
+  phone = '';
+  showPhoneError = false;
 
   constructor(
     private readonly actionSheetController: ActionSheetController,
@@ -94,11 +102,22 @@ export class ServiceBookingFormComponent implements OnInit {
     const today = new Date();
     this.selectedDateIso = this.toInputDate(today);
 
-    const defaultAddress = this.addresses.find((address) => address.isDefault);
-    this.selectedAddressId = defaultAddress?.id ?? this.addresses[0]?.id ?? '';
+    this.ensureSelectedAddress();
 
     if (!this.timeSlots.find((slot) => slot.id === this.selectedTimeSlotId) && this.timeSlots.length > 0) {
       this.selectedTimeSlotId = this.timeSlots[0].id;
+    }
+
+    this.applyInitialPhone(this.initialPhone);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if ('initialPhone' in changes && !this.phone.trim()) {
+      this.applyInitialPhone(changes['initialPhone'].currentValue as string | null);
+    }
+
+    if ('addresses' in changes) {
+      this.ensureSelectedAddress();
     }
   }
 
@@ -108,6 +127,10 @@ export class ServiceBookingFormComponent implements OnInit {
 
   get selectedTimeSlot(): TimeSlotOption | undefined {
     return this.timeSlots.find((slot) => slot.id === this.selectedTimeSlotId);
+  }
+
+  get hasAddresses(): boolean {
+    return this.addresses.length > 0;
   }
 
   get selectedDateLabel(): string {
@@ -135,6 +158,26 @@ export class ServiceBookingFormComponent implements OnInit {
     return this.toInputDate(new Date());
   }
 
+  get normalizedPhone(): string {
+    return this.normalizeIndianPhone(this.phone);
+  }
+
+  get isPhoneValid(): boolean {
+    return /^[6-9]\d{9}$/.test(this.normalizedPhone);
+  }
+
+  get phoneErrorMessage(): string {
+    if (!this.showPhoneError) {
+      return '';
+    }
+
+    if (!this.phone.trim()) {
+      return 'Phone number is required.';
+    }
+
+    return 'Please enter a valid Indian mobile number.';
+  }
+
   onDateSelected(event: any): void {
     const value = event?.detail?.value;
     if (typeof value !== 'string' || !value) {
@@ -147,6 +190,13 @@ export class ServiceBookingFormComponent implements OnInit {
   selectTimeSlot(slotId: any): void {
     if (typeof slotId !== 'string' || !slotId) return;
     this.selectedTimeSlotId = slotId;
+  }
+
+  onPhoneInput(value: string): void {
+    this.phone = value;
+    if (this.showPhoneError) {
+      this.showPhoneError = !this.isPhoneValid;
+    }
   }
 
   async openAddressChange(): Promise<void> {
@@ -174,12 +224,15 @@ export class ServiceBookingFormComponent implements OnInit {
   submitRequest(): void {
     const selectedAddress = this.selectedAddress;
     const selectedTimeSlot = this.selectedTimeSlot;
+    this.showPhoneError = !this.isPhoneValid;
 
-    if (!selectedAddress || !selectedTimeSlot) {
+    if (!selectedAddress || !selectedTimeSlot || !this.isPhoneValid) {
       return;
     }
 
     this.requestService.emit({
+      serviceId: this.serviceId ?? undefined,
+      serviceSlug: this.serviceSlug ?? undefined,
       serviceName: this.serviceName,
       dateIso: this.selectedDateIso,
       dateLabel: this.selectedDateLabel,
@@ -189,8 +242,31 @@ export class ServiceBookingFormComponent implements OnInit {
       addressLabel: selectedAddress.label,
       addressText: selectedAddress.fullAddress,
       price: this.startingPrice,
-      note: this.note.trim() ? this.note.trim() : undefined,
+      phone: this.normalizedPhone,
+      notes: this.notes.trim() ? this.notes.trim() : undefined,
     });
+  }
+
+  private applyInitialPhone(phone: string | null): void {
+    if (!phone) {
+      return;
+    }
+    this.phone = this.normalizeIndianPhone(phone);
+  }
+
+  private ensureSelectedAddress(): void {
+    if (!this.addresses.length) {
+      this.selectedAddressId = '';
+      return;
+    }
+
+    const selectedStillExists = this.addresses.some((address) => address.id === this.selectedAddressId);
+    if (selectedStillExists) {
+      return;
+    }
+
+    const defaultAddress = this.addresses.find((address) => address.isDefault);
+    this.selectedAddressId = defaultAddress?.id ?? this.addresses[0]?.id ?? '';
   }
 
   private toInputDate(date: Date): string {
@@ -203,5 +279,26 @@ export class ServiceBookingFormComponent implements OnInit {
   private parseInputDate(inputDate: string): Date {
     const [year, month, day] = inputDate.split('-').map((part) => Number(part));
     return new Date(year, month - 1, day);
+  }
+
+  private normalizeIndianPhone(input: string): string {
+    const digitsOnly = (input ?? '').replace(/\D/g, '');
+    if (!digitsOnly) {
+      return '';
+    }
+
+    if (digitsOnly.length === 10) {
+      return digitsOnly;
+    }
+
+    if (digitsOnly.length === 11 && digitsOnly.startsWith('0')) {
+      return digitsOnly.slice(1);
+    }
+
+    if (digitsOnly.length === 12 && digitsOnly.startsWith('91')) {
+      return digitsOnly.slice(2);
+    }
+
+    return digitsOnly;
   }
 }

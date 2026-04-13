@@ -10,10 +10,14 @@
       <div class="login-card__main">
         <h2 class="title">Sign in</h2>
 
-        <button class="google-btn" type="button" (click)="signInWithGoogle()">
+        <button class="google-btn" type="button" [disabled]="isLoading" (click)="signInWithGoogle()">
           <img src="assets/google.png" alt="Google" />
-          <span>Continue with Google</span>
+          <span>{{ isLoading ? 'Signing in...' : 'Continue with Google' }}</span>
         </button>
+
+        <ion-text color="danger" *ngIf="debug && errorMessage">
+          <p>{{ errorMessage }}</p>
+        </ion-text>
 
         <div class="security-text">
           <ion-icon name="lock-closed-outline"></ion-icon>

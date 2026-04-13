@@ -113,26 +113,51 @@
         </ion-label>
         <ion-button slot="end" fill="clear" (click)="openAddressChange()">Change</ion-button>
       </ion-item>
+      <p class="address-error" *ngIf="!hasAddresses">
+        No saved address found. Please add an address in your profile.
+      </p>
 
       <ion-item class="summary-item" lines="none">
         <ion-label>
           <h3>Summary</h3>
-          <p>{{ selectedDateLabel }} • {{ selectedTimeSlot?.label }} • {{ selectedAddress?.label }}</p>
+          <p>{{ selectedDateLabel }} • {{ selectedTimeSlot?.label }}</p>
+          <p>{{ selectedAddress?.label }} • {{ normalizedPhone || 'Add phone number' }}</p>
         </ion-label>
         <ion-note slot="end">₹{{ startingPrice }}</ion-note>
       </ion-item>
 
+      <ion-item class="phone-item" lines="none">
+        <ion-label position="stacked">Phone Number</ion-label>
+        <ion-input
+          type="tel"
+          inputmode="numeric"
+          autocomplete="tel"
+          placeholder="e.g. 9876543210"
+          [value]="phone"
+          (ionInput)="onPhoneInput($any($event.detail.value) || '')"
+        ></ion-input>
+        <ion-note class="phone-helper">Use a valid Indian mobile number</ion-note>
+      </ion-item>
+
+      <p class="phone-error" *ngIf="phoneErrorMessage">{{ phoneErrorMessage }}</p>
+
       <ion-item class="note-item" lines="none">
         <ion-label position="stacked">Any special note? (optional)</ion-label>
         <ion-textarea
-          [value]="note"
-          (ionInput)="note = $any($event.target).value || ''"
+          [value]="notes"
+          (ionInput)="notes = $any($event.target).value || ''"
           placeholder="e.g. Call on arrival, bring ladder, building gate code..."
           autoGrow="true"
         ></ion-textarea>
       </ion-item>
 
-      <ion-button class="request-btn" expand="block" size="large" (click)="submitRequest()">
+      <ion-button
+        class="request-btn"
+        expand="block"
+        size="large"
+        [disabled]="isSubmitting"
+        (click)="submitRequest()"
+      >
         Request service
       </ion-button>
       <p class="starting-price">Starting from ₹{{ startingPrice }}</p>

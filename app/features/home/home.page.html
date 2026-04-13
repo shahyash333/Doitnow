@@ -37,72 +37,97 @@
       [value]="searchQuery"
       (input)="onSearchInput($any($event.target).value || '')"
       (keydown.enter)="triggerSearch()"
-      placeholder="Search services (e.g. plumber, cleaning, cook)"
+      placeholder="Search services (e.g. plumber, cleaning, AC)"
     />
   </div>
 
-  <section class="section-wrap popular-section">
-    <div class="section-head section-head-with-controls">
-      <h2>Popular Services</h2>
-    </div>
+  <section class="home-feedback" *ngIf="isCatalogLoading">
+    <p>Loading services...</p>
+  </section>
 
-    <div #popularScroller class="popular-row" (scroll)="onPopularScroll()">
-      <article
-        class="popular-card"
-        *ngFor="let service of filteredPopularServices"
-        role="button"
-        tabindex="0"
-        (click)="openPopularService(service)"
-        (keyup.enter)="openPopularService(service)"
-      >
-        <div class="popular-media">
-          <span *ngIf="service.badge" class="service-badge">{{ service.badge }}</span>
-          <img [src]="service.image" [alt]="service.title" />
-        </div>
-        <div class="popular-card-body">
-          <h3>{{ service.title }}</h3>
-          <p>{{ service.subtitle }}</p>
-          <div class="popular-card-footer">
-            <span class="rating"><ion-icon [icon]="icons.star"></ion-icon> {{ service.rating }}</span>
-            <strong>{{ service.priceText }}</strong>
+  <section class="home-feedback error" *ngIf="!isCatalogLoading && catalogLoadError">
+    <p>{{ catalogLoadError }}</p>
+    <button type="button" (click)="retryCatalogLoad()">Retry</button>
+  </section>
+
+  <ng-container *ngIf="!isCatalogLoading && !catalogLoadError">
+    <section class="section-wrap popular-section" *ngIf="filteredPopularServices.length > 0">
+      <div class="section-head section-head-with-controls">
+        <h2>Popular Services</h2>
+      </div>
+
+      <div #popularScroller class="popular-row" (scroll)="onPopularScroll()">
+        <article
+          class="popular-card"
+          *ngFor="let service of filteredPopularServices; trackBy: trackByServiceId"
+          role="button"
+          tabindex="0"
+          (click)="openPopularService(service)"
+          (keyup.enter)="openPopularService(service)"
+        >
+          <div class="popular-media" [class.empty]="!getCardImage(service)">
+            <span *ngIf="service.tag" class="service-badge">{{ service.tag }}</span>
+            <img
+              *ngIf="getCardImage(service)"
+              [src]="getCardImage(service)"
+              [alt]="service.title"
+              loading="lazy"
+            />
+            <span *ngIf="!getCardImage(service)" class="media-fallback">{{ getInitials(service.title) }}</span>
           </div>
-        </div>
-      </article>
-    </div>
+          <div class="popular-card-body">
+            <h3>{{ service.title }}</h3>
+            <p>{{ service.subtitle || service.description }}</p>
+            <div class="popular-card-footer">
+              <span>{{ service.displayType === 'BANNER' ? 'Featured' : 'Popular' }}</span>
+              <strong>{{ service.priceText }}</strong>
+            </div>
+          </div>
+        </article>
+      </div>
 
-    <div class="popular-dots" aria-hidden="true">
-      <span
-        class="dot"
-        *ngFor="let _service of filteredPopularServices; let i = index"
-        [class.active]="i === activePopularIndex"
-      ></span>
-    </div>
-  </section>
+      <div class="popular-dots" aria-hidden="true">
+        <span
+          class="dot"
+          *ngFor="let _service of filteredPopularServices; let i = index"
+          [class.active]="i === activePopularIndex"
+        ></span>
+      </div>
+    </section>
 
-  <section class="section-wrap all-services">
-    <div class="section-head all-services-title">
-      <h2><ion-icon [icon]="icons.sparklesOutline"></ion-icon> All Services</h2>
-    </div>
+    <section class="section-wrap all-services">
+      <div class="section-head all-services-title">
+        <h2>All Services</h2>
+      </div>
 
-    <div class="service-grid">
-      <article
-        class="service-card"
-        *ngFor="let service of filteredAllServices"
-        [class.featured]="service.featured"
-        role="button"
-        tabindex="0"
-        (click)="openServiceCard(service)"
-        (keyup.enter)="openServiceCard(service)"
-      >
-        <div class="service-icon" [ngClass]="service.colorClass">
-          <ion-icon [icon]="icons[service.icon]"></ion-icon>
-        </div>
-        <h3>{{ service.title }}</h3>
-        <p>{{ service.subtitle }}</p>
-        <span class="service-price" [ngClass]="service.colorClass" style="background: none;">
-          {{ service.priceText }}
-        </span>
-      </article>
-    </div>
-  </section>
+      <div class="service-grid" *ngIf="filteredAllServices.length > 0; else noServicesFound">
+        <article
+          class="service-card"
+          *ngFor="let service of filteredAllServices; trackBy: trackByServiceId"
+          [ngStyle]="getServiceTheme(service)"
+          role="button"
+          tabindex="0"
+          (click)="openServiceCard(service)"
+          (keyup.enter)="openServiceCard(service)"
+        >
+          <div class="service-icon">
+            <img
+              *ngIf="getServiceIcon(service)"
+              [src]="getServiceIcon(service)"
+              [alt]="service.title + ' icon'"
+              loading="lazy"
+            />
+            <span *ngIf="!getServiceIcon(service)">{{ getInitials(service.title) }}</span>
+          </div>
+          <h3>{{ service.title }}</h3>
+          <p>{{ service.subtitle || service.description }}</p>
+          <span class="service-price">{{ service.priceText }}</span>
+        </article>
+      </div>
+
+      <ng-template #noServicesFound>
+        <p class="no-services">No services matched your search.</p>
+      </ng-template>
+    </section>
+  </ng-container>
 </ion-content>

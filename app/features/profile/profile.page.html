@@ -3,22 +3,43 @@
     <div class="hero__title">Profile</div>
 
     <div class="hero__info">
-      <div class="avatar">R</div>
+      <div class="avatar">
+        <img
+          *ngIf="hasAvatarUrl; else avatarFallback"
+          [src]="avatarUrl"
+          [alt]="displayName + ' avatar'"
+          (error)="onAvatarError()"
+        />
+        <ng-template #avatarFallback>{{ avatarText }}</ng-template>
+      </div>
       <div class="details">
         <div class="name-row">
-          <div class="name">Ramesh Patel</div>
+          <div class="name">{{ displayName }}</div>
           <button class="edit-btn" aria-label="Edit profile">
             <ion-icon [icon]="icons.createOutline"></ion-icon>
           </button>
         </div>
         <div class="contact">
-          <div class="contact-row">
+          <div class="contact-row" *ngIf="hasPhone; else addPhoneTemplate">
             <ion-icon [icon]="icons.callOutline"></ion-icon>
-            <span>+91 98765 43210</span>
+            <span>{{ displayPhone }}</span>
           </div>
+          <ng-template #addPhoneTemplate>
+            <div class="contact-row contact-row--optional">
+              <ion-icon [icon]="icons.callOutline"></ion-icon>
+              <span>No phone number</span>
+              <button
+                class="add-phone-btn"
+                type="button"
+                [disabled]="isSavingPhone"
+                (click)="onAddPhone()">
+                {{ isSavingPhone ? 'Opening...' : 'Add number' }}
+              </button>
+            </div>
+          </ng-template>
           <div class="contact-row">
             <ion-icon [icon]="icons.mailOutline"></ion-icon>
-            <span>ramesh&#64;email.com</span>
+            <span>{{ displayEmail }}</span>
           </div>
         </div>
       </div>
@@ -131,14 +152,14 @@
     </div>
   </section>
 
-  <section class="logout-card">
+  <button class="logout-card" type="button" [disabled]="isLoggingOut" (click)="onLogout()">
     <div class="item-left">
       <div class="item-icon red">
         <ion-icon [icon]="icons.logOutOutline"></ion-icon>
       </div>
       <div class="item-text">
-        <div class="item-title logout-text">Log Out</div>
+        <div class="item-title logout-text">{{ isLoggingOut ? 'Logging out...' : 'Log Out' }}</div>
       </div>
     </div>
-  </section>
+  </button>
 </ion-content>
