@@ -61,3 +61,19 @@ ion-tab,
     transform: rotate(360deg);
   }
 }
+
+ion-modal.address-modal-sheet {
+  --height: min(92vh, 760px);
+  --border-radius: 22px 22px 0 0;
+  --box-shadow: 0 -12px 40px rgba(8, 20, 48, 0.24);
+}
+
+ion-modal.address-modal-sheet::part(content) {
+  border-radius: 22px 22px 0 0;
+  overflow: hidden;
+}
+
+ion-modal.address-modal-sheet::part(handle) {
+  width: 48px;
+  background: #c8d3ea;
+}

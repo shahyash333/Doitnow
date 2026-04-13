@@ -1,0 +1,31 @@
+.address-modal-header ion-toolbar {
+  --background: #ffffff;
+  --color: #15203d;
+  padding-top: 4px;
+}
+
+.address-modal-header ion-title {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.address-modal-content {
+  --background: linear-gradient(180deg, #f4f7ff 0%, #ffffff 38%);
+}
+
+.body-wrap {
+  padding: 10px 14px calc(18px + env(safe-area-inset-bottom));
+  min-height: 100%;
+  animation: riseIn 200ms ease;
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

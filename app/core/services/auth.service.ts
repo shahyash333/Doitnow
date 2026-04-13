@@ -6,6 +6,7 @@ import { Capacitor } from '@capacitor/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 import { environment } from '../../../environments/environment';
+import { Address, AddressLocation } from '../models/address.model';
 
 const DEBUG = true;
 
@@ -26,8 +27,22 @@ export interface AuthAddress {
   id: string;
   userId?: string | null;
   label: string;
+  addressType: string;
+  contactName: string;
+  phone: string;
+  shortAddress: string;
   fullAddress: string;
-  isDefault?: boolean;
+  location: AddressLocation | null;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+  houseNumber?: string;
+  building?: string;
+  landmark?: string;
+  area?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
 }
 
 interface AuthResponse {
@@ -302,6 +317,24 @@ export class AuthService {
     localStorage.setItem(this.userStorageKey, JSON.stringify(updatedUser));
   }
 
+  updateLocalAddresses(addresses: Address[]): void {
+    const currentUser = this.getCurrentUser();
+
+    if (!currentUser) {
+      return;
+    }
+
+    const normalizedAddresses = this.normalizeAddresses(addresses);
+    const updatedUser: AuthUser = {
+      ...currentUser,
+      addresses: normalizedAddresses,
+      updatedAt: currentUser.updatedAt,
+    };
+
+    this.userSubject.next(updatedUser);
+    localStorage.setItem(this.userStorageKey, JSON.stringify(updatedUser));
+  }
+
   private async executeRefresh(): Promise<string> {
     const refreshToken = this.getRefreshToken();
 
@@ -406,19 +439,35 @@ export class AuthService {
 
     const source = entry as Record<string, unknown>;
     const id = this.readString(source, ['id']);
-    const label = this.readString(source, ['label']) ?? 'Address';
     const fullAddress = this.readString(source, ['fullAddress', 'address']) ?? '';
 
     if (!id || !fullAddress) {
       return null;
     }
 
+    const shortAddress = this.readString(source, ['shortAddress']) ?? this.deriveShortAddress(fullAddress);
+    const nowIso = new Date().toISOString();
+
     return {
       id,
       userId: this.readString(source, ['userId', 'user_id']),
-      label,
+      label: this.readString(source, ['label']) ?? 'Address',
+      addressType: this.readString(source, ['addressType']) ?? 'HOME',
+      contactName: this.readString(source, ['contactName', 'displayName']) ?? '',
+      phone: this.readString(source, ['phone']) ?? '',
+      shortAddress,
       fullAddress,
+      location: this.readLocation(source['location']) ?? this.readLatLngFromRoot(source),
       isDefault: this.readBoolean(source, ['isDefault', 'default']) ?? false,
+      createdAt: this.readString(source, ['createdAt', 'created_at']) ?? nowIso,
+      updatedAt: this.readString(source, ['updatedAt', 'updated_at']) ?? nowIso,
+      houseNumber: this.readString(source, ['houseNumber']) ?? undefined,
+      building: this.readString(source, ['building']) ?? undefined,
+      landmark: this.readString(source, ['landmark']) ?? undefined,
+      area: this.readString(source, ['area']) ?? undefined,
+      city: this.readString(source, ['city']) ?? undefined,
+      state: this.readString(source, ['state']) ?? undefined,
+      pincode: this.readString(source, ['pincode']) ?? undefined,
     };
   }
 
@@ -443,6 +492,46 @@ export class AuthService {
       }
     }
     return null;
+  }
+
+  private readLocation(locationValue: unknown): AddressLocation | null {
+    if (!locationValue || typeof locationValue !== 'object') {
+      return null;
+    }
+
+    const source = locationValue as Record<string, unknown>;
+    const lat = this.readNumber(source, ['lat']);
+    const lng = this.readNumber(source, ['lng', 'lon', 'long']);
+    return lat === null || lng === null ? null : { lat, lng };
+  }
+
+  private readLatLngFromRoot(source: Record<string, unknown>): AddressLocation | null {
+    const lat = this.readNumber(source, ['latitude', 'lat']);
+    const lng = this.readNumber(source, ['longitude', 'lng', 'lon', 'long']);
+    return lat === null || lng === null ? null : { lat, lng };
+  }
+
+  private readNumber(source: Record<string, unknown>, keys: string[]): number | null {
+    for (const key of keys) {
+      const value = source[key];
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        return value;
+      }
+
+      if (typeof value === 'string' && value.trim()) {
+        const parsed = Number(value);
+        if (Number.isFinite(parsed)) {
+          return parsed;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  private deriveShortAddress(fullAddress: string): string {
+    const firstPart = fullAddress.split(',')[0]?.trim() ?? '';
+    return firstPart || fullAddress;
   }
 
   private clearSession(): void {

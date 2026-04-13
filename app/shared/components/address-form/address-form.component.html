@@ -1,0 +1,113 @@
+<form class="address-form" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="row two-col">
+    <ion-item lines="none">
+      <ion-label position="stacked">Label *</ion-label>
+      <ion-input formControlName="label" placeholder="Home / Work / Other"></ion-input>
+    </ion-item>
+
+    <ion-item lines="none">
+      <ion-label position="stacked">Address Type</ion-label>
+      <ion-select formControlName="addressType" interface="action-sheet">
+        <ion-select-option *ngFor="let type of addressTypes" [value]="type">
+          {{ type }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+  </div>
+
+  <ion-item lines="none">
+    <ion-label position="stacked">Contact Name</ion-label>
+    <ion-input formControlName="contactName" placeholder="Who should we contact?"></ion-input>
+  </ion-item>
+
+  <ion-item lines="none">
+    <ion-label position="stacked">Phone *</ion-label>
+    <ion-input
+      type="tel"
+      inputmode="numeric"
+      formControlName="phone"
+      placeholder="10-digit phone number"
+      (ionInput)="onPhoneInput($any($event.detail.value) || '')"
+    ></ion-input>
+  </ion-item>
+  <p class="error" *ngIf="hasError('phone', 'required') || hasError('phone', 'pattern')">
+    Enter a valid 10-digit phone number.
+  </p>
+
+  <button class="location-btn" type="button" [disabled]="isResolvingLocation" (click)="useCurrentLocation()">
+    <ion-icon [icon]="icons.navigateOutline"></ion-icon>
+    {{ isResolvingLocation ? 'Fetching location...' : 'Use current location' }}
+  </button>
+  <p class="location-msg" [class.error]="isLocationError" *ngIf="locationMessage">{{ locationMessage }}</p>
+
+  <ion-item lines="none">
+    <ion-label position="stacked">House Number</ion-label>
+    <ion-input formControlName="houseNumber" placeholder="Flat no / house no"></ion-input>
+  </ion-item>
+
+  <ion-item lines="none">
+    <ion-label position="stacked">Building *</ion-label>
+    <ion-input formControlName="building" placeholder="Building or street"></ion-input>
+  </ion-item>
+  <p class="error" *ngIf="hasError('building', 'required')">Building is required.</p>
+
+  <ion-item lines="none">
+    <ion-label position="stacked">Landmark *</ion-label>
+    <ion-input formControlName="landmark" placeholder="Nearby landmark"></ion-input>
+  </ion-item>
+  <p class="error" *ngIf="hasError('landmark', 'required')">Landmark is required.</p>
+
+  <ion-item lines="none">
+    <ion-label position="stacked">Area</ion-label>
+    <ion-input formControlName="area" placeholder="Area or locality"></ion-input>
+  </ion-item>
+
+  <div class="row two-col">
+    <ion-item lines="none">
+      <ion-label position="stacked">City *</ion-label>
+      <ion-input formControlName="city"></ion-input>
+    </ion-item>
+
+    <ion-item lines="none">
+      <ion-label position="stacked">State *</ion-label>
+      <ion-input formControlName="state"></ion-input>
+    </ion-item>
+  </div>
+  <p class="error" *ngIf="hasError('city', 'required') || hasError('state', 'required')">
+    City and state are required.
+  </p>
+
+  <ion-item lines="none">
+    <ion-label position="stacked">Pincode *</ion-label>
+    <ion-input
+      type="tel"
+      inputmode="numeric"
+      formControlName="pincode"
+      placeholder="6-digit pincode"
+      (ionInput)="onPincodeInput($any($event.detail.value) || '')"
+    ></ion-input>
+  </ion-item>
+  <p class="error" *ngIf="hasError('pincode', 'required') || hasError('pincode', 'pattern')">
+    Enter a valid 6-digit pincode.
+  </p>
+
+  <p class="error" *ngIf="hasError('label', 'required')">Label is required.</p>
+
+  <ion-item lines="none">
+    <ion-label>Set as default</ion-label>
+    <ion-toggle slot="end" formControlName="isDefault"></ion-toggle>
+  </ion-item>
+
+  <div class="footer-actions">
+    <button class="secondary" type="button" [disabled]="isSubmitting" (click)="cancel.emit()">
+      <ion-icon [icon]="icons.closeOutline"></ion-icon>
+      Cancel
+    </button>
+
+    <button class="primary" type="submit" [disabled]="isSubmitting">
+      <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
+      <ion-icon *ngIf="!isSubmitting" [icon]="icons.saveOutline"></ion-icon>
+      {{ isEditMode ? 'Update Address' : 'Save Address' }}
+    </button>
+  </div>
+</form>

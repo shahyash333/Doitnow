@@ -1,0 +1,99 @@
+.address-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row.two-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+ion-item {
+  --background: #ffffff;
+  --border-radius: 14px;
+  border: 1px solid #e1e6f5;
+  border-radius: 14px;
+}
+
+ion-label[position='stacked'] {
+  color: #4e5780;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+ion-input,
+ion-select {
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  font-size: 14px;
+}
+
+.location-btn {
+  border: 1px dashed #1f6adf;
+  background: #edf5ff;
+  color: #1456ba;
+  min-height: 44px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.location-msg {
+  margin: -2px 2px 2px;
+  color: #216a2f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.location-msg.error,
+.error {
+  color: #b12222;
+}
+
+.error {
+  margin: -6px 2px 2px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.footer-actions {
+  margin-top: 6px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.footer-actions button {
+  min-height: 46px;
+  border-radius: 14px;
+  border: 0;
+  font-size: 14px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.footer-actions .secondary {
+  background: #f1f4fb;
+  color: #28345c;
+}
+
+.footer-actions .primary {
+  background: linear-gradient(135deg, #1d68dd 0%, #0bb0c0 100%);
+  color: #ffffff;
+}
+
+@media (max-width: 520px) {
+  .row.two-col {
+    grid-template-columns: 1fr;
+  }
+}

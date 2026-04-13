@@ -2,7 +2,7 @@
   padding: 14px 14px calc(20px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 14px;
 }
 
 .step-card {
@@ -81,14 +81,12 @@
   --padding-end: 10px;
 }
 
-.date-trigger ion-icon,
-.address-item ion-icon {
+.date-trigger ion-icon {
   color: #5f38ff;
   font-size: 20px;
 }
 
 .date-trigger ion-label h3,
-.address-item ion-label h3,
 .summary-item ion-label h3 {
   margin: 0;
   font-size: 16px;
@@ -97,7 +95,6 @@
 }
 
 .date-trigger ion-label p,
-.address-item ion-label p,
 .summary-item ion-label p {
   margin: 4px 0 0;
   color: #6c7490;
@@ -130,7 +127,53 @@
   font-weight: 700;
 }
 
-.address-item,
+.selected-address {
+  border: 1px solid #dce4f7;
+  border-radius: 16px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #fbfcff;
+}
+
+.address-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.address-head h3 {
+  margin: 0;
+  color: #1e2749;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.address-head p {
+  margin: 4px 0 0;
+  color: #5d6788;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.address-head small {
+  margin-top: 4px;
+  display: inline-block;
+  color: #303a5c;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.address-change-btn {
+  margin-top: 10px;
+  border: 0;
+  background: #eaf2ff;
+  color: #1a56b7;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .summary-item {
   --background: #ffffff;
   --border-radius: 16px;
@@ -139,43 +182,9 @@
   margin-bottom: 12px;
 }
 
-.phone-item {
-  --background: #ffffff;
-  --border-radius: 16px;
-  border: 1px solid #e2e6f3;
-  border-radius: 16px;
-  margin-bottom: 8px;
-}
-
-.phone-item ion-label {
-  font-weight: 800;
+.summary-item ion-note {
+  font-weight: 900;
   color: #1b2240;
-}
-
-.phone-item ion-input {
-  --padding-top: 10px;
-  --padding-bottom: 10px;
-  font-size: 15px;
-}
-
-.phone-helper {
-  margin-top: 6px;
-  font-size: 12px;
-  color: #6c7490;
-}
-
-.phone-error {
-  margin: 0 2px 10px;
-  color: #c02626;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.address-error {
-  margin: 0 2px 10px;
-  color: #c02626;
-  font-size: 12px;
-  font-weight: 700;
 }
 
 .note-item {
@@ -197,16 +206,48 @@
   color: #1b2240;
 }
 
-.summary-item ion-note {
-  font-weight: 900;
-  color: #1b2240;
-}
-
 .request-btn {
   margin-top: 6px;
   --background: linear-gradient(135deg, #5737f8 0%, #bc3af4 100%);
   --box-shadow: 0 10px 20px rgba(94, 56, 255, 0.24);
   font-weight: 900;
+}
+
+.missing-address {
+  border: 1px dashed #cfd7ef;
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  background: #f9fbff;
+}
+
+.missing-address ion-icon {
+  font-size: 26px;
+  color: #1860c6;
+}
+
+.missing-address h3 {
+  margin: 8px 0 0;
+  color: #1f284a;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.missing-address p {
+  margin: 8px 0 14px;
+  color: #596283;
+  font-size: 13px;
+}
+
+.missing-address button {
+  border: 0;
+  border-radius: 999px;
+  background: #1f63ce;
+  color: #ffffff;
+  min-height: 40px;
+  padding: 0 18px;
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .starting-price {
@@ -221,7 +262,6 @@
   .booking-form-shell {
     padding-left: 10px;
     padding-right: 10px;
-    gap: 14px;
   }
 
   .step-card {
@@ -235,134 +275,4 @@
   .step-card ion-card-content {
     padding: 8px 12px 14px;
   }
-}
-
-/* Keep legacy selectors harmless if referenced elsewhere */
-.time-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.time-slot {
-  border: 1px solid #e3e6f1;
-  border-radius: 16px;
-  min-height: 72px;
-  background: #fdfdff;
-  color: #1f2747;
-  padding: 8px 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-}
-
-.time-slot strong {
-  font-size: 17px;
-  font-weight: 800;
-}
-
-.time-slot span {
-  font-size: 12px;
-  color: #606885;
-}
-
-.time-slot ion-icon {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  color: #ffffff;
-  font-size: 19px;
-}
-
-.time-slot.active {
-  border-color: transparent;
-  background: linear-gradient(135deg, #5f38ff 0%, #c13dff 100%);
-  box-shadow: 0 8px 16px rgba(95, 56, 255, 0.24);
-}
-
-.time-slot.active strong,
-.time-slot.active span {
-  color: #ffffff;
-}
-
-.address-card {
-  border: 1px solid #e2e6f3;
-  border-radius: 16px;
-  padding: 11px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.address-main {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.address-main ion-icon {
-  color: #5f38ff;
-  font-size: 18px;
-  margin-top: 3px;
-}
-
-.address-copy strong {
-  font-size: 15px;
-  color: #1d2443;
-}
-
-.address-copy small {
-  color: #6b7391;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.address-copy p {
-  margin: 4px 0 0;
-  font-size: 12px;
-  color: #606987;
-  line-height: 1.35;
-}
-
-.address-change-btn {
-  border: 0;
-  background: transparent;
-  color: #5f38ff;
-  font-size: 16px;
-  font-weight: 700;
-  align-self: center;
-}
-
-.selection-summary {
-  margin-top: 14px;
-  border-top: 1px solid #eef0f7;
-  padding-top: 14px;
-  text-align: center;
-  color: #3b4260;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.request-btn {
-  margin-top: 14px;
-  width: 100%;
-  border: 0;
-  border-radius: 999px;
-  min-height: 52px;
-  background: linear-gradient(135deg, #5737f8 0%, #bc3af4 100%);
-  color: #ffffff;
-  font-size: 17px;
-  font-weight: 800;
-  box-shadow: 0 10px 20px rgba(94, 56, 255, 0.24);
-}
-
-.starting-price {
-  margin: 10px 0 0;
-  text-align: center;
-  color: #5f6681;
-  font-size: 13px;
-  font-weight: 600;
 }

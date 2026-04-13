@@ -1,0 +1,28 @@
+<section class="address-list-shell">
+  <button class="add-btn" type="button" [disabled]="isBusy" (click)="add.emit()">
+    <ion-icon [icon]="icons.addOutline"></ion-icon>
+    Add New Address
+  </button>
+
+  <div class="loader" *ngIf="isBusy">
+    <ion-spinner name="crescent"></ion-spinner>
+    <span>Updating addresses...</span>
+  </div>
+
+  <div class="empty-state" *ngIf="!isBusy && !addresses.length">
+    <h3>No saved address yet</h3>
+    <p>Add your first address to continue booking services.</p>
+    <button type="button" (click)="add.emit()">Add Address</button>
+  </div>
+
+  <div class="list-stack" *ngIf="addresses.length">
+    <app-address-card
+      *ngFor="let address of addresses; trackBy: trackById"
+      [address]="address"
+      [isSelected]="selectedAddressId === address.id"
+      (select)="select.emit($event)"
+      (edit)="edit.emit($event)"
+      (remove)="remove.emit($event)"
+    ></app-address-card>
+  </div>
+</section>

@@ -135,6 +135,10 @@ export class ProfilePage implements OnDestroy {
     return this.user?.phone?.trim() || '';
   }
 
+  get addressCount(): number {
+    return this.user?.addresses?.length ?? 0;
+  }
+
   get avatarText(): string {
     const preferred = this.user?.fullName?.trim() || this.user?.email?.trim() || 'U';
     return preferred.charAt(0).toUpperCase();

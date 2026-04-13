@@ -1,0 +1,44 @@
+<article
+  class="address-card"
+  [class.selected]="isSelected"
+  [class.default]="address.isDefault"
+  role="button"
+  tabindex="0"
+  (click)="onSelect()"
+  (keyup.enter)="onSelect()"
+>
+  <div class="top-row">
+    <div class="title-wrap">
+      <ion-icon [icon]="icons.locationOutline"></ion-icon>
+      <div>
+        <h3>{{ address.label }}</h3>
+        <p>{{ address.shortAddress }}</p>
+      </div>
+    </div>
+
+    <div class="chip-wrap">
+      <span class="chip selected-chip" *ngIf="isSelected">
+        <ion-icon [icon]="icons.checkmarkCircleOutline"></ion-icon>
+        Selected
+      </span>
+      <span class="chip default-chip" *ngIf="address.isDefault">
+        <ion-icon [icon]="icons.starOutline"></ion-icon>
+        Default
+      </span>
+    </div>
+  </div>
+
+  <p class="full-address">{{ address.fullAddress }}</p>
+  <p class="phone" *ngIf="address.phone">{{ address.phone }}</p>
+
+  <div class="actions">
+    <button class="action-btn" type="button" (click)="onEdit($event)">
+      <ion-icon [icon]="icons.createOutline"></ion-icon>
+      Edit
+    </button>
+    <button class="action-btn delete" type="button" (click)="onDelete($event)">
+      <ion-icon [icon]="icons.trashOutline"></ion-icon>
+      Delete
+    </button>
+  </div>
+</article>

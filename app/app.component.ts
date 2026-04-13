@@ -3,6 +3,7 @@ import { Capacitor } from '@capacitor/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 import { AuthService } from './core/services/auth.service';
+import { AddressService } from './core/services/address.service';
 import { environment } from '../environments/environment';
 
 @Component({
@@ -10,11 +11,15 @@ import { environment } from '../environments/environment';
   templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly addressService: AddressService,
+  ) {}
 
   ngOnInit(): void {
     this.initializeGoogleAuth();
     this.authService.restoreSession();
+    this.addressService.bootstrapFromAuth();
 
     const splash = document.getElementById('app-splash');
     if (!splash) return;

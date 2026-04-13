@@ -1,16 +1,15 @@
 import { Component, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ToastController } from '@ionic/angular';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ModalController, ToastController } from '@ionic/angular';
 import { Subscription, firstValueFrom } from 'rxjs';
 
-import {
-  AddressOption,
-  ServiceBookingPayload,
-} from '../../shared/components/service-booking-form/service-booking-form.component';
-import { CatalogService, CatalogServiceItem } from '../../core/services/catalog.service';
+import { Address } from '../../core/models/address.model';
+import { AddressService } from '../../core/services/address.service';
 import { BookingService } from '../../core/services/booking.service';
-import { AuthService } from '../../core/services/auth.service';
+import { CatalogService, CatalogServiceItem } from '../../core/services/catalog.service';
+import { ServiceBookingPayload } from '../../shared/components/service-booking-form/service-booking-form.component';
+import { AddressModalComponent } from '../../shared/components/address-modal/address-modal.component';
 
 @Component({
   selector: 'app-booking',
@@ -21,39 +20,62 @@ export class BookingPage implements OnDestroy {
   serviceName = 'Service Booking';
   startingPrice = 299;
   selectedService: CatalogServiceItem | null = null;
+  selectedAddress: Address | null = null;
   isServiceLoading = false;
   isSubmitting = false;
-  userPhone: string | null = null;
-  userAddresses: AddressOption[] = [];
-  private readonly userSubscription: Subscription;
+  private readonly subscriptions = new Subscription();
 
   constructor(
     private readonly activatedRoute: ActivatedRoute,
     private readonly router: Router,
+    private readonly modalController: ModalController,
     private readonly toastController: ToastController,
     private readonly catalogService: CatalogService,
     private readonly bookingService: BookingService,
-    private readonly authService: AuthService,
+    private readonly addressService: AddressService,
   ) {
-    const currentUser = this.authService.getCurrentUser();
-    this.userPhone = currentUser?.phone?.trim() || null;
-    this.userAddresses = this.mapAddressesToOptions(currentUser?.addresses);
-    this.userSubscription = this.authService.user$.subscribe((user) => {
-      this.userPhone = user?.phone?.trim() || null;
-      this.userAddresses = this.mapAddressesToOptions(user?.addresses);
-    });
+    this.subscriptions.add(
+      this.addressService.selectedAddress$.subscribe((selectedAddress) => {
+        this.selectedAddress = selectedAddress;
+      }),
+    );
 
-    this.activatedRoute.queryParams.subscribe((params: Params) => {
-      void this.resolveServiceContext(params);
-    });
+    this.subscriptions.add(
+      this.activatedRoute.queryParams.subscribe((params: Params) => {
+        void this.resolveServiceContext(params);
+      }),
+    );
   }
 
   ngOnDestroy(): void {
-    this.userSubscription.unsubscribe();
+    this.subscriptions.unsubscribe();
+  }
+
+  async openAddressModal(): Promise<void> {
+    const modal = await this.modalController.create({
+      component: AddressModalComponent,
+      cssClass: 'address-modal-sheet',
+      breakpoints: [0, 0.54, 0.82, 1],
+      initialBreakpoint: 0.82,
+      backdropDismiss: true,
+      handle: true,
+    });
+    await modal.present();
   }
 
   async onRequestService(payload: ServiceBookingPayload): Promise<void> {
     if (this.isSubmitting) {
+      return;
+    }
+
+    if (!this.selectedAddress?.id) {
+      await this.presentToast('Please add an address before placing the booking.', 'danger');
+      return;
+    }
+
+    const phone = this.selectedAddress.phone?.trim() ?? '';
+    if (!phone) {
+      await this.presentToast('Phone number is missing on the selected address. Please update the address.', 'danger');
       return;
     }
 
@@ -62,8 +84,8 @@ export class BookingPage implements OnDestroy {
       return;
     }
 
-    if (!payload.addressId || !payload.timeSlotId) {
-      await this.presentToast('Please select a valid address and time slot.', 'danger');
+    if (!payload.timeSlotId) {
+      await this.presentToast('Please select a valid time slot.', 'danger');
       return;
     }
 
@@ -82,18 +104,14 @@ export class BookingPage implements OnDestroy {
       await firstValueFrom(
         this.bookingService.createBooking({
           serviceId: payload.serviceId,
-          addressId: payload.addressId,
+          addressId: this.selectedAddress.id,
           date: payload.dateIso,
           timeSlot: payload.timeSlotId,
           price: payload.price,
-          phone: payload.phone,
+          phone,
           notes: payload.notes,
         }),
       );
-
-      if (payload.phone !== this.userPhone) {
-        this.authService.updateLocalPhone(payload.phone);
-      }
 
       await this.presentToast('Booking request submitted successfully.', 'success');
     } catch (error) {
@@ -116,9 +134,7 @@ export class BookingPage implements OnDestroy {
     if (serviceId || serviceSlug) {
       this.isServiceLoading = true;
       try {
-        const service = await firstValueFrom(
-          this.catalogService.findServiceInCatalog(serviceId, serviceSlug),
-        );
+        const service = await firstValueFrom(this.catalogService.findServiceInCatalog(serviceId, serviceSlug));
         if (service) {
           this.applyServiceData(service);
           return;
@@ -169,9 +185,10 @@ export class BookingPage implements OnDestroy {
   private applyServiceData(service: CatalogServiceItem): void {
     this.selectedService = service;
     this.serviceName = service.title || 'Service Booking';
-    this.startingPrice = Number.isFinite(service.startingPrice) && service.startingPrice > 0
-      ? service.startingPrice
-      : this.parsePrice(service.priceText);
+    this.startingPrice =
+      Number.isFinite(service.startingPrice) && service.startingPrice > 0
+        ? service.startingPrice
+        : this.parsePrice(service.priceText);
   }
 
   private isCatalogServiceItem(value: unknown): value is CatalogServiceItem {
@@ -256,10 +273,7 @@ export class BookingPage implements OnDestroy {
     return 'Booking failed. Please try again.';
   }
 
-  private async presentToast(
-    message: string,
-    color: 'success' | 'danger',
-  ): Promise<void> {
+  private async presentToast(message: string, color: 'success' | 'danger'): Promise<void> {
     const toast = await this.toastController.create({
       message,
       duration: 2600,
@@ -267,22 +281,5 @@ export class BookingPage implements OnDestroy {
       color,
     });
     await toast.present();
-  }
-
-  private mapAddressesToOptions(
-    addresses: Array<{ id: string; label: string; fullAddress: string; isDefault?: boolean }> | undefined,
-  ): AddressOption[] {
-    if (!addresses?.length) {
-      return [];
-    }
-
-    return addresses
-      .filter((address) => Boolean(address.id && address.fullAddress))
-      .map((address) => ({
-        id: address.id,
-        label: address.label || 'Address',
-        fullAddress: address.fullAddress,
-        isDefault: Boolean(address.isDefault),
-      }));
   }
 }

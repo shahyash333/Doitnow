@@ -1,6 +1,7 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { ModalController } from '@ionic/angular';
+import { Subscription, firstValueFrom } from 'rxjs';
 import { addIcons } from 'ionicons';
 import {
   chevronDownOutline,
@@ -9,14 +10,17 @@ import {
   searchOutline,
 } from 'ionicons/icons';
 
+import { Address } from '../../core/models/address.model';
+import { AddressService } from '../../core/services/address.service';
 import { CatalogService, CatalogServiceItem } from '../../core/services/catalog.service';
+import { AddressModalComponent } from '../../shared/components/address-modal/address-modal.component';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   @ViewChild('popularScroller') popularScroller?: ElementRef<HTMLDivElement>;
 
   readonly icons = {
@@ -28,9 +32,10 @@ export class HomePage implements OnInit {
 
   activePopularIndex = 0;
   searchQuery = '';
-  selectedLocation = 'Satellite, Ahmedabad';
   isCatalogLoading = true;
   catalogLoadError = '';
+  addresses: Address[] = [];
+  selectedAddress: Address | null = null;
 
   popularServices: CatalogServiceItem[] = [];
   otherServices: CatalogServiceItem[] = [];
@@ -62,30 +67,61 @@ export class HomePage implements OnInit {
     violet: { bg: '#ede9fe', text: '#5b21b6' },
     yellow: { bg: '#fef9c3', text: '#854d0e' },
   };
+  private readonly subscriptions = new Subscription();
 
   constructor(
     private readonly router: Router,
-    private readonly route: ActivatedRoute,
+    private readonly modalController: ModalController,
+    private readonly addressService: AddressService,
     private readonly catalogService: CatalogService,
   ) {
     addIcons(this.icons);
   }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
-      const locationFromQuery = typeof params['location'] === 'string' ? params['location'].trim() : '';
-      if (locationFromQuery) {
-        this.selectedLocation = locationFromQuery;
-      }
-    });
+    this.subscriptions.add(
+      this.addressService.addressList$.subscribe((addresses) => {
+        this.addresses = addresses;
+      }),
+    );
+
+    this.subscriptions.add(
+      this.addressService.selectedAddress$.subscribe((selectedAddress) => {
+        this.selectedAddress = selectedAddress;
+      }),
+    );
 
     void this.loadCatalog();
   }
 
-  openLocation(): void {
-    this.router.navigate(['/home/location'], {
-      queryParams: { current: this.selectedLocation },
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  get locationLabel(): string {
+    const selectedAddressShort = this.selectedAddress?.shortAddress?.trim();
+    if (selectedAddressShort) {
+      return selectedAddressShort;
+    }
+
+    const defaultAddressShort = this.addresses.find((address) => address.isDefault)?.shortAddress?.trim();
+    if (defaultAddressShort) {
+      return defaultAddressShort;
+    }
+
+    return 'Select your location';
+  }
+
+  async openLocation(): Promise<void> {
+    const modal = await this.modalController.create({
+      component: AddressModalComponent,
+      cssClass: 'address-modal-sheet',
+      breakpoints: [0, 0.54, 0.82, 1],
+      initialBreakpoint: 0.82,
+      backdropDismiss: true,
+      handle: true,
     });
+    await modal.present();
   }
 
   openNotifications(): void {
