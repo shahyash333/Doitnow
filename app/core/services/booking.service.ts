@@ -15,6 +15,18 @@ export interface CreateBookingRequest {
   notes?: string;
 }
 
+export interface BookingRequestItem {
+  requestId: string;
+  status: string;
+  serviceName: string;
+  description: string | null;
+}
+
+export interface BookingRequestsResponse {
+  message: string;
+  data: BookingRequestItem[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -25,5 +37,9 @@ export class BookingService extends BaseService {
 
   createBooking(payload: CreateBookingRequest): Observable<unknown> {
     return this.http.post(`${environment.apiUrl}/booking`, payload);
+  }
+
+  getBookingRequests(): Observable<BookingRequestsResponse> {
+    return this.http.get<BookingRequestsResponse>(`${environment.apiUrl}/booking/requests`);
   }
 }

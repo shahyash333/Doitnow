@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import {
   buildOutline,
@@ -11,6 +13,9 @@ import {
   starOutline,
   timeOutline,
 } from 'ionicons/icons';
+import { firstValueFrom } from 'rxjs';
+
+import { BookingRequestItem, BookingService } from '../../core/services/booking.service';
 
 interface Request {
   id: string;
@@ -30,6 +35,9 @@ interface Request {
 })
 export class RequestsPage {
   activeTab: string = 'all';
+  isLoading = false;
+  loadError = '';
+  readonly skeletonCards = Array.from({ length: 3 });
 
   readonly icons = {
     buildOutline,
@@ -42,48 +50,7 @@ export class RequestsPage {
     timeOutline,
   };
 
-  requests: Request[] = [
-    {
-      id: '1',
-      title: 'Medicine Pickup',
-      description: 'Need blood pressure tablets from Apollo Pharmacy...',
-      icon: 'medicalOutline',
-      colorClass: 'mint',
-      status: 'approved',
-      statusLabel: 'Approved',
-      statusIcon: 'checkmarkCircleOutline',
-    },
-    {
-      id: '2',
-      title: 'Home Cleaning',
-      description: 'Full house cleaning needed',
-      icon: 'sparklesOutline',
-      colorClass: 'sky',
-      status: 'pending',
-      statusLabel: 'Pending',
-      statusIcon: 'timeOutline',
-    },
-    {
-      id: '3',
-      title: 'Cooking',
-      description: 'Lunch preparation for 4 people',
-      icon: 'buildOutline',
-      colorClass: 'peach',
-      status: 'completed',
-      statusLabel: 'Completed',
-      statusIcon: 'starOutline',
-    },
-    {
-      id: '4',
-      title: 'Car Wash',
-      description: 'Full exterior and interior wash needed...',
-      icon: 'carOutline',
-      colorClass: 'sand',
-      status: 'pending',
-      statusLabel: 'Pending',
-      statusIcon: 'timeOutline',
-    },
-  ];
+  requests: Request[] = [];
 
   get filteredRequests(): Request[] {
     if (this.activeTab === 'all') {
@@ -96,8 +63,17 @@ export class RequestsPage {
     this.activeTab = tab;
   }
 
-  constructor(private readonly router: Router) {
+  constructor(
+    private readonly router: Router,
+    private readonly bookingService: BookingService,
+    private readonly toastController: ToastController,
+  ) {
     addIcons(this.icons);
+  }
+
+  ionViewWillEnter(): void {
+    void this.maybeShowBookingSuccessToast();
+    void this.loadRequests();
   }
 
   viewDetails(request: Request): void {
@@ -111,5 +87,117 @@ export class RequestsPage {
   performAction(request: Request): void {
     console.log('Action for:', request);
     // Handle cancel or rebook
+  }
+
+  retryLoad(): void {
+    void this.loadRequests();
+  }
+
+  private async loadRequests(): Promise<void> {
+    this.isLoading = true;
+    this.loadError = '';
+
+    try {
+      const response = await firstValueFrom(this.bookingService.getBookingRequests());
+      this.requests = (response.data ?? []).map((request) => this.mapApiRequestToUi(request));
+    } catch (error: unknown) {
+      this.requests = [];
+
+      if (error instanceof HttpErrorResponse && error.status === 401) {
+        this.loadError = 'Your session has expired. Please login again.';
+      } else {
+        this.loadError = 'Unable to load requests right now. Please try again.';
+      }
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  private mapApiRequestToUi(request: BookingRequestItem): Request {
+    const normalizedStatus = (request.status ?? '').toUpperCase();
+    const status = this.mapStatus(normalizedStatus);
+
+    return {
+      id: request.requestId,
+      title: request.serviceName || 'Service Request',
+      description: request.description?.trim() || 'No description provided.',
+      icon: this.mapIcon(request.serviceName),
+      colorClass: this.mapColorClass(request.serviceName),
+      status,
+      statusLabel: this.toTitleCase(normalizedStatus || status),
+      statusIcon: status === 'pending' ? 'timeOutline' : status === 'completed' ? 'starOutline' : 'checkmarkCircleOutline',
+    };
+  }
+
+  private mapStatus(status: string): Request['status'] {
+    if (status === 'PENDING') {
+      return 'pending';
+    }
+
+    if (status === 'COMPLETED') {
+      return 'completed';
+    }
+
+    return 'approved';
+  }
+
+  private mapIcon(serviceName: string): Request['icon'] {
+    const value = (serviceName ?? '').toLowerCase();
+
+    if (value.includes('medical') || value.includes('medicine') || value.includes('pharmacy')) {
+      return 'medicalOutline';
+    }
+
+    if (value.includes('car')) {
+      return 'carOutline';
+    }
+
+    if (value.includes('clean')) {
+      return 'sparklesOutline';
+    }
+
+    return 'buildOutline';
+  }
+
+  private mapColorClass(serviceName: string): string {
+    const value = (serviceName ?? '').toLowerCase();
+
+    if (value.includes('medical') || value.includes('medicine') || value.includes('pharmacy')) {
+      return 'mint';
+    }
+
+    if (value.includes('car')) {
+      return 'sand';
+    }
+
+    if (value.includes('clean')) {
+      return 'sky';
+    }
+
+    return 'peach';
+  }
+
+  private toTitleCase(value: string): string {
+    return value
+      .toLowerCase()
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
+  private async maybeShowBookingSuccessToast(): Promise<void> {
+    const message = sessionStorage.getItem('bookingSuccessToast');
+    if (!message) {
+      return;
+    }
+
+    sessionStorage.removeItem('bookingSuccessToast');
+    const toast = await this.toastController.create({
+      message,
+      duration: 2400,
+      position: 'bottom',
+      color: 'success',
+    });
+    await toast.present();
   }
 }

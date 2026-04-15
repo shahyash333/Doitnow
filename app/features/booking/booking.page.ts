@@ -112,8 +112,8 @@ export class BookingPage implements OnDestroy {
           notes: payload.notes,
         }),
       );
-
-      await this.presentToast('Booking request submitted successfully.', 'success');
+      sessionStorage.setItem('bookingSuccessToast', 'Booking request submitted successfully.');
+      await this.router.navigate(['/home/requests']);
     } catch (error) {
       await this.presentToast(this.extractErrorMessage(error), 'danger');
     } finally {

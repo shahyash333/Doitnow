@@ -1,4 +1,10 @@
 <form class="address-form" [formGroup]="form" (ngSubmit)="submit()">
+  <button class="location-btn" type="button" [disabled]="isResolvingLocation" (click)="useCurrentLocation()">
+    <ion-icon [icon]="icons.navigateOutline"></ion-icon>
+    {{ isResolvingLocation ? 'Fetching location...' : 'Use current location' }}
+  </button>
+  <p class="location-msg" [class.error]="isLocationError" *ngIf="locationMessage">{{ locationMessage }}</p>
+
   <div class="row two-col">
     <ion-item lines="none">
       <ion-label position="stacked">Label *</ion-label>
@@ -33,12 +39,6 @@
   <p class="error" *ngIf="hasError('phone', 'required') || hasError('phone', 'pattern')">
     Enter a valid 10-digit phone number.
   </p>
-
-  <button class="location-btn" type="button" [disabled]="isResolvingLocation" (click)="useCurrentLocation()">
-    <ion-icon [icon]="icons.navigateOutline"></ion-icon>
-    {{ isResolvingLocation ? 'Fetching location...' : 'Use current location' }}
-  </button>
-  <p class="location-msg" [class.error]="isLocationError" *ngIf="locationMessage">{{ locationMessage }}</p>
 
   <ion-item lines="none">
     <ion-label position="stacked">House Number</ion-label>

@@ -81,6 +81,44 @@
   box-shadow: 0 14px 28px rgba(17, 24, 39, 0.08);
 }
 
+.skeleton-card {
+  .icon-circle {
+    background: #f3f4f6;
+  }
+}
+
+.skeleton-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.skeleton-title {
+  width: 70%;
+  height: 18px;
+  margin: 0 0 10px;
+}
+
+.skeleton-description {
+  width: 100%;
+  height: 14px;
+  margin: 0 0 10px;
+}
+
+.skeleton-status {
+  width: 88px;
+  height: 24px;
+  border-radius: 999px;
+  margin: 0;
+}
+
+.skeleton-button {
+  width: 100%;
+  height: 40px;
+  border-radius: 999px;
+  margin: 0;
+}
+
 .request-top {
   display: flex;
   gap: 14px;
@@ -257,6 +295,10 @@
     color: #9ca3af;
     font-weight: 500;
   }
+}
+
+.retry-btn {
+  margin-top: 14px;
 }
 
 @media (max-width: 480px) {

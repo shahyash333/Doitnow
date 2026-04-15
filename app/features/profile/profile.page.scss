@@ -197,6 +197,10 @@ ion-content.profile-page {
   justify-content: space-between;
 }
 
+.saved-addresses-item {
+  cursor: pointer;
+}
+
 .menu-item:not(:last-child) {
   margin-bottom: 6px;
 }
@@ -277,6 +281,111 @@ ion-content.profile-page {
 .chev {
   color: #a4a7b6;
   font-size: 22px;
+}
+
+.saved-addresses-panel {
+  margin: 4px 6px 8px;
+  padding: 10px;
+  border-radius: 20px;
+  background: #f7f7fb;
+  border: 1px solid #ebedf5;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.saved-address-row {
+  border-radius: 16px;
+  padding: 12px 12px;
+  background: #eceaf6;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.saved-address-content {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.saved-address-content ion-icon {
+  color: #6b5cff;
+  font-size: 20px;
+  margin-top: 2px;
+}
+
+.saved-address-content p {
+  margin: 0;
+  color: #262c43;
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.saved-address-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.edit-address-btn,
+.remove-address-btn {
+  border: 0;
+  border-radius: 999px;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-address-btn {
+  color: #727fa6;
+}
+
+.remove-address-btn {
+  color: #eb6f78;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-address-btn ion-icon,
+.remove-address-btn ion-icon {
+  font-size: 22px;
+}
+
+.saved-address-empty {
+  border-radius: 16px;
+  border: 1px dashed #d7dbe8;
+  background: #ffffff;
+  padding: 14px;
+  text-align: center;
+}
+
+.saved-address-empty p {
+  margin: 0;
+  color: #80869d;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.add-address-btn {
+  border: 2px dashed #d6d9e3;
+  background: #ffffff;
+  color: #6c748a;
+  min-height: 50px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .logout-card {

@@ -72,17 +72,68 @@
 
   <section class="menu">
     <div class="menu-card">
-      <div class="menu-item">
+    <div class="menu-item saved-addresses-item" (click)="toggleSavedAddresses()">
       <div class="item-left">
         <div class="item-icon amber">
           <ion-icon [icon]="icons.locationOutline"></ion-icon>
         </div>
         <div class="item-text">
           <div class="item-title">Saved Addresses</div>
-          <div class="item-sub">{{ addressCount }} address(es)</div>
+          <div class="item-sub" *ngIf="addressCount; else noAddressText">{{ addressCount }} address(es)</div>
+          <ng-template #noAddressText>
+            <div class="item-sub">Tap to add address</div>
+          </ng-template>
         </div>
       </div>
-      <ion-icon class="chev" [icon]="icons.chevronForwardOutline"></ion-icon>
+
+      <ion-icon
+        class="chev"
+        [icon]="isSavedAddressesExpanded ? icons.chevronDownOutline : icons.chevronForwardOutline"
+      ></ion-icon>
+    </div>
+
+    <div class="saved-addresses-panel" *ngIf="isSavedAddressesExpanded">
+      <div class="saved-address-row" *ngFor="let address of addresses">
+        <div class="saved-address-content">
+          <ion-icon [icon]="icons.locationOutline"></ion-icon>
+          <p>{{ address.fullAddress }}</p>
+        </div>
+        <div class="saved-address-actions">
+          <button
+            class="edit-address-btn"
+            type="button"
+            [disabled]="isAddressBusy"
+            (click)="openEditAddressModal(address, $event)"
+            aria-label="Edit saved address"
+          >
+            <ion-icon [icon]="icons.createOutline"></ion-icon>
+          </button>
+
+          <button
+            class="remove-address-btn"
+            type="button"
+            [disabled]="isAddressBusy"
+            (click)="onDeleteAddress(address, $event)"
+            aria-label="Remove saved address"
+          >
+            <ion-icon [icon]="icons.closeOutline"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="saved-address-empty" *ngIf="!addresses.length">
+        <p>No saved addresses yet.</p>
+      </div>
+
+      <button
+        class="add-address-btn"
+        type="button"
+        [disabled]="isAddressBusy"
+        (click)="openAddressModal($event)"
+      >
+        <ion-icon [icon]="icons.addOutline"></ion-icon>
+        Add Address
+      </button>
     </div>
 
     <div class="menu-item">

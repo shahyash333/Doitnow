@@ -18,6 +18,7 @@ export class TabsPage implements OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   hideTabBar = false;
+  isHomeSelected = false;
 
   readonly icons = {
     homeOutline,
@@ -28,7 +29,7 @@ export class TabsPage implements OnDestroy {
 
   constructor(private readonly router: Router) {
     addIcons(this.icons);
-    this.hideTabBar = this.isBookingRoute(this.router.url);
+    this.updateRouteState(this.router.url);
 
     this.router.events
       .pipe(
@@ -36,7 +37,7 @@ export class TabsPage implements OnDestroy {
         takeUntil(this.destroy$),
       )
       .subscribe((event) => {
-        this.hideTabBar = this.isBookingRoute(event.urlAfterRedirects);
+        this.updateRouteState(event.urlAfterRedirects);
       });
   }
 
@@ -47,5 +48,15 @@ export class TabsPage implements OnDestroy {
 
   private isBookingRoute(url: string): boolean {
     return url.includes('/home/booking');
+  }
+
+  private isHomeRoute(url: string): boolean {
+    const urlWithoutQuery = url.split('?')[0].split('#')[0];
+    return urlWithoutQuery === '/home' || urlWithoutQuery === '/home/';
+  }
+
+  private updateRouteState(url: string): void {
+    this.hideTabBar = this.isBookingRoute(url);
+    this.isHomeSelected = this.isHomeRoute(url);
   }
 }
