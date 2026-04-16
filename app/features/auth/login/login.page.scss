@@ -135,12 +135,16 @@
   transform: scale(0.98);
 }
 
-.google-btn img {
+.google-btn img,
+.google-btn ion-icon {
   width: 20px;
   height: 20px;
-  background: #fff;
-  border-radius: 50%;
-  padding: 3px;
+}
+
+.google-btn ion-icon {
+  font-size: 20px;
+  color: #fff;
+  --ionicon-stroke-width: 44px;
 }
 
 .security-text {
@@ -227,9 +231,14 @@
     min-height: 54px;
   }
 
-  .google-btn img {
+  .google-btn img,
+  .google-btn ion-icon {
     width: 18px;
     height: 18px;
+  }
+
+  .google-btn ion-icon {
+    font-size: 18px;
   }
 
   .security-text p {

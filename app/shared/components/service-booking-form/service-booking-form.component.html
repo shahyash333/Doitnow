@@ -59,11 +59,32 @@
     </ion-card-header>
 
     <ion-card-content>
-      <ion-segment class="time-segment" [value]="selectedTimeSlotId" (ionChange)="selectTimeSlot($any($event.detail.value))">
-        <ion-segment-button *ngFor="let slot of timeSlots" [value]="slot.id">
-          <ion-label>{{ slot.label }}</ion-label>
-        </ion-segment-button>
-      </ion-segment>
+      <div class="time-slot-grid" role="radiogroup" aria-label="Select time slot">
+        <button
+          *ngFor="let slot of timeSlots"
+          class="time-slot-chip"
+          type="button"
+          [class.selected]="slot.id === selectedTimeSlotId"
+          [class.time-slot-chip--asap]="slot.id === 'asap'"
+          [attr.aria-checked]="slot.id === selectedTimeSlotId"
+          (click)="selectTimeSlot(slot.id)"
+        >
+          <span class="time-slot-chip__top">
+            <span class="time-slot-chip__icon-wrap">
+              <ion-icon class="time-slot-chip__icon" [icon]="getTimeSlotIcon(slot.id)" aria-hidden="true"></ion-icon>
+            </span>
+            <span class="time-slot-chip__badge" *ngIf="slot.id === 'asap'">Recommended</span>
+            <ion-icon
+              class="time-slot-chip__check"
+              *ngIf="slot.id === selectedTimeSlotId"
+              [icon]="icons.checkmarkOutline"
+              aria-hidden="true"
+            ></ion-icon>
+          </span>
+          <span class="time-slot-chip__label">{{ slot.label }}</span>
+          <span class="time-slot-chip__meta">{{ slot.timeText }}</span>
+        </button>
+      </div>
 
       <div class="time-detail" *ngIf="selectedTimeSlot as slot">
         <strong>{{ slot.timeText }}</strong>

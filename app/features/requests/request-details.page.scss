@@ -1,5 +1,5 @@
 .request-details-content {
-  --background: #f3f4fa;
+  --background: linear-gradient(180deg, #eef2ff 0%, #f7f8fc 28%, #f4f6fb 100%);
   font-family:
     'Nunito Sans',
     'Avenir Next',
@@ -14,32 +14,46 @@
     radial-gradient(120% 80% at 15% 5%, #6f43ff 0%, rgba(111, 67, 255, 0) 62%),
     linear-gradient(125deg, #4f2dff 0%, #7a2fda 55%, #ef6a3b 100%);
   color: #ffffff;
-  padding: calc(48px + env(safe-area-inset-top)) 24px 30px;
+  padding: calc(18px + env(safe-area-inset-top)) 24px 34px;
   border-bottom-left-radius: 34px;
   border-bottom-right-radius: 34px;
 }
 
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.hero-top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
 .back-btn {
   border: 0;
-  width: 78px;
-  height: 78px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
+  background: transparent;
   color: #ffffff;
+  width: 28px;
+  height: 28px;
+  padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .back-btn ion-icon {
-  font-size: 34px;
+  font-size: 24px;
 }
 
 .hero h1 {
-  margin: 22px 0 16px;
-  font-size: 46px;
-  line-height: 1.04;
-  letter-spacing: -0.02em;
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.2;
   font-weight: 900;
 }
 
@@ -48,10 +62,10 @@
   align-items: center;
   gap: 8px;
   border-radius: 999px;
-  padding: 10px 20px;
-  font-size: 20px;
+  padding: 8px 14px;
+  font-size: 15px;
   font-weight: 800;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .status-pill.approved {
@@ -71,12 +85,27 @@
 .worker-card {
   margin: 16px 16px 0;
   background: #ffffff;
-  border-radius: 28px;
-  padding: 20px;
+  border-radius: 24px;
+  padding: 18px;
+  box-shadow: 0 14px 36px rgba(30, 41, 78, 0.08);
 }
 
 .details-card {
-  margin-top: -18px;
+  margin-top: -20px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.section-head h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #1c233a;
+  font-weight: 900;
 }
 
 .label {
@@ -87,8 +116,16 @@
   font-weight: 800;
 }
 
+.detail-panel {
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fbfcff 0%, #f5f7fd 100%);
+  border: 1px solid #edf1fb;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
 .details-card p {
-  margin: 8px 0 18px;
+  margin: 8px 0 0;
   font-size: 16px;
   color: #1d2238;
   line-height: 1.35;
@@ -101,6 +138,13 @@
   gap: 14px;
 }
 
+.meta-tile {
+  border-radius: 18px;
+  background: #f8f9fd;
+  border: 1px solid #edf1fb;
+  padding: 14px;
+}
+
 .meta-grid h3 {
   margin: 6px 0 0;
   font-size: 16px;
@@ -109,25 +153,17 @@
   font-weight: 700;
 }
 
-.progress-card h2,
-.worker-card h2 {
-  margin: 0 0 18px;
-  font-size: 20px;
-  color: #1c233a;
-  font-weight: 900;
-}
-
 .progress-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .step {
   display: grid;
-  grid-template-columns: 30px 1fr;
+  grid-template-columns: 32px 1fr;
   align-items: flex-start;
-  min-height: 52px;
+  min-height: 54px;
 }
 
 .marker-wrap {
@@ -168,7 +204,7 @@
 }
 
 .step-label {
-  margin-top: -1px;
+  margin-top: 1px;
   font-size: 16px;
   color: #6f768a;
   font-weight: 700;
@@ -183,6 +219,10 @@
   display: flex;
   align-items: center;
   gap: 14px;
+  border-radius: 18px;
+  background: #f8f9fd;
+  border: 1px solid #edf1fb;
+  padding: 14px;
 }
 
 .avatar {
@@ -292,33 +332,32 @@
 
 @media (max-width: 520px) {
   .hero {
-    padding: calc(34px + env(safe-area-inset-top)) 16px 24px;
+    padding: calc(14px + env(safe-area-inset-top)) 16px 26px;
   }
 
-  .back-btn {
-    width: 56px;
-    height: 56px;
-  }
-
-  .back-btn ion-icon {
-    font-size: 26px;
+  .hero-top {
+    gap: 10px;
+    margin-bottom: 14px;
   }
 
   .hero h1 {
-    font-size: 40px;
-    margin-top: 18px;
+    font-size: 20px;
   }
 
   .status-pill {
-    font-size: 18px;
-    padding: 8px 16px;
+    font-size: 14px;
+    padding: 8px 12px;
   }
 
   .details-card,
   .progress-card,
   .worker-card {
-    border-radius: 24px;
+    border-radius: 20px;
     padding: 16px;
+  }
+
+  .section-head h2 {
+    font-size: 18px;
   }
 
   .meta-grid {

@@ -1,14 +1,16 @@
 <ion-content class="request-details-content">
   <section class="hero" *ngIf="!isLoading && !loadError && details">
-    <button class="back-btn" type="button" (click)="goBack()" aria-label="Back to requests">
-      <ion-icon [icon]="icons.arrowBackOutline"></ion-icon>
-    </button>
-
-    <h1>{{ details.title }}</h1>
-
-    <div class="status-pill" [ngClass]="details.status">
-      <ion-icon [icon]="icons.checkmarkCircleOutline"></ion-icon>
-      <span>{{ details.statusLabel }}</span>
+    <div class="hero-copy">
+      <div class="hero-top">
+        <button class="back-btn" type="button" (click)="goBack()" aria-label="Back to requests">
+          <ion-icon [icon]="icons.chevronBackOutline"></ion-icon>
+        </button>
+        <h1>{{ details.title }}</h1>
+      </div>
+      <div class="status-pill" [ngClass]="details.status">
+        <ion-icon [icon]="icons.checkmarkCircleOutline"></ion-icon>
+        <span>{{ details.statusLabel }}</span>
+      </div>
     </div>
   </section>
 
@@ -25,15 +27,21 @@
 
   <ng-container *ngIf="!isLoading && !loadError && details">
     <section class="details-card">
-      <div class="label">Description</div>
-      <p>{{ details.description }}</p>
+      <div class="section-head">
+        <h2>Request Details</h2>
+      </div>
+
+      <div class="detail-panel">
+        <div class="label">Description</div>
+        <p>{{ details.description }}</p>
+      </div>
 
       <div class="meta-grid">
-        <div>
+        <div class="meta-tile">
           <div class="label">Time</div>
           <h3>{{ details.timeLabel }}</h3>
         </div>
-        <div>
+        <div class="meta-tile">
           <div class="label">Address</div>
           <h3>{{ details.addressLabel }}</h3>
         </div>
@@ -41,7 +49,9 @@
     </section>
 
     <section class="progress-card">
-      <h2>Progress</h2>
+      <div class="section-head">
+        <h2>Progress</h2>
+      </div>
 
       <div class="progress-list">
         <div class="step" *ngFor="let step of progressSteps; let i = index" [class.last]="i === progressSteps.length - 1">
@@ -55,7 +65,9 @@
     </section>
 
     <section class="worker-card" *ngIf="isApproved">
-      <h2>Assigned Worker</h2>
+      <div class="section-head">
+        <h2>Assigned Worker</h2>
+      </div>
 
       <div class="worker-row">
         <div class="avatar">V</div>

@@ -5,8 +5,12 @@ import {
   checkmarkOutline,
   homeOutline,
   locationOutline,
+  moonOutline,
   navigateOutline,
+  partlySunnyOutline,
+  sunnyOutline,
   timeOutline,
+  timerOutline,
 } from 'ionicons/icons';
 
 import { Address } from '../../../core/models/address.model';
@@ -45,6 +49,7 @@ export class ServiceBookingFormComponent implements OnInit, OnChanges {
   @Input() selectedAddress: Address | null = null;
 
   @Input() timeSlots: TimeSlotOption[] = [
+    { id: 'asap', label: 'ASAP', timeText: 'Within 60 mins', description: 'Earliest available professional' },
     { id: 'morning', label: 'Morning', timeText: '8 AM - 11 AM' },
     { id: 'afternoon', label: 'Afternoon', timeText: '12 PM - 3 PM' },
     { id: 'evening', label: 'Evening', timeText: '4 PM - 7 PM' },
@@ -59,12 +64,16 @@ export class ServiceBookingFormComponent implements OnInit, OnChanges {
     checkmarkOutline,
     homeOutline,
     locationOutline,
+    moonOutline,
     navigateOutline,
+    partlySunnyOutline,
+    sunnyOutline,
     timeOutline,
+    timerOutline,
   };
 
   selectedDateIso = '';
-  selectedTimeSlotId = 'morning';
+  selectedTimeSlotId = 'asap';
   isDatePickerOpen = false;
   notes = '';
 
@@ -138,6 +147,21 @@ export class ServiceBookingFormComponent implements OnInit, OnChanges {
       return;
     }
     this.selectedTimeSlotId = slotId;
+  }
+
+  getTimeSlotIcon(slotId: string) {
+    switch (slotId) {
+      case 'asap':
+        return this.icons.timerOutline;
+      case 'morning':
+        return this.icons.sunnyOutline;
+      case 'afternoon':
+        return this.icons.partlySunnyOutline;
+      case 'evening':
+        return this.icons.moonOutline;
+      default:
+        return this.icons.timeOutline;
+    }
   }
 
   submitRequest(): void {

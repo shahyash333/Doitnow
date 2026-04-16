@@ -11,7 +11,7 @@
         <h2 class="title">Sign in</h2>
 
         <button class="google-btn" type="button" [disabled]="isLoading" (click)="signInWithGoogle()">
-          <img src="assets/google.png" alt="Google" />
+          <ion-icon [icon]="icons.mailOutline" aria-hidden="true"></ion-icon>
           <span>{{ isLoading ? 'Signing in...' : 'Continue with Google' }}</span>
         </button>
 
@@ -20,7 +20,7 @@
         </ion-text>
 
         <div class="security-text">
-          <ion-icon name="lock-closed-outline"></ion-icon>
+          <ion-icon [icon]="icons.lockClosedOutline"></ion-icon>
           <p>Your account safety is our priority. Fast, secure, and trusted login.</p>
         </div>
       </div>

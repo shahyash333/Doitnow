@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { Capacitor } from '@capacitor/core';
+import { addIcons } from 'ionicons';
+import { lockClosedOutline, mailOutline } from 'ionicons/icons';
 
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -12,6 +14,10 @@ const DEBUG = true;
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage {
+  readonly icons = {
+    lockClosedOutline,
+    mailOutline,
+  };
   isLoading = false;
   errorMessage = '';
   readonly debug = DEBUG;
@@ -19,7 +25,9 @@ export class LoginPage {
   constructor(
     private readonly authService: AuthService,
     private readonly alertController: AlertController,
-  ) {}
+  ) {
+    addIcons(this.icons);
+  }
 
   async signInWithGoogle(): Promise<void> {
     if (this.isLoading) {

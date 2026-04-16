@@ -111,13 +111,7 @@
           (keyup.enter)="openServiceCard(service)"
         >
           <div class="service-icon">
-            <img
-              *ngIf="getServiceIcon(service)"
-              [src]="getServiceIcon(service)"
-              [alt]="service.title + ' icon'"
-              loading="lazy"
-            />
-            <span *ngIf="!getServiceIcon(service)">{{ getInitials(service.title) }}</span>
+            <ion-icon [icon]="getServiceIcon(service)" attr.aria-label="{{ service.title + ' icon' }}"></ion-icon>
           </div>
           <h3>{{ service.title }}</h3>
           <p>{{ service.subtitle || service.description }}</p>

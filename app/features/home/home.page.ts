@@ -5,9 +5,15 @@ import { Subscription, firstValueFrom } from 'rxjs';
 import { addIcons } from 'ionicons';
 import {
   chevronDownOutline,
+  fastFoodOutline,
+  flashOutline,
+  homeOutline,
   locationOutline,
   notificationsOutline,
+  pawOutline,
+  restaurantOutline,
   searchOutline,
+  sparklesOutline,
 } from 'ionicons/icons';
 
 import { Address } from '../../core/models/address.model';
@@ -25,9 +31,15 @@ export class HomePage implements OnInit, OnDestroy {
 
   readonly icons = {
     chevronDownOutline,
+    fastFoodOutline,
+    flashOutline,
+    homeOutline,
     locationOutline,
     notificationsOutline,
+    pawOutline,
+    restaurantOutline,
     searchOutline,
+    sparklesOutline,
   };
 
   activePopularIndex = 0;
@@ -193,8 +205,34 @@ export class HomePage implements OnInit, OnDestroy {
     return service.imageUrl ?? service.iconUrl ?? '';
   }
 
-  getServiceIcon(service: CatalogServiceItem): string {
-    return service.iconUrl ?? service.imageUrl ?? '';
+  getServiceIcon(service: CatalogServiceItem) {
+    const title = service.title.trim().toLowerCase();
+
+    if (title.includes('cook') || title.includes('cooking') || title.includes('chef')) {
+      return this.icons.restaurantOutline;
+    }
+
+    if (title.includes('food') || title.includes('pickup') || title.includes('delivery')) {
+      return this.icons.fastFoodOutline;
+    }
+
+    if (title.includes('dog') || title.includes('pet') || title.includes('walk')) {
+      return this.icons.pawOutline;
+    }
+
+    if (title.includes('electric')) {
+      return this.icons.flashOutline;
+    }
+
+    if (title.includes('clean')) {
+      return this.icons.sparklesOutline;
+    }
+
+    if (title.includes('home')) {
+      return this.icons.homeOutline;
+    }
+
+    return this.icons.homeOutline;
   }
 
   getServiceTheme(service: CatalogServiceItem): Record<string, string> {

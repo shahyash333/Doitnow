@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
-  arrowBackOutline,
   callOutline,
   chatbubbleOutline,
+  chevronBackOutline,
   checkmarkCircleOutline,
   star,
 } from 'ionicons/icons';
@@ -35,9 +35,9 @@ export class RequestDetailsPage {
   details: RequestDetailsView | null = null;
 
   readonly icons = {
-    arrowBackOutline,
     callOutline,
     chatbubbleOutline,
+    chevronBackOutline,
     checkmarkCircleOutline,
     star,
   };

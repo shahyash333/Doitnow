@@ -1,11 +1,14 @@
 <ion-header class="address-modal-header ion-no-border">
   <ion-toolbar>
-    <ion-title>{{ currentView === 'list' ? 'Select Address' : (editingAddress ? 'Edit Address' : 'Add Address') }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="close()">
+    <div class="address-modal-handle" aria-hidden="true"></div>
+    <div class="address-modal-top">
+      <div class="address-modal-heading">
+        <ion-title>{{ currentView === 'list' ? 'Select Address' : (editingAddress ? 'Edit Address' : 'Add Address') }}</ion-title>
+      </div>
+      <ion-button class="close-btn" fill="clear" (click)="close()">
         <ion-icon slot="icon-only" [icon]="icons.closeOutline"></ion-icon>
       </ion-button>
-    </ion-buttons>
+    </div>
   </ion-toolbar>
 </ion-header>
 

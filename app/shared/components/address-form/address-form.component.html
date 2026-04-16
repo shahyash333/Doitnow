@@ -1,17 +1,22 @@
 <form class="address-form" [formGroup]="form" (ngSubmit)="submit()">
+  <section class="form-intro">
+    <h3>{{ isEditMode ? 'Update address details' : 'Add a service address' }}</h3>
+    <p>{{ isEditMode ? 'Make changes so our partner reaches the right place.' : 'Save your address once for faster bookings next time.' }}</p>
+  </section>
+
   <button class="location-btn" type="button" [disabled]="isResolvingLocation" (click)="useCurrentLocation()">
     <ion-icon [icon]="icons.navigateOutline"></ion-icon>
-    {{ isResolvingLocation ? 'Fetching location...' : 'Use current location' }}
+    <span>{{ isResolvingLocation ? 'Fetching location...' : 'Use current location' }}</span>
   </button>
   <p class="location-msg" [class.error]="isLocationError" *ngIf="locationMessage">{{ locationMessage }}</p>
 
   <div class="row two-col">
-    <ion-item lines="none">
+    <ion-item class="field-item" lines="none">
       <ion-label position="stacked">Label *</ion-label>
       <ion-input formControlName="label" placeholder="Home / Work / Other"></ion-input>
     </ion-item>
 
-    <ion-item lines="none">
+    <ion-item class="field-item" lines="none">
       <ion-label position="stacked">Address Type</ion-label>
       <ion-select formControlName="addressType" interface="action-sheet">
         <ion-select-option *ngFor="let type of addressTypes" [value]="type">
@@ -21,12 +26,12 @@
     </ion-item>
   </div>
 
-  <ion-item lines="none">
+  <ion-item class="field-item" lines="none">
     <ion-label position="stacked">Contact Name</ion-label>
     <ion-input formControlName="contactName" placeholder="Who should we contact?"></ion-input>
   </ion-item>
 
-  <ion-item lines="none">
+  <ion-item class="field-item" lines="none">
     <ion-label position="stacked">Phone *</ion-label>
     <ion-input
       type="tel"
@@ -40,35 +45,35 @@
     Enter a valid 10-digit phone number.
   </p>
 
-  <ion-item lines="none">
+  <ion-item class="field-item" lines="none">
     <ion-label position="stacked">House Number</ion-label>
     <ion-input formControlName="houseNumber" placeholder="Flat no / house no"></ion-input>
   </ion-item>
 
-  <ion-item lines="none">
+  <ion-item class="field-item" lines="none">
     <ion-label position="stacked">Building *</ion-label>
     <ion-input formControlName="building" placeholder="Building or street"></ion-input>
   </ion-item>
   <p class="error" *ngIf="hasError('building', 'required')">Building is required.</p>
 
-  <ion-item lines="none">
+  <ion-item class="field-item" lines="none">
     <ion-label position="stacked">Landmark *</ion-label>
     <ion-input formControlName="landmark" placeholder="Nearby landmark"></ion-input>
   </ion-item>
   <p class="error" *ngIf="hasError('landmark', 'required')">Landmark is required.</p>
 
-  <ion-item lines="none">
+  <ion-item class="field-item" lines="none">
     <ion-label position="stacked">Area</ion-label>
     <ion-input formControlName="area" placeholder="Area or locality"></ion-input>
   </ion-item>
 
   <div class="row two-col">
-    <ion-item lines="none">
+    <ion-item class="field-item" lines="none">
       <ion-label position="stacked">City *</ion-label>
       <ion-input formControlName="city"></ion-input>
     </ion-item>
 
-    <ion-item lines="none">
+    <ion-item class="field-item" lines="none">
       <ion-label position="stacked">State *</ion-label>
       <ion-input formControlName="state"></ion-input>
     </ion-item>
@@ -77,7 +82,7 @@
     City and state are required.
   </p>
 
-  <ion-item lines="none">
+  <ion-item class="field-item" lines="none">
     <ion-label position="stacked">Pincode *</ion-label>
     <ion-input
       type="tel"
@@ -93,7 +98,7 @@
 
   <p class="error" *ngIf="hasError('label', 'required')">Label is required.</p>
 
-  <ion-item lines="none">
+  <ion-item class="field-item default-toggle" lines="none">
     <ion-label>Set as default</ion-label>
     <ion-toggle slot="end" formControlName="isDefault"></ion-toggle>
   </ion-item>

@@ -6,17 +6,39 @@
 
 .add-btn {
   border: 0;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #1e6ee6 0%, #15b7c4 100%);
+  border-radius: 18px;
+  background: linear-gradient(135deg, #2c6df2 0%, #23c1d7 100%);
   color: #ffffff;
-  min-height: 46px;
+  min-height: 58px;
+  padding: 12px 16px;
   font-size: 14px;
   font-weight: 800;
-  display: inline-flex;
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  grid-template-areas:
+    'icon title'
+    'icon subtitle';
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  box-shadow: 0 10px 22px rgba(17, 89, 181, 0.24);
+  justify-content: start;
+  column-gap: 10px;
+  box-shadow: 0 14px 28px rgba(33, 103, 214, 0.24);
+  text-align: left;
+}
+
+.add-btn ion-icon {
+  grid-area: icon;
+  font-size: 18px;
+}
+
+.add-btn span {
+  grid-area: title;
+}
+
+.add-btn small {
+  grid-area: subtitle;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .loader {
@@ -30,32 +52,49 @@
 
 .empty-state {
   border: 1px dashed #d9deef;
-  border-radius: 16px;
-  padding: 18px;
-  background: #f9fbff;
+  border-radius: 20px;
+  padding: 22px 18px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  text-align: center;
+}
+
+.empty-state__icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 12px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(44, 109, 242, 0.12) 0%, rgba(35, 193, 215, 0.14) 100%);
+  color: #256cf0;
+  font-size: 26px;
+  font-weight: 700;
 }
 
 .empty-state h3 {
   margin: 0;
   color: #1b2342;
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 21px;
+  font-weight: 900;
 }
 
 .empty-state p {
-  margin: 8px 0 12px;
+  margin: 8px 0 16px;
   color: #566084;
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .empty-state button {
   border: 0;
-  background: #1f63ce;
+  background: linear-gradient(135deg, #2c6df2 0%, #215ecc 100%);
   color: #ffffff;
   border-radius: 999px;
-  padding: 9px 14px;
+  min-height: 42px;
+  padding: 0 18px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
+  box-shadow: 0 10px 18px rgba(44, 109, 242, 0.2);
 }
 
 .list-stack {

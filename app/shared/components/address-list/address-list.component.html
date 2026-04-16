@@ -1,7 +1,8 @@
 <section class="address-list-shell">
   <button class="add-btn" type="button" [disabled]="isBusy" (click)="add.emit()">
     <ion-icon [icon]="icons.addOutline"></ion-icon>
-    Add New Address
+    <span>Add New Address</span>
+    <small>Save another location</small>
   </button>
 
   <div class="loader" *ngIf="isBusy">
@@ -10,9 +11,9 @@
   </div>
 
   <div class="empty-state" *ngIf="!isBusy && !addresses.length">
+    <div class="empty-state__icon">+</div>
     <h3>No saved address yet</h3>
     <p>Add your first address to continue booking services.</p>
-    <button type="button" (click)="add.emit()">Add Address</button>
   </div>
 
   <div class="list-stack" *ngIf="addresses.length">

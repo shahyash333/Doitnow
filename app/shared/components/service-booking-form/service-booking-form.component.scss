@@ -2,48 +2,67 @@
   padding: 14px 14px calc(20px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .step-card {
+  margin: 0;
   border-radius: 20px;
   border: 1px solid #eceef6;
   box-shadow: 0 8px 20px rgba(23, 27, 54, 0.06);
 }
 
 .step-title {
-  padding: 16px 16px 8px;
+  padding: 12px 14px 6px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .step-title__left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  min-width: 0;
+}
+
+.step-copy {
+  min-width: 0;
+}
+
+.step-note {
+  margin-top: 2px;
+  color: #7a829d;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .step-card ion-card-title {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 900;
   color: #1b2240;
 }
 
 .step-card ion-card-subtitle {
-  margin-top: 2px;
+  margin-top: 1px;
   color: #68708c;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: none;
 }
 
 .step-badge {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: linear-gradient(135deg, #5f38ff 0%, #8d45ff 100%);
   color: #ffffff;
   display: grid;
   place-items: center;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
   flex-shrink: 0;
 }
@@ -59,7 +78,7 @@
 }
 
 .step-card ion-card-content {
-  padding: 8px 14px 16px;
+  padding: 6px 14px 14px;
 }
 
 .date-trigger {
@@ -101,10 +120,118 @@
   font-size: 13px;
 }
 
-.time-segment {
-  --background: #f3f4f9;
-  border-radius: 14px;
-  padding: 4px;
+.time-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.time-slot-chip {
+  border: 1px solid #e1e6f5;
+  border-radius: 16px;
+  background: #f7f8fc;
+  color: #3a4260;
+  min-height: 72px;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+  transition:
+    transform 0.16s ease,
+    border-color 0.16s ease,
+    background 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.time-slot-chip__top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.time-slot-chip__icon-wrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(95, 56, 255, 0.12) 0%, rgba(217, 70, 239, 0.12) 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.time-slot-chip__icon {
+  font-size: 16px;
+  color: #4a35da;
+}
+
+.time-slot-chip__badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(95, 56, 255, 0.1);
+  color: #4a35da;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.time-slot-chip__check {
+  margin-left: auto;
+  font-size: 16px;
+  color: #4a35da;
+}
+
+.time-slot-chip__label {
+  font-size: 14px;
+  font-weight: 900;
+  color: #20284a;
+}
+
+.time-slot-chip__meta {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #6c7490;
+  font-weight: 700;
+}
+
+.time-slot-chip.selected {
+  border-color: #5f38ff;
+  background: linear-gradient(135deg, rgba(95, 56, 255, 0.1) 0%, rgba(217, 70, 239, 0.1) 100%);
+  box-shadow: 0 8px 18px rgba(95, 56, 255, 0.14);
+}
+
+.time-slot-chip--asap {
+  background: linear-gradient(135deg, #fff8eb 0%, #fff4fb 100%);
+  border-color: #f1d8ff;
+}
+
+.time-slot-chip.selected .time-slot-chip__label {
+  color: #3f2ccf;
+}
+
+.time-slot-chip.selected .time-slot-chip__meta {
+  color: #564f86;
+}
+
+.time-slot-chip.selected .time-slot-chip__badge {
+  background: rgba(95, 56, 255, 0.16);
+}
+
+.time-slot-chip.selected .time-slot-chip__icon-wrap {
+  background: linear-gradient(135deg, rgba(95, 56, 255, 0.18) 0%, rgba(217, 70, 239, 0.18) 100%);
+}
+
+.time-slot-chip:active {
+  transform: scale(0.98);
 }
 
 .time-detail {
@@ -260,6 +387,7 @@
 
 @media (max-width: 480px) {
   .booking-form-shell {
+    padding-top: 10px;
     padding-left: 10px;
     padding-right: 10px;
   }
@@ -269,10 +397,44 @@
   }
 
   .step-title {
-    padding: 14px 12px 6px;
+    padding: 10px 12px 4px;
+    gap: 8px;
   }
 
   .step-card ion-card-content {
-    padding: 8px 12px 14px;
+    padding: 6px 12px 12px;
+  }
+
+  .step-note {
+    font-size: 11px;
+  }
+
+  .step-card ion-card-title {
+    font-size: 16px;
+  }
+
+  .step-card ion-card-subtitle {
+    font-size: 12px;
+  }
+
+  .time-slot-grid {
+    gap: 8px;
+  }
+
+  .time-slot-chip {
+    min-height: 68px;
+    padding: 10px 8px;
+  }
+
+  .time-slot-chip__top {
+    margin-bottom: 6px;
+  }
+
+  .time-slot-chip__label {
+    font-size: 13px;
+  }
+
+  .time-slot-chip__meta {
+    font-size: 11px;
   }
 }
