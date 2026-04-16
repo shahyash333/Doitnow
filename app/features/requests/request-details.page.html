@@ -1,0 +1,81 @@
+<ion-content class="request-details-content">
+  <section class="hero" *ngIf="!isLoading && !loadError && details">
+    <button class="back-btn" type="button" (click)="goBack()" aria-label="Back to requests">
+      <ion-icon [icon]="icons.arrowBackOutline"></ion-icon>
+    </button>
+
+    <h1>{{ details.title }}</h1>
+
+    <div class="status-pill" [ngClass]="details.status">
+      <ion-icon [icon]="icons.checkmarkCircleOutline"></ion-icon>
+      <span>{{ details.statusLabel }}</span>
+    </div>
+  </section>
+
+  <section class="loading-wrap" *ngIf="isLoading">
+    <ion-skeleton-text animated class="hero-skeleton"></ion-skeleton-text>
+    <ion-skeleton-text animated class="card-skeleton"></ion-skeleton-text>
+    <ion-skeleton-text animated class="card-skeleton"></ion-skeleton-text>
+  </section>
+
+  <section class="error-wrap" *ngIf="!isLoading && loadError">
+    <p>{{ loadError }}</p>
+    <button type="button" (click)="retryLoad()">Retry</button>
+  </section>
+
+  <ng-container *ngIf="!isLoading && !loadError && details">
+    <section class="details-card">
+      <div class="label">Description</div>
+      <p>{{ details.description }}</p>
+
+      <div class="meta-grid">
+        <div>
+          <div class="label">Time</div>
+          <h3>{{ details.timeLabel }}</h3>
+        </div>
+        <div>
+          <div class="label">Address</div>
+          <h3>{{ details.addressLabel }}</h3>
+        </div>
+      </div>
+    </section>
+
+    <section class="progress-card">
+      <h2>Progress</h2>
+
+      <div class="progress-list">
+        <div class="step" *ngFor="let step of progressSteps; let i = index" [class.last]="i === progressSteps.length - 1">
+          <div class="marker-wrap">
+            <span class="marker" [ngClass]="step.state"></span>
+            <span class="line" [ngClass]="step.state" *ngIf="i < progressSteps.length - 1"></span>
+          </div>
+          <div class="step-label" [ngClass]="step.state">{{ step.label }}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="worker-card" *ngIf="isApproved">
+      <h2>Assigned Worker</h2>
+
+      <div class="worker-row">
+        <div class="avatar">V</div>
+        <div class="worker-main">
+          <h3>Vijay Kumar</h3>
+          <div class="rating-row">
+            <ion-icon [icon]="icons.star"></ion-icon>
+            <span>4.8</span>
+          </div>
+        </div>
+
+        <div class="worker-actions">
+          <button type="button" aria-label="Call worker">
+            <ion-icon [icon]="icons.callOutline"></ion-icon>
+          </button>
+          <button type="button" aria-label="Message worker">
+            <ion-icon [icon]="icons.chatbubbleOutline"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+</ion-content>

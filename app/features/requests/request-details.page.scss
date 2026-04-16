@@ -1,0 +1,336 @@
+.request-details-content {
+  --background: #f3f4fa;
+  font-family:
+    'Nunito Sans',
+    'Avenir Next',
+    'Segoe UI',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+}
+
+.hero {
+  background:
+    radial-gradient(120% 80% at 15% 5%, #6f43ff 0%, rgba(111, 67, 255, 0) 62%),
+    linear-gradient(125deg, #4f2dff 0%, #7a2fda 55%, #ef6a3b 100%);
+  color: #ffffff;
+  padding: calc(48px + env(safe-area-inset-top)) 24px 30px;
+  border-bottom-left-radius: 34px;
+  border-bottom-right-radius: 34px;
+}
+
+.back-btn {
+  border: 0;
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-btn ion-icon {
+  font-size: 34px;
+}
+
+.hero h1 {
+  margin: 22px 0 16px;
+  font-size: 46px;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  font-weight: 900;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 10px 20px;
+  font-size: 20px;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.status-pill.approved {
+  color: #1ec176;
+}
+
+.status-pill.pending {
+  color: #f4a620;
+}
+
+.status-pill.completed {
+  color: #6b7280;
+}
+
+.details-card,
+.progress-card,
+.worker-card {
+  margin: 16px 16px 0;
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 20px;
+}
+
+.details-card {
+  margin-top: -18px;
+}
+
+.label {
+  color: #6d7487;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+}
+
+.details-card p {
+  margin: 8px 0 18px;
+  font-size: 16px;
+  color: #1d2238;
+  line-height: 1.35;
+  font-weight: 600;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.meta-grid h3 {
+  margin: 6px 0 0;
+  font-size: 16px;
+  line-height: 1.35;
+  color: #1d2238;
+  font-weight: 700;
+}
+
+.progress-card h2,
+.worker-card h2 {
+  margin: 0 0 18px;
+  font-size: 20px;
+  color: #1c233a;
+  font-weight: 900;
+}
+
+.progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  align-items: flex-start;
+  min-height: 52px;
+}
+
+.marker-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.marker {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #d7dae4;
+  border: 3px solid #d7dae4;
+}
+
+.marker.done,
+.marker.active {
+  background: #5338f0;
+  border-color: #5338f0;
+}
+
+.marker.active {
+  box-shadow: 0 0 0 7px rgba(83, 56, 240, 0.2);
+}
+
+.line {
+  width: 3px;
+  min-height: 34px;
+  background: #d7dae4;
+  margin-top: 3px;
+}
+
+.line.done,
+.line.active {
+  background: #5338f0;
+}
+
+.step-label {
+  margin-top: -1px;
+  font-size: 16px;
+  color: #6f768a;
+  font-weight: 700;
+}
+
+.step-label.done,
+.step-label.active {
+  color: #1c233a;
+}
+
+.worker-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar {
+  width: 82px;
+  height: 82px;
+  border-radius: 30px;
+  background: linear-gradient(145deg, #4f2dff 0%, #8e38d8 100%);
+  color: #ffffff;
+  font-size: 44px;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.worker-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.worker-main h3 {
+  margin: 0 0 6px;
+  font-size: 21px;
+  color: #1b2238;
+  font-weight: 900;
+}
+
+.rating-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #747c90;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.rating-row ion-icon {
+  color: #f6a209;
+  font-size: 18px;
+}
+
+.worker-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.worker-actions button {
+  border: 2px solid #e3e6ef;
+  background: #f6f7fb;
+  color: #1d2238;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.worker-actions ion-icon {
+  font-size: 27px;
+}
+
+.loading-wrap {
+  padding: 14px 16px 24px;
+}
+
+.hero-skeleton {
+  width: 100%;
+  height: 170px;
+  border-radius: 28px;
+}
+
+.card-skeleton {
+  width: 100%;
+  height: 220px;
+  border-radius: 28px;
+  margin-top: 12px;
+}
+
+.error-wrap {
+  margin: 16px;
+  border-radius: 20px;
+  border: 1px solid #e5d6d8;
+  background: #fff6f6;
+  padding: 18px;
+}
+
+.error-wrap p {
+  margin: 0;
+  font-size: 14px;
+  color: #963636;
+  font-weight: 700;
+}
+
+.error-wrap button {
+  margin-top: 12px;
+  border: 0;
+  border-radius: 999px;
+  min-height: 40px;
+  padding: 0 16px;
+  background: #e94c5d;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+@media (max-width: 520px) {
+  .hero {
+    padding: calc(34px + env(safe-area-inset-top)) 16px 24px;
+  }
+
+  .back-btn {
+    width: 56px;
+    height: 56px;
+  }
+
+  .back-btn ion-icon {
+    font-size: 26px;
+  }
+
+  .hero h1 {
+    font-size: 40px;
+    margin-top: 18px;
+  }
+
+  .status-pill {
+    font-size: 18px;
+    padding: 8px 16px;
+  }
+
+  .details-card,
+  .progress-card,
+  .worker-card {
+    border-radius: 24px;
+    padding: 16px;
+  }
+
+  .meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .worker-row {
+    flex-wrap: wrap;
+  }
+
+  .worker-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

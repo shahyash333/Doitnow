@@ -18,7 +18,7 @@ export class TabsPage implements OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   hideTabBar = false;
-  isHomeSelected = false;
+  activeTab: 'home' | 'requests' | 'alerts' | 'profile' | null = null;
 
   readonly icons = {
     homeOutline,
@@ -50,13 +50,30 @@ export class TabsPage implements OnDestroy {
     return url.includes('/home/booking');
   }
 
-  private isHomeRoute(url: string): boolean {
-    const urlWithoutQuery = url.split('?')[0].split('#')[0];
-    return urlWithoutQuery === '/home' || urlWithoutQuery === '/home/';
-  }
-
   private updateRouteState(url: string): void {
     this.hideTabBar = this.isBookingRoute(url);
-    this.isHomeSelected = this.isHomeRoute(url);
+    this.activeTab = this.resolveActiveTab(url);
+  }
+
+  private resolveActiveTab(url: string): 'home' | 'requests' | 'alerts' | 'profile' | null {
+    const normalizedUrl = url.split('?')[0].split('#')[0];
+
+    if (normalizedUrl === '/home' || normalizedUrl === '/home/') {
+      return 'home';
+    }
+
+    if (normalizedUrl.startsWith('/home/requests')) {
+      return 'requests';
+    }
+
+    if (normalizedUrl.startsWith('/home/alerts')) {
+      return 'alerts';
+    }
+
+    if (normalizedUrl.startsWith('/home/profile')) {
+      return 'profile';
+    }
+
+    return null;
   }
 }

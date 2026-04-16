@@ -17,6 +17,16 @@ ion-tab-button {
   --ripple-color: rgba(93, 63, 255, 0.15);
   min-height: 56px;
   font-weight: 600;
+  color: #78809a;
+}
+
+ion-tab-button.route-active {
+  color: #5d3fff;
+}
+
+/* Prevent stale Ionic-selected class from highlighting multiple tabs. */
+ion-tab-button.tab-selected:not(.route-active) {
+  color: #78809a;
 }
 
 ion-tab-button ion-icon {

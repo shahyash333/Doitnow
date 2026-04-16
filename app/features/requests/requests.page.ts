@@ -77,9 +77,17 @@ export class RequestsPage {
   }
 
   viewDetails(request: Request): void {
-    this.router.navigate(['/home/booking'], {
-      queryParams: {
-        service: request.title,
+    this.router.navigate(['/home/requests', request.id], {
+      state: {
+        request: {
+          id: request.id,
+          title: request.title,
+          description: request.description,
+          status: request.status,
+          statusLabel: request.statusLabel,
+          timeLabel: 'Today, 4:00 PM',
+          addressLabel: 'Address will be shared once worker is assigned.',
+        },
       },
     });
   }

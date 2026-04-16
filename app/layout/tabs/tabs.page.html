@@ -3,22 +3,22 @@
   <ion-router-outlet id="main"></ion-router-outlet>
 
   <ion-tab-bar slot="bottom" [class.hidden]="hideTabBar">
-    <ion-tab-button tab="home" href="/home" [class.tab-selected]="isHomeSelected">
+    <ion-tab-button tab="home" href="/home" [class.route-active]="activeTab === 'home'">
       <ion-icon [icon]="icons.homeOutline"></ion-icon>
       <ion-label>Home</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="requests" href="/home/requests">
+    <ion-tab-button tab="requests" href="/home/requests" [class.route-active]="activeTab === 'requests'">
       <ion-icon [icon]="icons.receiptOutline"></ion-icon>
       <ion-label>Requests</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="alerts" href="/home/alerts">
+    <ion-tab-button tab="alerts" href="/home/alerts" [class.route-active]="activeTab === 'alerts'">
       <ion-icon [icon]="icons.notificationsOutline"></ion-icon>
       <ion-label>Alerts</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="profile" href="/home/profile">
+    <ion-tab-button tab="profile" href="/home/profile" [class.route-active]="activeTab === 'profile'">
       <ion-icon [icon]="icons.personOutline"></ion-icon>
       <ion-label>Profile</ion-label>
     </ion-tab-button>

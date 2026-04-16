@@ -1,5 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { ModalController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
@@ -62,6 +63,7 @@ export class ProfilePage implements OnDestroy {
   };
 
   constructor(
+    private readonly router: Router,
     private readonly authService: AuthService,
     private readonly addressService: AddressService,
     private readonly modalController: ModalController,
@@ -183,6 +185,10 @@ export class ProfilePage implements OnDestroy {
 
   toggleSavedAddresses(): void {
     this.isSavedAddressesExpanded = !this.isSavedAddressesExpanded;
+  }
+
+  openRequestHistory(): void {
+    void this.router.navigate(['/home/requests']);
   }
 
   async openAddressModal(event?: Event): Promise<void> {
