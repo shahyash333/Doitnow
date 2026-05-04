@@ -15,6 +15,7 @@
     "android:add": "npx cap add android",
     "android:build": "npm run build && npx cap sync android",
     "android:sync": "npx cap sync android",
+    "android:assets": "capacitor-assets generate --android --iconBackgroundColor '#4F46E5' --splashBackgroundColor '#4F46E5' --splashBackgroundColorDark '#0F172A' --logoSplashScale 0.42",
     "android:open": "npx cap open android",
     "android:run": "npx cap run android"
   },
@@ -40,6 +41,7 @@
     "@angular-devkit/build-angular": "^17.3.8",
     "@angular/cli": "^17.3.8",
     "@angular/compiler-cli": "^17.3.0",
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.2.0",
     "@ionic/angular-toolkit": "^11.0.1",
     "@ionic/cli": "^7.2.1",

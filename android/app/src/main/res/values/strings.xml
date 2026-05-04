@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">HomeHelp</string>
-    <string name="title_activity_main">HomeHelp</string>
-    <string name="package_name">com.homehelp.app</string>
-    <string name="custom_url_scheme">com.homehelp.app</string>
+    <string name="app_name">DoItNow</string>
+    <string name="title_activity_main">DoItNow</string>
+    <string name="package_name">com.doitnow.app</string>
+    <string name="custom_url_scheme">com.doitnow.app</string>
     <string name="server_client_id">27260261148-rjud9f2k5o23makdpk6g425jpitnn5he.apps.googleusercontent.com</string>
 </resources>
