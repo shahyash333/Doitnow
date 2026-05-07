@@ -53,6 +53,10 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
 
   popularServices: CatalogServiceItem[] = [];
   otherServices: CatalogServiceItem[] = [];
+  private touchStartX = 0;
+  private touchStartY = 0;
+  private touchLastY = 0;
+  private indicatorRaf: number | null = null;
   private readonly defaultServiceTheme = {
     bg: '#eef2ff',
     text: '#435497',
@@ -109,10 +113,14 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => this.updatePopularIndicators(), 0);
+    this.schedulePopularIndicatorUpdate();
   }
 
   ngOnDestroy(): void {
+    if (this.indicatorRaf !== null) {
+      cancelAnimationFrame(this.indicatorRaf);
+      this.indicatorRaf = null;
+    }
     this.subscriptions.unsubscribe();
   }
 
@@ -154,7 +162,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     if (scroller) {
       scroller.scrollTo({ left: 0, behavior: 'smooth' });
     }
-    this.updatePopularIndicators();
+    this.schedulePopularIndicatorUpdate();
   }
 
   triggerSearch(): void {
@@ -172,6 +180,34 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
 
     event.preventDefault();
     void this.homeContent?.scrollByPoint(0, event.deltaY, 0);
+  }
+
+  onPopularTouchStart(event: TouchEvent): void {
+    const touch = event.touches.item(0);
+    if (!touch) {
+      return;
+    }
+
+    this.touchStartX = touch.clientX;
+    this.touchStartY = touch.clientY;
+    this.touchLastY = touch.clientY;
+  }
+
+  onPopularTouchMove(event: TouchEvent): void {
+    const touch = event.touches.item(0);
+    if (!touch) {
+      return;
+    }
+
+    const dx = Math.abs(touch.clientX - this.touchStartX);
+    const dy = Math.abs(touch.clientY - this.touchStartY);
+    if (dy <= dx || dy < 8) {
+      return;
+    }
+
+    const deltaY = this.touchLastY - touch.clientY;
+    this.touchLastY = touch.clientY;
+    void this.homeContent?.scrollByPoint(0, deltaY, 0);
   }
 
   get popularDots(): number[] {
@@ -193,6 +229,17 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     const approximateIndex = Math.round(scroller.scrollLeft / cardStep);
     const maxIndex = Math.max(this.popularDotCount - 1, 0);
     this.activePopularDotIndex = Math.max(0, Math.min(approximateIndex, maxIndex));
+  }
+
+  private schedulePopularIndicatorUpdate(): void {
+    if (this.indicatorRaf !== null) {
+      cancelAnimationFrame(this.indicatorRaf);
+    }
+
+    this.indicatorRaf = requestAnimationFrame(() => {
+      this.indicatorRaf = null;
+      this.updatePopularIndicators();
+    });
   }
 
   openPopularService(service: CatalogServiceItem): void {
@@ -300,7 +347,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       if (scroller) {
         scroller.scrollTo({ left: 0, behavior: 'auto' });
       }
-      this.updatePopularIndicators();
+      this.schedulePopularIndicatorUpdate();
     } catch {
       this.popularServices = [];
       this.otherServices = [];
@@ -309,6 +356,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       this.catalogLoadError = 'Unable to load services right now. Please try again.';
     } finally {
       this.isCatalogLoading = false;
+      this.schedulePopularIndicatorUpdate();
     }
   }
 
