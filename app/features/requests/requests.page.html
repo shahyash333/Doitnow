@@ -33,7 +33,7 @@
     </button>
   </div>
 
-  <div class="requests-list" *ngIf="isLoading">
+  <div class="requests-list" *ngIf="isInitialLoading">
     <article class="request-card skeleton-card" *ngFor="let _ of skeletonCards">
       <div class="request-top">
         <div class="icon-circle">
@@ -52,14 +52,14 @@
     </article>
   </div>
 
-  <div class="requests-list" *ngIf="!isLoading">
+  <div class="requests-list" *ngIf="!isInitialLoading">
     <div *ngIf="loadError" class="empty-state">
       <ion-icon name="alert-circle-outline"></ion-icon>
       <p>{{ loadError }}</p>
       <button class="btn primary retry-btn" type="button" (click)="retryLoad()">Retry</button>
     </div>
 
-    <article class="request-card" *ngFor="let request of filteredRequests" [hidden]="!!loadError">
+    <article class="request-card" *ngFor="let request of requests" [hidden]="!!loadError">
       <div class="request-top">
         <div class="icon-circle" [ngClass]="request.colorClass">
           <ion-icon [icon]="icons[request.icon]"></ion-icon>
@@ -100,9 +100,18 @@
       </div>
     </article>
 
-    <div *ngIf="!loadError && filteredRequests.length === 0" class="empty-state">
+    <div *ngIf="!loadError && requests.length === 0" class="empty-state">
       <ion-icon name="document-outline"></ion-icon>
-      <p>No requests found</p>
+      <p>{{ emptyStateText }}</p>
     </div>
   </div>
+
+  <ion-infinite-scroll
+    threshold="120px"
+    [disabled]="!hasMore || isInitialLoading || !!loadError"
+    (ionInfinite)="onLoadMore($event)"
+  >
+    <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Loading more bookings...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

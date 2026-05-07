@@ -25,6 +25,19 @@ export interface BookingRequestItem {
 export interface BookingRequestsResponse {
   message: string;
   data: BookingRequestItem[];
+  meta?: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    filter: 'all' | 'pending' | 'approved' | 'completed';
+  };
+}
+
+export interface BookingRequestsQueryParams {
+  filter?: 'all' | 'pending' | 'approved' | 'completed';
+  page?: number;
+  limit?: number;
 }
 
 @Injectable({
@@ -39,7 +52,20 @@ export class BookingService extends BaseService {
     return this.http.post(`${environment.apiUrl}/booking`, payload);
   }
 
-  getBookingRequests(): Observable<BookingRequestsResponse> {
-    return this.http.get<BookingRequestsResponse>(`${environment.apiUrl}/booking/requests`);
+  getBookingRequests(params?: BookingRequestsQueryParams): Observable<BookingRequestsResponse> {
+    const queryParams: Record<string, string> = {};
+    if (params?.filter) {
+      queryParams['filter'] = params.filter;
+    }
+    if (typeof params?.page === 'number') {
+      queryParams['page'] = String(params.page);
+    }
+    if (typeof params?.limit === 'number') {
+      queryParams['limit'] = String(params.limit);
+    }
+
+    return this.http.get<BookingRequestsResponse>(`${environment.apiUrl}/booking/requests`, {
+      params: queryParams,
+    });
   }
 }

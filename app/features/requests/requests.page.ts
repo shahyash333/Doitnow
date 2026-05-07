@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
+import { InfiniteScrollCustomEvent, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import {
   buildOutline,
@@ -14,7 +14,13 @@ import {
 } from 'ionicons/icons';
 import { firstValueFrom } from 'rxjs';
 
-import { BookingRequestItem, BookingService } from '../../core/services/booking.service';
+import {
+  BookingRequestItem,
+  BookingRequestsQueryParams,
+  BookingService,
+} from '../../core/services/booking.service';
+
+type RequestFilter = 'all' | 'pending' | 'approved' | 'completed';
 
 interface Request {
   id: string;
@@ -33,10 +39,15 @@ interface Request {
   styleUrls: ['./requests.page.scss'],
 })
 export class RequestsPage {
-  activeTab: string = 'all';
-  isLoading = false;
+  activeTab: RequestFilter = 'all';
+  isInitialLoading = false;
+  isLoadingMore = false;
+  hasMore = true;
   loadError = '';
-  readonly skeletonCards = Array.from({ length: 3 });
+  readonly skeletonCards = Array.from({ length: 4 });
+  private readonly pageSize = 10;
+  private currentPage = 1;
+  private latestLoadRequestId = 0;
 
   readonly icons = {
     buildOutline,
@@ -50,15 +61,20 @@ export class RequestsPage {
 
   requests: Request[] = [];
 
-  get filteredRequests(): Request[] {
+  get emptyStateText(): string {
     if (this.activeTab === 'all') {
-      return this.requests;
+      return 'No bookings yet.';
     }
-    return this.requests.filter((req) => req.status === this.activeTab);
+    return `No ${this.activeTab} bookings yet.`;
   }
 
-  selectTab(tab: string): void {
+  selectTab(tab: RequestFilter): void {
+    if (this.activeTab === tab && this.requests.length > 0) {
+      return;
+    }
+
     this.activeTab = tab;
+    void this.loadRequests({ reset: true });
   }
 
   constructor(
@@ -71,7 +87,7 @@ export class RequestsPage {
 
   ionViewWillEnter(): void {
     void this.maybeShowBookingSuccessToast();
-    void this.loadRequests();
+    void this.loadRequests({ reset: true });
   }
 
   viewDetails(request: Request): void {
@@ -96,18 +112,62 @@ export class RequestsPage {
   }
 
   retryLoad(): void {
-    void this.loadRequests();
+    void this.loadRequests({ reset: true });
   }
 
-  private async loadRequests(): Promise<void> {
-    this.isLoading = true;
-    this.loadError = '';
+  async onLoadMore(event: Event): Promise<void> {
+    if (!this.hasMore || this.isInitialLoading || this.isLoadingMore) {
+      (event as InfiniteScrollCustomEvent).target.complete();
+      return;
+    }
+
+    await this.loadRequests({
+      reset: false,
+      infiniteEvent: event as InfiniteScrollCustomEvent,
+    });
+  }
+
+  private async loadRequests(options: { reset: boolean; infiniteEvent?: InfiniteScrollCustomEvent }): Promise<void> {
+    const { reset, infiniteEvent } = options;
+    const requestId = ++this.latestLoadRequestId;
+
+    if (reset) {
+      this.isInitialLoading = true;
+      this.currentPage = 1;
+      this.hasMore = true;
+      this.requests = [];
+      this.loadError = '';
+    } else {
+      this.isLoadingMore = true;
+    }
+
+    const query: BookingRequestsQueryParams = {
+      filter: this.activeTab,
+      page: this.currentPage,
+      limit: this.pageSize,
+    };
 
     try {
-      const response = await firstValueFrom(this.bookingService.getBookingRequests());
-      this.requests = (response.data ?? []).map((request) => this.mapApiRequestToUi(request));
+      const response = await firstValueFrom(this.bookingService.getBookingRequests(query));
+
+      if (requestId !== this.latestLoadRequestId) {
+        return;
+      }
+
+      const pageItems = (response.data ?? []).map((request) => this.mapApiRequestToUi(request));
+      this.requests = reset ? pageItems : [...this.requests, ...pageItems];
+
+      const totalPages = response.meta?.totalPages ?? this.currentPage;
+      this.hasMore = this.currentPage < totalPages && pageItems.length > 0;
+      this.currentPage += 1;
     } catch (error: unknown) {
-      this.requests = [];
+      if (requestId !== this.latestLoadRequestId) {
+        return;
+      }
+
+      if (reset) {
+        this.requests = [];
+      }
 
       if (error instanceof HttpErrorResponse && error.status === 401) {
         this.loadError = 'Your session has expired. Please login again.';
@@ -115,7 +175,11 @@ export class RequestsPage {
         this.loadError = 'Unable to load requests right now. Please try again.';
       }
     } finally {
-      this.isLoading = false;
+      if (requestId === this.latestLoadRequestId) {
+        this.isInitialLoading = false;
+        this.isLoadingMore = false;
+      }
+      infiniteEvent?.target.complete();
     }
   }
 
