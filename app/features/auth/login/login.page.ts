@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
+import { Browser } from '@capacitor/browser';
 import { AlertController } from '@ionic/angular';
 import { Capacitor } from '@capacitor/core';
 import { addIcons } from 'ionicons';
-import { lockClosedOutline, mailOutline } from 'ionicons/icons';
+import { lockClosedOutline } from 'ionicons/icons';
 
 import { AuthService, GoogleSignInFlowError } from '../../../core/services/auth.service';
 import { environment } from '../../../../environments/environment';
@@ -17,7 +18,6 @@ const DEBUG = !environment.production;
 export class LoginPage {
   readonly icons = {
     lockClosedOutline,
-    mailOutline,
   };
   isLoading = false;
   errorMessage = '';
@@ -54,6 +54,25 @@ export class LoginPage {
       await this.showSignInErrorPopup(error);
     } finally {
       this.isLoading = false;
+    }
+  }
+
+  async openPrivacyPolicy(): Promise<void> {
+    const url = environment.privacyPolicyUrl;
+
+    try {
+      if (Capacitor.isNativePlatform()) {
+        await Browser.open({
+          url,
+          presentationStyle: 'fullscreen',
+        });
+        return;
+      }
+
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch (error) {
+      console.error('Unable to open privacy policy', error);
+      window.open(url, '_blank', 'noopener,noreferrer');
     }
   }
 

@@ -162,16 +162,23 @@
   transform: scale(0.98);
 }
 
-.google-btn img,
-.google-btn ion-icon {
-  width: 20px;
-  height: 20px;
-}
-
-.google-btn ion-icon {
-  font-size: 20px;
-  color: #fff;
-  --ionicon-stroke-width: 44px;
+.google-mark {
+  font-family: Arial, sans-serif;
+  font-size: 23px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: conic-gradient(
+    from 50deg,
+    #ea4335 0deg 85deg,
+    #fbbc05 85deg 165deg,
+    #34a853 165deg 255deg,
+    #4285f4 255deg 360deg
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
 }
 
 .security-text {
@@ -213,6 +220,19 @@
 .terms span {
   color: #5d3fff;
   font-weight: 700;
+}
+
+.policy-link {
+  color: #5d3fff;
+  font-weight: 700;
+  font-size: inherit;
+  line-height: inherit;
+  font-family: inherit;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 @keyframes login-reveal {
@@ -264,14 +284,8 @@
     min-height: 54px;
   }
 
-  .google-btn img,
-  .google-btn ion-icon {
-    width: 18px;
-    height: 18px;
-  }
-
-  .google-btn ion-icon {
-    font-size: 18px;
+  .google-mark {
+    font-size: 21px;
   }
 
   .security-text p {

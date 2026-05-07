@@ -17,7 +17,7 @@
         <h2 class="title">Sign in</h2>
 
         <button class="google-btn" type="button" [disabled]="isLoading" (click)="signInWithGoogle()">
-          <ion-icon [icon]="icons.mailOutline" aria-hidden="true"></ion-icon>
+          <span class="google-mark" aria-hidden="true">G</span>
           <span>{{ isLoading ? 'Signing in...' : 'Continue with Google' }}</span>
         </button>
 
@@ -36,7 +36,7 @@
 
         <p class="terms">
           By continuing, you agree to our <span>Terms of Service</span> and
-          <span>Privacy Policy</span>
+          <button class="policy-link" type="button" (click)="openPrivacyPolicy()">Privacy Policy</button>
         </p>
       </div>
     </section>
