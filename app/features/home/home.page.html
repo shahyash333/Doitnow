@@ -56,7 +56,14 @@
         <h2>Popular Services</h2>
       </div>
 
-      <div #popularScroller class="popular-row" (scroll)="onPopularScroll()" (wheel)="onPopularWheel($event)">
+      <div
+        #popularScroller
+        class="popular-row"
+        (scroll)="onPopularScroll()"
+        (wheel)="onPopularWheel($event)"
+        (touchstart)="onPopularTouchStart($event)"
+        (touchmove)="onPopularTouchMove($event)"
+      >
         <article
           class="popular-card"
           *ngFor="let service of filteredPopularServices; trackBy: trackByServiceId"
