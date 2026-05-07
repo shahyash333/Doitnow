@@ -20,15 +20,6 @@ export class AppComponent implements OnInit {
     this.initializeGoogleAuth();
     this.authService.restoreSession();
     this.addressService.bootstrapFromAuth();
-
-    const splash = document.getElementById('app-splash');
-    if (!splash) return;
-
-    splash.classList.add('app-splash--hide');
-
-    window.setTimeout(() => {
-      splash.remove();
-    }, 250);
   }
 
   private initializeGoogleAuth(): void {
@@ -40,7 +31,6 @@ export class AppComponent implements OnInit {
       GoogleAuth.initialize({
         clientId: environment.google.webClientId,
         scopes: ['profile', 'email'],
-        grantOfflineAccess: true,
       });
     } catch (error) {
       console.error('GoogleAuth initialization failed', error);

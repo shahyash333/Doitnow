@@ -4,9 +4,10 @@ import { Capacitor } from '@capacitor/core';
 import { addIcons } from 'ionicons';
 import { lockClosedOutline, mailOutline } from 'ionicons/icons';
 
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService, GoogleSignInFlowError } from '../../../core/services/auth.service';
+import { environment } from '../../../../environments/environment';
 
-const DEBUG = true;
+const DEBUG = !environment.production;
 
 @Component({
   selector: 'app-login',
@@ -70,6 +71,15 @@ export class LoginPage {
   }
 
   private getDetailedErrorMessage(error: unknown): string {
+    if (error instanceof GoogleSignInFlowError) {
+      const details = error.technicalDetails ? `\nDetails: ${error.technicalDetails}` : '';
+      return `Message: ${error.message}\nCode: ${String(error.code ?? 'N/A')}${details}`;
+    }
+
+    if (error instanceof Error) {
+      return `Message: ${error.message}`;
+    }
+
     if (error && typeof error === 'object') {
       try {
         return JSON.stringify(error, null, 2);
@@ -82,6 +92,10 @@ export class LoginPage {
   }
 
   private getErrorMessage(error: unknown): string {
+    if (error instanceof GoogleSignInFlowError) {
+      return error.message;
+    }
+
     if (error instanceof Error) {
       return error.message;
     }

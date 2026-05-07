@@ -1,4 +1,4 @@
-package com.homehelp.app;
+package com.doitnow.app;
 
 import com.getcapacitor.BridgeActivity;
 

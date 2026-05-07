@@ -13,15 +13,19 @@
     <meta name="msapplication-tap-highlight" content="no" />
 
     <link rel="icon" type="image/svg+xml" href="assets/icon/favicon.svg" />
+    <style>
+      html,
+      body,
+      app-root {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        background: #4e2fe6;
+      }
+    </style>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body>
-    <div id="app-splash" class="app-splash" aria-hidden="true">
-      <div class="app-splash__content">
-        <img class="app-splash__logo" src="assets/logo.svg" alt="" />
-        <div class="app-splash__spinner" role="presentation"></div>
-      </div>
-    </div>
     <app-root></app-root>
   </body>
 </html>

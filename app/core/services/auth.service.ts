@@ -8,7 +8,7 @@ import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { environment } from '../../../environments/environment';
 import { Address, AddressLocation } from '../models/address.model';
 
-const DEBUG = true;
+const DEBUG = !environment.production;
 
 export interface AuthUser {
   addresses: AuthAddress[];
@@ -58,6 +58,17 @@ interface GoogleCredentialResponse {
   credential?: string;
 }
 
+export class GoogleSignInFlowError extends Error {
+  constructor(
+    message: string,
+    public readonly code?: string | number,
+    public readonly technicalDetails?: string,
+  ) {
+    super(message);
+    this.name = 'GoogleSignInFlowError';
+  }
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -93,8 +104,9 @@ export class AuthService {
 
       await this.handleWebLogin();
     } catch (error) {
-      console.error('Google sign-in flow failed', error);
-      throw error;
+      const normalizedError = this.normalizeGoogleSignInError(error, platform);
+      console.error('Google sign-in flow failed', normalizedError, error);
+      throw normalizedError;
     }
   }
 
@@ -153,6 +165,8 @@ export class AuthService {
   }
 
   async handleAndroidLogin(): Promise<void> {
+    this.initializeAndroidGoogleAuth();
+
     let user: any;
 
     try {
@@ -163,7 +177,7 @@ export class AuthService {
       console.error('Google Android Sign-In Error message:', typedError?.message);
       console.error('Google Android Sign-In Error error:', typedError?.error);
       console.error('Google Android Sign-In Error code:', typedError?.code);
-      throw error;
+      throw this.normalizeAndroidSignInError(error);
     }
 
     const idToken = user.authentication?.idToken;
@@ -215,7 +229,7 @@ export class AuthService {
         console.error('[AuthService] Backend response status:', error.status);
       }
       console.error('Backend login failed', error);
-      throw error;
+      throw this.normalizeBackendAuthError(error, apiUrl);
     }
   }
 
@@ -532,6 +546,107 @@ export class AuthService {
   private deriveShortAddress(fullAddress: string): string {
     const firstPart = fullAddress.split(',')[0]?.trim() ?? '';
     return firstPart || fullAddress;
+  }
+
+  private initializeAndroidGoogleAuth(): void {
+    GoogleAuth.initialize({
+      clientId: environment.google.webClientId,
+      scopes: ['profile', 'email'],
+    });
+  }
+
+  private normalizeGoogleSignInError(error: unknown, platform: string): Error {
+    if (error instanceof GoogleSignInFlowError) {
+      return error;
+    }
+
+    if (platform === 'android') {
+      return this.normalizeAndroidSignInError(error);
+    }
+
+    return new GoogleSignInFlowError(this.extractErrorMessage(error));
+  }
+
+  private normalizeBackendAuthError(error: unknown, apiUrl?: string): Error {
+    if (!(error instanceof HttpErrorResponse)) {
+      return error instanceof Error
+        ? error
+        : new GoogleSignInFlowError('Unable to complete sign-in. Please try again.');
+    }
+
+    if (error.status === 0) {
+      const details = apiUrl ? `API: ${apiUrl}` : undefined;
+      return new GoogleSignInFlowError(
+        'Unable to reach server from mobile app. Please verify API URL, backend CORS (https://localhost), and HTTP/HTTPS settings.',
+        error.status,
+        details,
+      );
+    }
+
+    if (error.status === 401 || error.status === 403) {
+      return new GoogleSignInFlowError(
+        'Google authentication was rejected by server. Please try again or contact support.',
+        error.status,
+      );
+    }
+
+    if (error.status >= 500) {
+      return new GoogleSignInFlowError(
+        'Server is temporarily unavailable. Please try again in a moment.',
+        error.status,
+      );
+    }
+
+    return new GoogleSignInFlowError(
+      'Unable to sign in with Google. Please try again.',
+      error.status,
+      this.extractErrorMessage(error.error),
+    );
+  }
+
+  private normalizeAndroidSignInError(error: unknown): Error {
+    const source = error as { message?: string; code?: string | number };
+    const code = source?.code;
+
+    if (code === 12501) {
+      return new GoogleSignInFlowError('Google sign-in was cancelled.', code);
+    }
+
+    if (code === 10 || String(source?.message ?? '').toLowerCase().includes('server client id')) {
+      return new GoogleSignInFlowError(
+        'Google sign-in is currently misconfigured for Android. Please contact support.',
+        code,
+      );
+    }
+
+    if (code === 7) {
+      return new GoogleSignInFlowError(
+        'Network error during Google sign-in. Please check your internet and try again.',
+        code,
+      );
+    }
+
+    return new GoogleSignInFlowError(
+      'Google sign-in failed on Android. Please try again.',
+      code,
+      this.extractErrorMessage(error),
+    );
+  }
+
+  private extractErrorMessage(error: unknown): string {
+    if (error instanceof Error && error.message?.trim()) {
+      return error.message;
+    }
+
+    if (typeof error === 'string' && error.trim()) {
+      return error;
+    }
+
+    try {
+      return JSON.stringify(error);
+    } catch {
+      return 'Unknown error';
+    }
   }
 
   private clearSession(): void {

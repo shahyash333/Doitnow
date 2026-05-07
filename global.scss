@@ -20,46 +20,14 @@ ion-tab,
   min-height: 0;
 }
 
-.app-splash {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  display: grid;
-  place-items: center;
-  background: #ffffff;
-  transition: opacity 200ms ease;
-}
-
-.app-splash__content {
-  display: grid;
-  justify-items: center;
-  gap: 16px;
-  padding: 24px;
-}
-
-.app-splash__logo {
-  width: 96px;
-  height: 96px;
-}
-
-.app-splash__spinner {
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  border: 3px solid rgba(0, 0, 0, 0.15);
-  border-top-color: rgba(0, 0, 0, 0.55);
-  animation: app-splash-spin 900ms linear infinite;
-}
-
-.app-splash--hide {
-  opacity: 0;
-  pointer-events: none;
-}
-
-@keyframes app-splash-spin {
-  to {
-    transform: rotate(360deg);
-  }
+html,
+body,
+app-root,
+ion-app {
+  background:
+    radial-gradient(80% 58% at 88% 0%, rgba(255, 221, 87, 0.26) 0%, rgba(255, 221, 87, 0) 65%),
+    radial-gradient(120% 80% at 10% 0%, #7f5aff 0%, rgba(127, 90, 255, 0) 62%),
+    linear-gradient(128deg, #4e2fe6 0%, #6f32d1 52%, #a63dbf 100%);
 }
 
 ion-modal.address-modal-sheet {

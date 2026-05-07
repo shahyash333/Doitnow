@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.homehelp.app"
+    namespace "com.doitnow.app"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.doitnow.app"
