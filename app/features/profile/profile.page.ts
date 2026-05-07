@@ -1,6 +1,8 @@
 import { Component, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
 import { AlertController } from '@ionic/angular';
 import { ModalController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
@@ -11,7 +13,6 @@ import {
   chevronForwardOutline,
   closeOutline,
   createOutline,
-  globeOutline,
   heartOutline,
   helpCircleOutline,
   locationOutline,
@@ -27,6 +28,7 @@ import { Address } from '../../core/models/address.model';
 import { AddressService } from '../../core/services/address.service';
 import { AuthService, AuthUser } from '../../core/services/auth.service';
 import { AddressModalComponent } from '../../shared/components/address-modal/address-modal.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -50,7 +52,6 @@ export class ProfilePage implements OnDestroy {
     chevronForwardOutline,
     closeOutline,
     createOutline,
-    globeOutline,
     heartOutline,
     helpCircleOutline,
     locationOutline,
@@ -109,14 +110,20 @@ export class ProfilePage implements OnDestroy {
 
     try {
       const alert = await this.alertController.create({
-        header: 'Add phone number',
-        message: 'Optional: you can add a phone number for easier contact.',
+        cssClass: 'phone-input-alert',
+        header: 'Add Phone Number',
+        subHeader: 'Used by service partners to contact you for bookings.',
         inputs: [
           {
             name: 'phone',
             type: 'tel',
-            placeholder: 'Enter phone number',
-            value: this.user?.phone ?? '',
+            placeholder: '10-digit phone number',
+            value: (this.user?.phone ?? '').replace(/\D/g, '').slice(0, 10),
+            attributes: {
+              inputmode: 'numeric',
+              maxlength: 10,
+              autocomplete: 'tel',
+            },
           },
         ],
         buttons: [
@@ -127,12 +134,19 @@ export class ProfilePage implements OnDestroy {
           {
             text: 'Save',
             handler: (data: { phone?: string }) => {
-              const phone = data.phone?.trim() ?? '';
+              const phone = this.normalizePhone(data.phone);
               if (!phone) {
+                void this.presentToast('Phone number is required.', 'danger');
+                return false;
+              }
+
+              if (!this.isValidPhone(phone)) {
+                void this.presentToast('Enter a valid 10-digit phone number.', 'danger');
                 return false;
               }
 
               this.authService.updateLocalPhone(phone);
+              void this.presentToast('Phone number saved.', 'success');
               return true;
             },
           },
@@ -189,6 +203,10 @@ export class ProfilePage implements OnDestroy {
 
   openRequestHistory(): void {
     void this.router.navigate(['/home/requests']);
+  }
+
+  async openAboutUs(): Promise<void> {
+    await this.openExternalUrl(environment.aboutUsUrl);
   }
 
   async openAddressModal(event?: Event): Promise<void> {
@@ -289,6 +307,31 @@ export class ProfilePage implements OnDestroy {
       color,
     });
     await toast.present();
+  }
+
+  private normalizePhone(value?: string | null): string {
+    return (value ?? '').replace(/\D/g, '').slice(0, 10);
+  }
+
+  private isValidPhone(phone: string): boolean {
+    return /^\d{10}$/.test(phone);
+  }
+
+  private async openExternalUrl(url: string): Promise<void> {
+    try {
+      if (Capacitor.isNativePlatform()) {
+        await Browser.open({
+          url,
+          presentationStyle: 'fullscreen',
+        });
+        return;
+      }
+
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch (error) {
+      console.error('Unable to open external link', error);
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
   }
 
   ngOnDestroy(): void {

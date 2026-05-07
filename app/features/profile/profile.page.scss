@@ -64,23 +64,6 @@ ion-content.profile-page {
   text-overflow: ellipsis;
 }
 
-.edit-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.edit-btn ion-icon {
-  font-size: 18px;
-  color: inherit;
-}
-
 .contact {
   display: flex;
   flex-direction: column;
@@ -195,6 +178,13 @@ ion-content.profile-page {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.menu-item-button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
 }
 
 .saved-addresses-item {
@@ -405,4 +395,8 @@ ion-content.profile-page {
 
 .logout-text {
   color: #e23b3b;
+}
+
+:host ::ng-deep .phone-input-alert .alert-input {
+  letter-spacing: 0.03em;
 }

@@ -90,7 +90,7 @@ export class BookingPage implements OnDestroy {
     }
 
     if (!this.isValidBookingDate(payload.dateIso)) {
-      await this.presentToast('Please choose a valid date (today or later).', 'danger');
+      await this.presentToast('Please choose a valid date between today and the next 7 days.', 'danger');
       return;
     }
 
@@ -241,7 +241,10 @@ export class BookingPage implements OnDestroy {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     selectedDate.setHours(0, 0, 0, 0);
-    return selectedDate >= today;
+    const maxDate = new Date(today);
+    maxDate.setDate(maxDate.getDate() + 7);
+
+    return selectedDate >= today && selectedDate <= maxDate;
   }
 
   private extractErrorMessage(error: unknown): string {

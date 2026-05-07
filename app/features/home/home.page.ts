@@ -1,6 +1,6 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { IonContent, ModalController } from '@ionic/angular';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { addIcons } from 'ionicons';
 import {
@@ -26,7 +26,8 @@ import { AddressModalComponent } from '../../shared/components/address-modal/add
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage implements OnInit, OnDestroy {
+export class HomePage implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('homeContent') homeContent?: IonContent;
   @ViewChild('popularScroller') popularScroller?: ElementRef<HTMLDivElement>;
 
   readonly icons = {
@@ -42,7 +43,8 @@ export class HomePage implements OnInit, OnDestroy {
     sparklesOutline,
   };
 
-  activePopularIndex = 0;
+  activePopularDotIndex = 0;
+  popularDotCount = 1;
   searchQuery = '';
   isCatalogLoading = true;
   catalogLoadError = '';
@@ -106,6 +108,10 @@ export class HomePage implements OnInit, OnDestroy {
     void this.loadCatalog();
   }
 
+  ngAfterViewInit(): void {
+    setTimeout(() => this.updatePopularIndicators(), 0);
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
@@ -142,12 +148,13 @@ export class HomePage implements OnInit, OnDestroy {
 
   onSearchInput(value: string): void {
     this.searchQuery = value;
-    this.activePopularIndex = 0;
+    this.activePopularDotIndex = 0;
 
     const scroller = this.popularScroller?.nativeElement;
     if (scroller) {
       scroller.scrollTo({ left: 0, behavior: 'smooth' });
     }
+    this.updatePopularIndicators();
   }
 
   triggerSearch(): void {
@@ -155,6 +162,23 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   onPopularScroll(): void {
+    this.updatePopularIndicators();
+  }
+
+  onPopularWheel(event: WheelEvent): void {
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) {
+      return;
+    }
+
+    event.preventDefault();
+    void this.homeContent?.scrollByPoint(0, event.deltaY, 0);
+  }
+
+  get popularDots(): number[] {
+    return Array.from({ length: this.popularDotCount }, (_, index) => index);
+  }
+
+  private updatePopularIndicators(): void {
     const scroller = this.popularScroller?.nativeElement;
     if (!scroller) {
       return;
@@ -162,9 +186,13 @@ export class HomePage implements OnInit, OnDestroy {
 
     const firstCard = scroller.querySelector<HTMLElement>('.popular-card');
     const cardStep = (firstCard?.offsetWidth ?? 220) + 12;
+    const visibleCards = Math.max(1, Math.floor(scroller.clientWidth / cardStep));
+    const totalServices = this.filteredPopularServices.length;
+    this.popularDotCount = Math.max(totalServices - visibleCards + 1, 1);
+
     const approximateIndex = Math.round(scroller.scrollLeft / cardStep);
-    const maxIndex = Math.max(this.filteredPopularServices.length - 1, 0);
-    this.activePopularIndex = Math.max(0, Math.min(approximateIndex, maxIndex));
+    const maxIndex = Math.max(this.popularDotCount - 1, 0);
+    this.activePopularDotIndex = Math.max(0, Math.min(approximateIndex, maxIndex));
   }
 
   openPopularService(service: CatalogServiceItem): void {
@@ -266,15 +294,18 @@ export class HomePage implements OnInit, OnDestroy {
       const response = await firstValueFrom(this.catalogService.getCatalog(forceRefresh));
       this.popularServices = response.popular ?? [];
       this.otherServices = response.others ?? [];
-      this.activePopularIndex = 0;
+      this.activePopularDotIndex = 0;
 
       const scroller = this.popularScroller?.nativeElement;
       if (scroller) {
         scroller.scrollTo({ left: 0, behavior: 'auto' });
       }
+      this.updatePopularIndicators();
     } catch {
       this.popularServices = [];
       this.otherServices = [];
+      this.popularDotCount = 1;
+      this.activePopularDotIndex = 0;
       this.catalogLoadError = 'Unable to load services right now. Please try again.';
     } finally {
       this.isCatalogLoading = false;

@@ -1,4 +1,4 @@
-<ion-content class="home-content">
+<ion-content #homeContent class="home-content">
   <section class="hero">
     <div class="hero-top">
       <button
@@ -56,7 +56,7 @@
         <h2>Popular Services</h2>
       </div>
 
-      <div #popularScroller class="popular-row" (scroll)="onPopularScroll()">
+      <div #popularScroller class="popular-row" (scroll)="onPopularScroll()" (wheel)="onPopularWheel($event)">
         <article
           class="popular-card"
           *ngFor="let service of filteredPopularServices; trackBy: trackByServiceId"
@@ -89,8 +89,8 @@
       <div class="popular-dots" aria-hidden="true">
         <span
           class="dot"
-          *ngFor="let _service of filteredPopularServices; let i = index"
-          [class.active]="i === activePopularIndex"
+          *ngFor="let _dot of popularDots; let i = index"
+          [class.active]="i === activePopularDotIndex"
         ></span>
       </div>
     </section>

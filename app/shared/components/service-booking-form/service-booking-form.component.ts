@@ -132,6 +132,12 @@ export class ServiceBookingFormComponent implements OnInit, OnChanges {
     return this.toInputDate(new Date());
   }
 
+  get maxDateIso(): string {
+    const maxDate = new Date();
+    maxDate.setDate(maxDate.getDate() + 7);
+    return this.toInputDate(maxDate);
+  }
+
   onDateSelected(event: { detail?: { value?: string | string[] | null } }): void {
     const value = event?.detail?.value;
     const dateValue = Array.isArray(value) ? value[0] : value;

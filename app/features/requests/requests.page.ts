@@ -6,7 +6,6 @@ import { addIcons } from 'ionicons';
 import {
   buildOutline,
   carOutline,
-  chevronForwardOutline,
   checkmarkCircleOutline,
   medicalOutline,
   sparklesOutline,
@@ -42,7 +41,6 @@ export class RequestsPage {
   readonly icons = {
     buildOutline,
     carOutline,
-    chevronForwardOutline,
     checkmarkCircleOutline,
     medicalOutline,
     sparklesOutline,

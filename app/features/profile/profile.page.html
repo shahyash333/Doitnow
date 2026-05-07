@@ -15,9 +15,6 @@
       <div class="details">
         <div class="name-row">
           <div class="name">{{ displayName }}</div>
-          <button class="edit-btn" aria-label="Edit profile">
-            <ion-icon [icon]="icons.createOutline"></ion-icon>
-          </button>
         </div>
         <div class="contact">
           <div class="contact-row" *ngIf="hasPhone; else addPhoneTemplate">
@@ -151,19 +148,6 @@
 
     <div class="menu-item">
       <div class="item-left">
-        <div class="item-icon orange">
-          <ion-icon [icon]="icons.globeOutline"></ion-icon>
-        </div>
-        <div class="item-text">
-          <div class="item-title">Language</div>
-          <div class="item-sub">English</div>
-        </div>
-      </div>
-      <ion-icon class="chev" [icon]="icons.chevronForwardOutline"></ion-icon>
-    </div>
-
-    <div class="menu-item">
-      <div class="item-left">
         <div class="item-icon blue">
           <ion-icon [icon]="icons.helpCircleOutline"></ion-icon>
         </div>
@@ -188,7 +172,7 @@
       <ion-icon class="chev" [icon]="icons.chevronForwardOutline"></ion-icon>
     </div>
 
-    <div class="menu-item">
+    <button class="menu-item menu-item-button" type="button" (click)="openAboutUs()">
       <div class="item-left">
         <div class="item-icon pink">
           <ion-icon [icon]="icons.heartOutline"></ion-icon>
@@ -199,7 +183,7 @@
         </div>
       </div>
       <ion-icon class="chev" [icon]="icons.chevronForwardOutline"></ion-icon>
-    </div>
+    </button>
     </div>
   </section>
 

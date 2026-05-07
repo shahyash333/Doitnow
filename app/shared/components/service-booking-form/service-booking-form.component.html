@@ -35,6 +35,7 @@
             <ion-datetime
               presentation="date"
               [min]="minDateIso"
+              [max]="maxDateIso"
               [value]="selectedDateIso"
               (ionChange)="onDateSelected($event)"
             ></ion-datetime>
