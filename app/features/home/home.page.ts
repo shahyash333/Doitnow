@@ -280,6 +280,11 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     return service.imageUrl ?? service.iconUrl ?? '';
   }
 
+  /** Image for the All Services grid: prefer API icon, else banner/cover image. */
+  getServiceTileImage(service: CatalogServiceItem): string {
+    return service.iconUrl ?? service.imageUrl ?? '';
+  }
+
   getServiceIcon(service: CatalogServiceItem) {
     const title = service.title.trim().toLowerCase();
 
