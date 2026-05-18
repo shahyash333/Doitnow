@@ -12,11 +12,12 @@
     </div>
   </section>
 
-  <section class="notifications-list">
+  <section class="notifications-list" *ngIf="notifications$ | async as notifications">
     <article
       class="notification-card"
       *ngFor="let notification of notifications"
       [class.unread]="notification.isUnread"
+      (click)="openNotification(notification.id)"
     >
       <div class="icon-circle" [ngClass]="notification.colorClass">
         <ion-icon [icon]="icons[notification.icon]"></ion-icon>
@@ -28,6 +29,15 @@
         </div>
         <p class="notification-description">{{ notification.description }}</p>
         <span class="notification-time">{{ notification.timestamp }}</span>
+      </div>
+    </article>
+
+    <article class="notification-card empty-card" *ngIf="notifications.length === 0">
+      <div class="notification-text">
+        <div class="notification-title-row">
+          <h3 class="notification-title">No notifications yet</h3>
+        </div>
+        <p class="notification-description">You will see request updates from admin here.</p>
       </div>
     </article>
   </section>

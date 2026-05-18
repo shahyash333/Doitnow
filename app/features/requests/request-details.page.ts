@@ -6,13 +6,14 @@ import {
   chatbubbleOutline,
   chevronBackOutline,
   checkmarkCircleOutline,
+  closeCircleOutline,
   star,
 } from 'ionicons/icons';
 import { firstValueFrom } from 'rxjs';
 
-import { BookingRequestItem, BookingService } from '../../core/services/booking.service';
+import { BookingRequestDetailsItem, BookingService } from '../../core/services/booking.service';
 
-type RequestStatus = 'pending' | 'approved' | 'completed';
+type RequestStatus = 'pending' | 'approved' | 'completed' | 'cancelled';
 
 interface RequestDetailsView {
   id: string;
@@ -22,6 +23,14 @@ interface RequestDetailsView {
   statusLabel: string;
   timeLabel: string;
   addressLabel: string;
+  worker: {
+    name: string;
+    rating: string;
+    phone: string | null;
+    avatarText: string;
+  } | null;
+  cancellationReason: string | null;
+  cancellationDescription: string | null;
 }
 
 @Component({
@@ -39,6 +48,7 @@ export class RequestDetailsPage {
     chatbubbleOutline,
     chevronBackOutline,
     checkmarkCircleOutline,
+    closeCircleOutline,
     star,
   };
 
@@ -62,12 +72,19 @@ export class RequestDetailsPage {
     void this.loadDetails();
   }
 
-  get isApproved(): boolean {
-    return this.details?.status === 'approved';
+  get showWorkerSection(): boolean {
+    return Boolean(this.details?.worker) && this.details?.status !== 'pending';
   }
 
   get progressSteps(): Array<{ label: string; state: 'done' | 'active' | 'upcoming' }> {
     const status = this.details?.status;
+
+    if (status === 'cancelled') {
+      return [
+        { label: 'Request Submitted', state: 'done' },
+        { label: this.details?.cancellationReason || 'Cancelled', state: 'active' },
+      ];
+    }
 
     if (status === 'completed') {
       return [
@@ -106,16 +123,10 @@ export class RequestDetailsPage {
         return;
       }
 
-      const stateRequest = history.state?.['request'] as RequestDetailsView | undefined;
-      if (stateRequest?.id === requestId) {
-        this.details = stateRequest;
-        return;
-      }
+      const response = await firstValueFrom(this.bookingService.getBookingRequestDetails(requestId));
+      const request = response.data;
 
-      const response = await firstValueFrom(this.bookingService.getBookingRequests());
-      const request = (response.data ?? []).find((item) => item.requestId === requestId);
-
-      if (!request) {
+      if (!request?.requestId) {
         this.loadError = 'Request not found.';
         return;
       }
@@ -128,9 +139,12 @@ export class RequestDetailsPage {
     }
   }
 
-  private mapApiToDetails(request: BookingRequestItem): RequestDetailsView {
+  private mapApiToDetails(request: BookingRequestDetailsItem): RequestDetailsView {
     const normalizedStatus = (request.status ?? '').toUpperCase();
     const status = this.mapStatus(normalizedStatus);
+    const workerName = request.assignedWorker?.name?.trim() || '';
+    const cancellationReason = this.getCancellationReason(normalizedStatus);
+    const cancellationDescription = this.normalizeDescription(request.rejectionReason) ?? this.normalizeDescription(request.description);
 
     return {
       id: request.requestId,
@@ -138,8 +152,21 @@ export class RequestDetailsPage {
       description: request.description?.trim() || 'No description provided.',
       status,
       statusLabel: this.toTitleCase(normalizedStatus || status),
-      timeLabel: 'Today, 4:00 PM',
-      addressLabel: 'Address will be shared once worker is assigned.',
+      timeLabel: this.formatScheduledTime(request.scheduledAt),
+      addressLabel: request.address?.fullAddress?.trim() || 'Address details not available.',
+      worker: workerName
+        ? {
+            name: workerName,
+            rating:
+              typeof request.assignedWorker?.rating === 'number'
+                ? request.assignedWorker.rating.toFixed(1)
+                : 'N/A',
+            phone: request.assignedWorker?.phone ?? null,
+            avatarText: workerName.charAt(0).toUpperCase(),
+          }
+        : null,
+      cancellationReason,
+      cancellationDescription,
     };
   }
 
@@ -152,6 +179,15 @@ export class RequestDetailsPage {
       return 'completed';
     }
 
+    if (
+      status === 'CANCELLED' ||
+      status === 'CANCELLED_BY_ADMIN' ||
+      status === 'CANCELLED_BY_USER' ||
+      status === 'CANCELLLED_BY_USER'
+    ) {
+      return 'cancelled';
+    }
+
     return 'approved';
   }
 
@@ -161,5 +197,46 @@ export class RequestDetailsPage {
       .split('_')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
+  }
+
+  private formatScheduledTime(scheduledAt: string | null): string {
+    if (!scheduledAt) {
+      return 'Time not available';
+    }
+
+    const date = new Date(scheduledAt);
+    if (Number.isNaN(date.getTime())) {
+      return 'Time not available';
+    }
+
+    return new Intl.DateTimeFormat('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    }).format(date);
+  }
+
+  private getCancellationReason(status: string): string | null {
+    if (status === 'CANCELLED_BY_ADMIN') {
+      return 'Cancelled by Admin';
+    }
+
+    if (status === 'CANCELLED_BY_USER' || status === 'CANCELLLED_BY_USER') {
+      return 'Cancelled by User';
+    }
+
+    if (status === 'CANCELLED') {
+      return 'Cancelled';
+    }
+
+    return null;
+  }
+
+  private normalizeDescription(description: string | null | undefined): string | null {
+    const value = description?.trim();
+    return value ? value : null;
   }
 }

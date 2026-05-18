@@ -76,6 +76,25 @@ export class LoginPage {
     }
   }
 
+  async openTermsOfService(): Promise<void> {
+    const url = environment.termsOfServiceUrl;
+
+    try {
+      if (Capacitor.isNativePlatform()) {
+        await Browser.open({
+          url,
+          presentationStyle: 'fullscreen',
+        });
+        return;
+      }
+
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch (error) {
+      console.error('Unable to open terms of service', error);
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  }
+
   private async showSignInErrorPopup(error: unknown): Promise<void> {
     const message = DEBUG ? this.getDetailedErrorMessage(error) : this.getErrorMessage(error);
     const platform = Capacitor.getPlatform();

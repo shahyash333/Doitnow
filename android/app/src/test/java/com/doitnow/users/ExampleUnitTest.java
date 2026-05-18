@@ -1,4 +1,4 @@
-package com.getcapacitor.myapp;
+package com.doitnow.users;
 
 import static org.junit.Assert.*;
 

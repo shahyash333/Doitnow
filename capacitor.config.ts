@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.doitnow.app',
+  appId: 'com.doitnow.users',
   appName: 'HomeHelp',
   webDir: 'www/browser',
   // Backend currently serves over HTTP. This allows Android webview/native HTTP

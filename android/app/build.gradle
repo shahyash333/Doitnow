@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.doitnow.app"
+    namespace "com.doitnow.users"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.doitnow.app"
+        applicationId "com.doitnow.users"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

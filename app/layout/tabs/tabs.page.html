@@ -14,7 +14,10 @@
     </ion-tab-button>
 
     <ion-tab-button tab="alerts" href="/home/alerts" [class.route-active]="activeTab === 'alerts'">
-      <ion-icon [icon]="icons.notificationsOutline"></ion-icon>
+      <div class="alerts-icon-wrap">
+        <ion-icon [icon]="icons.notificationsOutline"></ion-icon>
+        <span class="alerts-badge" *ngIf="unreadCount > 0">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
+      </div>
       <ion-label>Alerts</ion-label>
     </ion-tab-button>
 

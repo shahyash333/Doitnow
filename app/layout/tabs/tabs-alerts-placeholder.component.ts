@@ -8,6 +8,9 @@ import {
   personOutline,
   timeOutline,
 } from 'ionicons/icons';
+import { Observable } from 'rxjs';
+
+import { NotificationsService } from '../../core/services/notifications.service';
 
 interface Notification {
   id: string;
@@ -34,47 +37,26 @@ export class TabsAlertsPlaceholderComponent {
     timeOutline,
   };
 
-  notifications: Notification[] = [
-    {
-      id: '1',
-      title: 'Request Approved',
-      description: 'Your medicine pickup request has been approved. Worker assigned.',
-      timestamp: '2 hours ago',
-      isUnread: true,
-      icon: 'checkmarkCircleOutline',
-      colorClass: 'mint',
-    },
-    {
-      id: '2',
-      title: 'Worker Assigned',
-      description: 'Vijay Kumar will handle your medicine pickup today at 4 PM.',
-      timestamp: '2 hours ago',
-      isUnread: true,
-      icon: 'personOutline',
-      colorClass: 'lavender',
-    },
-    {
-      id: '3',
-      title: 'Service Completed',
-      description: 'Your home cleaning service has been marked as completed.',
-      timestamp: 'Yesterday',
-      isUnread: false,
-      icon: 'timeOutline',
-      colorClass: 'amber',
-    },
-  ];
+  readonly notifications$: Observable<Notification[]>;
 
-  constructor() {
+  constructor(private readonly notificationsService: NotificationsService) {
     addIcons(this.icons);
+    this.notifications$ = this.notificationsService.notifications$ as Observable<Notification[]>;
+  }
+
+  ionViewWillEnter(): void {
+    void this.notificationsService.syncInAppNotifications(true);
   }
 
   get unreadCount(): number {
-    return this.notifications.filter((n) => n.isUnread).length;
+    return this.notificationsService.notifications.filter((n) => n.isUnread).length;
   }
 
   readAll(): void {
-    this.notifications.forEach((notification) => {
-      notification.isUnread = false;
-    });
+    this.notificationsService.markAllAsRead();
+  }
+
+  openNotification(notificationId: string): void {
+    void this.notificationsService.openNotification(notificationId);
   }
 }

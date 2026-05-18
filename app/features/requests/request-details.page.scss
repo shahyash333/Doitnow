@@ -80,6 +80,10 @@
   color: #6b7280;
 }
 
+.status-pill.cancelled {
+  color: #dc2626;
+}
+
 .details-card,
 .progress-card,
 .worker-card {
@@ -213,6 +217,29 @@
 .step-label.done,
 .step-label.active {
   color: #1c233a;
+}
+
+.cancelled-note {
+  margin-top: 14px;
+  border-radius: 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 12px 14px;
+}
+
+.cancelled-note h3 {
+  margin: 0;
+  color: #b91c1c;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.cancelled-note p {
+  margin: 8px 0 0;
+  color: #7f1d1d;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 .worker-row {

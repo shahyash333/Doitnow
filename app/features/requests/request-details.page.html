@@ -8,7 +8,7 @@
         <h1>{{ details.title }}</h1>
       </div>
       <div class="status-pill" [ngClass]="details.status">
-        <ion-icon [icon]="icons.checkmarkCircleOutline"></ion-icon>
+        <ion-icon [icon]="details.status === 'cancelled' ? icons.closeCircleOutline : icons.checkmarkCircleOutline"></ion-icon>
         <span>{{ details.statusLabel }}</span>
       </div>
     </div>
@@ -62,25 +62,30 @@
           <div class="step-label" [ngClass]="step.state">{{ step.label }}</div>
         </div>
       </div>
+
+      <div class="cancelled-note" *ngIf="details.status === 'cancelled'">
+        <h3>{{ details.cancellationReason || 'Cancelled' }}</h3>
+        <p *ngIf="details.cancellationDescription">{{ details.cancellationDescription }}</p>
+      </div>
     </section>
 
-    <section class="worker-card" *ngIf="isApproved">
+    <section class="worker-card" *ngIf="showWorkerSection">
       <div class="section-head">
         <h2>Assigned Worker</h2>
       </div>
 
       <div class="worker-row">
-        <div class="avatar">V</div>
+        <div class="avatar">{{ details.worker?.avatarText }}</div>
         <div class="worker-main">
-          <h3>Vijay Kumar</h3>
+          <h3>{{ details.worker?.name }}</h3>
           <div class="rating-row">
             <ion-icon [icon]="icons.star"></ion-icon>
-            <span>4.8</span>
+            <span>{{ details.worker?.rating }}</span>
           </div>
         </div>
 
         <div class="worker-actions">
-          <button type="button" aria-label="Call worker">
+          <button type="button" aria-label="Call worker" [disabled]="!details.worker?.phone">
             <ion-icon [icon]="icons.callOutline"></ion-icon>
           </button>
           <button type="button" aria-label="Message worker">

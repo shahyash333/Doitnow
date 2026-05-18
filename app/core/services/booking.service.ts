@@ -20,6 +20,35 @@ export interface BookingRequestItem {
   status: string;
   serviceName: string;
   description: string | null;
+  rejectionReason?: string | null;
+}
+
+export interface BookingRequestDetailsWorker {
+  id: string;
+  name: string;
+  rating: number | null;
+  avatarUrl: string | null;
+  phone: string | null;
+}
+
+export interface BookingRequestDetailsAddress {
+  fullAddress: string | null;
+}
+
+export interface BookingRequestDetailsItem {
+  requestId: string;
+  status: string;
+  serviceName: string;
+  description: string | null;
+  rejectionReason?: string | null;
+  scheduledAt: string | null;
+  address: BookingRequestDetailsAddress | null;
+  assignedWorker: BookingRequestDetailsWorker | null;
+}
+
+export interface BookingRequestDetailsResponse {
+  message: string;
+  data: BookingRequestDetailsItem;
 }
 
 export interface BookingRequestsResponse {
@@ -38,6 +67,20 @@ export interface BookingRequestsQueryParams {
   filter?: 'all' | 'pending' | 'approved' | 'completed';
   page?: number;
   limit?: number;
+}
+
+export interface CancelBookingRequestPayload {
+  reason?: string;
+}
+
+export interface CancelBookingRequestResponse {
+  message: string;
+  data: {
+    requestId: string;
+    status: string;
+    rejectionReason: string | null;
+    cancelledAt: string;
+  };
 }
 
 @Injectable({
@@ -67,5 +110,19 @@ export class BookingService extends BaseService {
     return this.http.get<BookingRequestsResponse>(`${environment.apiUrl}/booking/requests`, {
       params: queryParams,
     });
+  }
+
+  getBookingRequestDetails(requestId: string): Observable<BookingRequestDetailsResponse> {
+    return this.http.get<BookingRequestDetailsResponse>(`${environment.apiUrl}/booking/requests/${requestId}`);
+  }
+
+  cancelBookingRequest(
+    requestId: string,
+    payload: CancelBookingRequestPayload,
+  ): Observable<CancelBookingRequestResponse> {
+    return this.http.patch<CancelBookingRequestResponse>(
+      `${environment.apiUrl}/booking/requests/${requestId}/cancel`,
+      payload,
+    );
   }
 }

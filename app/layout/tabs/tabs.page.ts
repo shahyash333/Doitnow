@@ -8,6 +8,7 @@ import {
   receiptOutline,
 } from 'ionicons/icons';
 import { Subject, filter, takeUntil } from 'rxjs';
+import { NotificationsService } from '../../core/services/notifications.service';
 
 @Component({
   selector: 'app-tabs',
@@ -19,6 +20,7 @@ export class TabsPage implements OnDestroy {
 
   hideTabBar = false;
   activeTab: 'home' | 'requests' | 'alerts' | 'profile' | null = null;
+  unreadCount = 0;
 
   readonly icons = {
     homeOutline,
@@ -27,7 +29,10 @@ export class TabsPage implements OnDestroy {
     receiptOutline,
   };
 
-  constructor(private readonly router: Router) {
+  constructor(
+    private readonly router: Router,
+    private readonly notificationsService: NotificationsService,
+  ) {
     addIcons(this.icons);
     this.updateRouteState(this.router.url);
 
@@ -39,6 +44,10 @@ export class TabsPage implements OnDestroy {
       .subscribe((event) => {
         this.updateRouteState(event.urlAfterRedirects);
       });
+
+    this.notificationsService.unreadCount$.pipe(takeUntil(this.destroy$)).subscribe((count) => {
+      this.unreadCount = count;
+    });
   }
 
   ngOnDestroy(): void {

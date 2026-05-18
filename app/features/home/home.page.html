@@ -19,6 +19,9 @@
         (click)="openNotifications()"
       >
         <ion-icon [icon]="icons.notificationsOutline"></ion-icon>
+        <span class="notification-badge" *ngIf="unreadNotificationsCount > 0">
+          {{ unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount }}
+        </span>
       </button>
     </div>
 

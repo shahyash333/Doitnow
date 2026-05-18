@@ -1,4 +1,4 @@
-package com.doitnow.app;
+package com.doitnow.users;
 
 import com.getcapacitor.BridgeActivity;
 

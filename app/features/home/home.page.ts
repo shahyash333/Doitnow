@@ -19,6 +19,7 @@ import {
 import { Address } from '../../core/models/address.model';
 import { AddressService } from '../../core/services/address.service';
 import { CatalogService, CatalogServiceItem } from '../../core/services/catalog.service';
+import { NotificationsService } from '../../core/services/notifications.service';
 import { AddressModalComponent } from '../../shared/components/address-modal/address-modal.component';
 
 @Component({
@@ -50,6 +51,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   catalogLoadError = '';
   addresses: Address[] = [];
   selectedAddress: Address | null = null;
+  unreadNotificationsCount = 0;
 
   popularServices: CatalogServiceItem[] = [];
   otherServices: CatalogServiceItem[] = [];
@@ -92,6 +94,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     private readonly modalController: ModalController,
     private readonly addressService: AddressService,
     private readonly catalogService: CatalogService,
+    private readonly notificationsService: NotificationsService,
   ) {
     addIcons(this.icons);
   }
@@ -106,6 +109,12 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions.add(
       this.addressService.selectedAddress$.subscribe((selectedAddress) => {
         this.selectedAddress = selectedAddress;
+      }),
+    );
+
+    this.subscriptions.add(
+      this.notificationsService.unreadCount$.subscribe((count) => {
+        this.unreadNotificationsCount = count;
       }),
     );
 

@@ -7,6 +7,7 @@ ion-tab-bar {
   padding-bottom: calc(6px + env(safe-area-inset-bottom));
   box-shadow: 0 -4px 14px rgba(34, 42, 70, 0.06);
   z-index: 10;
+  overflow: visible;
 }
 
 ion-tab-bar.hidden {
@@ -18,6 +19,7 @@ ion-tab-button {
   min-height: 56px;
   font-weight: 600;
   color: #78809a;
+  overflow: visible;
 }
 
 ion-tab-button.route-active {
@@ -31,6 +33,29 @@ ion-tab-button.tab-selected:not(.route-active) {
 
 ion-tab-button ion-icon {
   font-size: 22px;
+}
+
+.alerts-icon-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alerts-badge {
+  position: absolute;
+  top: -5px;
+  right: -14px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
 }
 
 ion-tab-button ion-label {

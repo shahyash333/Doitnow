@@ -75,6 +75,12 @@
   display: flex;
   gap: 14px;
   box-shadow: 0 12px 24px rgba(25, 33, 61, 0.08);
+  cursor: pointer;
+}
+
+.notification-card.unread {
+  border-color: #d8ddff;
+  box-shadow: 0 14px 28px rgba(42, 58, 128, 0.12);
 }
 
 .icon-circle {
@@ -104,6 +110,11 @@
 .amber {
   background: #fff1d9;
   color: #e09b2d;
+}
+
+.rose {
+  background: #fee2e2;
+  color: #dc2626;
 }
 
 .notification-text {
@@ -142,6 +153,10 @@
 .notification-time {
   font-size: 13px;
   color: #9aa0b2;
+}
+
+.empty-card {
+  cursor: default;
 }
 
 @media (max-width: 480px) {

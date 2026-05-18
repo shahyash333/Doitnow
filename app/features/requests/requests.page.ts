@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { InfiniteScrollCustomEvent, ToastController } from '@ionic/angular';
+import { AlertController, InfiniteScrollCustomEvent, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import {
   buildOutline,
   carOutline,
   checkmarkCircleOutline,
+  closeCircleOutline,
   medicalOutline,
   sparklesOutline,
   starOutline,
@@ -19,6 +20,7 @@ import {
   BookingRequestsQueryParams,
   BookingService,
 } from '../../core/services/booking.service';
+import { NotificationsService } from '../../core/services/notifications.service';
 
 type RequestFilter = 'all' | 'pending' | 'approved' | 'completed';
 
@@ -28,7 +30,7 @@ interface Request {
   description: string;
   icon: keyof RequestsPage['icons'];
   colorClass: string;
-  status: 'pending' | 'approved' | 'completed';
+  status: 'pending' | 'approved' | 'completed' | 'cancelled';
   statusLabel: string;
   statusIcon: keyof RequestsPage['icons'];
 }
@@ -48,11 +50,13 @@ export class RequestsPage {
   private readonly pageSize = 10;
   private currentPage = 1;
   private latestLoadRequestId = 0;
+  private cancellingRequestId: string | null = null;
 
   readonly icons = {
     buildOutline,
     carOutline,
     checkmarkCircleOutline,
+    closeCircleOutline,
     medicalOutline,
     sparklesOutline,
     starOutline,
@@ -81,6 +85,8 @@ export class RequestsPage {
     private readonly router: Router,
     private readonly bookingService: BookingService,
     private readonly toastController: ToastController,
+    private readonly alertController: AlertController,
+    private readonly notificationsService: NotificationsService,
   ) {
     addIcons(this.icons);
   }
@@ -106,9 +112,20 @@ export class RequestsPage {
     });
   }
 
-  performAction(request: Request): void {
-    console.log('Action for:', request);
-    // Handle cancel or rebook
+  get isCancellingAnyRequest(): boolean {
+    return Boolean(this.cancellingRequestId);
+  }
+
+  isCancellingRequest(requestId: string): boolean {
+    return this.cancellingRequestId === requestId;
+  }
+
+  async performAction(request: Request): Promise<void> {
+    if (request.status !== 'pending' || this.cancellingRequestId) {
+      return;
+    }
+
+    await this.openCancelConfirmation(request);
   }
 
   retryLoad(): void {
@@ -195,7 +212,14 @@ export class RequestsPage {
       colorClass: this.mapColorClass(request.serviceName),
       status,
       statusLabel: this.toTitleCase(normalizedStatus || status),
-      statusIcon: status === 'pending' ? 'timeOutline' : status === 'completed' ? 'starOutline' : 'checkmarkCircleOutline',
+      statusIcon:
+        status === 'pending'
+          ? 'timeOutline'
+          : status === 'completed'
+            ? 'starOutline'
+            : status === 'cancelled'
+              ? 'closeCircleOutline'
+              : 'checkmarkCircleOutline',
     };
   }
 
@@ -206,6 +230,15 @@ export class RequestsPage {
 
     if (status === 'COMPLETED') {
       return 'completed';
+    }
+
+    if (
+      status === 'CANCELLED' ||
+      status === 'CANCELLED_BY_ADMIN' ||
+      status === 'CANCELLED_BY_USER' ||
+      status === 'CANCELLLED_BY_USER'
+    ) {
+      return 'cancelled';
     }
 
     return 'approved';
@@ -269,5 +302,97 @@ export class RequestsPage {
       color: 'success',
     });
     await toast.present();
+  }
+
+  private async openCancelConfirmation(request: Request): Promise<void> {
+    const alert = await this.alertController.create({
+      header: 'Cancel this request?',
+      subHeader: 'This action cannot be undone.',
+      message: 'You can optionally share a reason for cancellation.',
+      cssClass: 'cancel-request-alert',
+      inputs: [
+        {
+          name: 'reason',
+          type: 'textarea',
+          placeholder: 'Optional reason (max 500 characters)',
+          attributes: {
+            maxlength: 500,
+          },
+        },
+      ],
+      buttons: [
+        {
+          text: 'Keep Request',
+          role: 'cancel',
+        },
+        {
+          text: 'Cancel Request',
+          role: 'destructive',
+          handler: (data: { reason?: string }) => {
+            void this.confirmCancelRequest(request.id, data.reason);
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  private async confirmCancelRequest(requestId: string, reason?: string): Promise<void> {
+    const trimmedReason = reason?.trim() ?? '';
+    const payload = trimmedReason ? { reason: trimmedReason } : {};
+
+    this.cancellingRequestId = requestId;
+
+    try {
+      const response = await firstValueFrom(this.bookingService.cancelBookingRequest(requestId, payload));
+      const normalizedStatus = (response.data?.status ?? 'CANCELLED_BY_USER').toUpperCase();
+      const status = this.mapStatus(normalizedStatus);
+      const statusLabel = this.toTitleCase(normalizedStatus);
+
+      this.requests = this.requests.map((request) =>
+        request.id === requestId
+          ? {
+              ...request,
+              status,
+              statusLabel,
+              statusIcon: 'closeCircleOutline',
+            }
+          : request,
+      );
+      const cancelledRequest = this.requests.find((request) => request.id === requestId);
+      this.notificationsService.addLocalBookingStatusNotification({
+        bookingId: requestId,
+        status: normalizedStatus,
+        serviceName: cancelledRequest?.title ?? null,
+        rejectionReason: response.data?.rejectionReason ?? null,
+      });
+
+      const toast = await this.toastController.create({
+        message: response.message || 'Request cancelled successfully.',
+        duration: 2200,
+        position: 'bottom',
+        color: 'success',
+      });
+      await toast.present();
+
+      if (this.activeTab !== 'all' && this.activeTab !== 'pending') {
+        void this.loadRequests({ reset: true });
+      }
+    } catch (error: unknown) {
+      const message =
+        error instanceof HttpErrorResponse
+          ? error.error?.message || 'Unable to cancel request right now.'
+          : 'Unable to cancel request right now.';
+      const toast = await this.toastController.create({
+        message,
+        duration: 2400,
+        position: 'bottom',
+        color: 'danger',
+      });
+      await toast.present();
+    } finally {
+      this.cancellingRequestId = null;
+    }
   }
 }
