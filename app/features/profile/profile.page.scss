@@ -5,7 +5,7 @@ ion-content.profile-page {
 .hero {
   background: linear-gradient(135deg, #4a2bdc 0%, #6e2cd9 45%, #b43a96 75%, #ef6a3b 100%);
   color: #ffffff;
-  padding: 28px 22px 84px;
+  padding: calc(env(safe-area-inset-top) + 28px) 22px 84px;
   border-bottom-left-radius: 34px;
   border-bottom-right-radius: 34px;
   position: relative;
@@ -150,6 +150,23 @@ ion-content.profile-page {
   font-size: 22px;
   font-weight: 700;
   color: #1e1f2e;
+  line-height: 1.2;
+  min-height: 27px;
+}
+
+.stat-value--empty {
+  color: #9aa0b3;
+}
+
+.stat-value--text {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  max-width: 92px;
+}
+
+.stats-card--loading .stat-value {
+  opacity: 0.55;
 }
 
 .stat-label {
@@ -191,7 +208,8 @@ ion-content.profile-page {
   cursor: pointer;
 }
 
-.request-history-item {
+.request-history-item,
+.help-support-item {
   cursor: pointer;
 }
 

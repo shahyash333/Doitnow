@@ -1,37 +1,53 @@
-<ion-header class="address-modal-header ion-no-border">
-  <ion-toolbar>
-    <div class="address-modal-handle" aria-hidden="true"></div>
-    <div class="address-modal-top">
-      <div class="address-modal-heading">
-        <ion-title>{{ currentView === 'list' ? 'Select Address' : (editingAddress ? 'Edit Address' : 'Add Address') }}</ion-title>
+<div class="ion-page address-modal-page">
+  <ion-header class="address-modal-header ion-no-border">
+    <ion-toolbar>
+      <div class="address-modal-top">
+        <div class="address-modal-heading">
+          <ion-title>{{
+            currentView === 'list' ? 'Select Address' : editingAddress ? 'Edit Address' : 'Add Address'
+          }}</ion-title>
+          <p class="address-modal-subtitle" *ngIf="currentView === 'form'">
+            {{ editingAddress ? 'Update where we should visit.' : 'Tell us where to send help.' }}
+          </p>
+        </div>
+        <ion-button class="close-btn" fill="clear" (click)="close()">
+          <ion-icon slot="icon-only" [icon]="icons.closeOutline"></ion-icon>
+        </ion-button>
       </div>
-      <ion-button class="close-btn" fill="clear" (click)="close()">
-        <ion-icon slot="icon-only" [icon]="icons.closeOutline"></ion-icon>
-      </ion-button>
-    </div>
-  </ion-toolbar>
-</ion-header>
+    </ion-toolbar>
+  </ion-header>
 
-<ion-content class="address-modal-content">
-  <section class="body-wrap">
-    <app-address-list
-      *ngIf="currentView === 'list'"
-      [addresses]="addresses"
-      [selectedAddressId]="selectedAddress?.id ?? null"
-      [isBusy]="isBusy"
-      (select)="onSelectAddress($event)"
-      (edit)="openEditForm($event)"
-      (remove)="onDeleteAddress($event)"
-      (add)="openAddForm()"
-    ></app-address-list>
+  <ion-content class="address-modal-content" [scrollY]="true">
+    <section class="body-wrap">
+      <app-address-list
+        *ngIf="currentView === 'list'"
+        [addresses]="addresses"
+        [selectedAddressId]="selectedAddress?.id ?? null"
+        [isBusy]="isBusy"
+        (select)="onSelectAddress($event)"
+        (edit)="openEditForm($event)"
+        (remove)="onDeleteAddress($event)"
+        (add)="openAddForm()"
+      ></app-address-list>
 
-    <app-address-form
-      *ngIf="currentView === 'form'"
-      [mode]="editingAddress ? 'edit' : 'add'"
-      [initialAddress]="editingAddress"
-      [isSubmitting]="isBusy"
-      (save)="onSaveAddress($event)"
-      (cancel)="onCancelForm()"
-    ></app-address-form>
-  </section>
-</ion-content>
+      <app-address-form
+        *ngIf="currentView === 'form'"
+        #addressForm
+        [mode]="editingAddress ? 'edit' : 'add'"
+        [initialAddress]="editingAddress"
+        [isSubmitting]="isBusy"
+        (save)="onSaveAddress($event)"
+      ></app-address-form>
+    </section>
+  </ion-content>
+
+  <footer class="address-modal-footer" *ngIf="currentView === 'form'">
+    <button class="footer-btn footer-btn--secondary" type="button" [disabled]="isBusy" (click)="onCancelForm()">
+      Cancel
+    </button>
+    <button class="footer-btn footer-btn--primary" type="button" [disabled]="isBusy" (click)="submitForm()">
+      <ion-spinner *ngIf="isBusy" name="crescent"></ion-spinner>
+      <span *ngIf="!isBusy">{{ editingAddress ? 'Update Address' : 'Save Address' }}</span>
+    </button>
+  </footer>
+</div>

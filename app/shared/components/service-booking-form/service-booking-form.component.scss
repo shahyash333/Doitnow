@@ -1,440 +1,342 @@
-.booking-form-shell {
-  padding: 14px 14px calc(20px + env(safe-area-inset-bottom));
+.booking-layout {
+  min-height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
-.step-card {
-  margin: 0;
+.booking-layout__content {
+  flex: 1;
+  padding: 14px 14px calc(176px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.price-hero {
+  border-radius: 22px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, #4f2dff 0%, #7a2fda 55%, #ef4d75 100%);
+  color: #ffffff;
+  box-shadow: 0 14px 28px rgba(79, 45, 255, 0.22);
+}
+
+.price-hero__service {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  opacity: 0.92;
+}
+
+.price-hero__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.price-hero__row span {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+}
+
+.price-hero__row strong {
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.price-hero__meta {
+  margin: 8px 0 0;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.flow-card {
   border-radius: 20px;
   border: 1px solid #eceef6;
-  box-shadow: 0 8px 20px rgba(23, 27, 54, 0.06);
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(23, 27, 54, 0.05);
+  padding: 14px;
 }
 
-.step-title {
-  padding: 12px 14px 6px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
+.flow-card--invalid {
+  border-color: rgba(217, 72, 98, 0.35);
 }
 
-.step-title__left {
+.flow-card--notes {
+  padding-bottom: 16px;
+  margin-bottom: 8px;
+}
+
+.flow-card__head {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-width: 0;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
-.step-copy {
-  min-width: 0;
-}
-
-.step-note {
-  margin-top: 2px;
-  color: #7a829d;
-  font-size: 12px;
-  font-weight: 700;
-  text-align: right;
-  white-space: nowrap;
-}
-
-.step-card ion-card-title {
+.flow-card__head h2 {
+  margin: 0;
   font-size: 17px;
   font-weight: 900;
   color: #1b2240;
 }
 
-.step-card ion-card-subtitle {
-  margin-top: 1px;
-  color: #68708c;
+.flow-card__head p {
+  margin: 2px 0 0;
   font-size: 13px;
-  font-weight: 700;
-  text-transform: none;
+  color: #7a829d;
+  font-weight: 600;
 }
 
-.step-badge {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #5f38ff 0%, #8d45ff 100%);
-  color: #ffffff;
+.flow-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
   display: grid;
   place-items: center;
-  font-size: 15px;
-  font-weight: 800;
   flex-shrink: 0;
 }
 
-.step-badge.amber {
-  background: #ffcf78;
-  color: #7c4a05;
+.flow-icon ion-icon {
+  font-size: 18px;
 }
 
-.step-badge.mint {
-  background: #b9efe1;
+.flow-icon.violet {
+  background: rgba(95, 56, 255, 0.12);
+  color: #5f38ff;
+}
+
+.flow-icon.amber {
+  background: rgba(255, 196, 77, 0.2);
+  color: #9a6400;
+}
+
+.flow-icon.mint {
+  background: rgba(35, 199, 99, 0.14);
   color: #157c62;
 }
 
-.step-card ion-card-content {
-  padding: 6px 14px 14px;
-}
-
 .date-trigger {
-  --background: #f7f5ff;
-  --border-radius: 16px;
-  border: 1.5px solid #6a3fff;
-  border-radius: 16px;
+  --background: #f7f8fc;
+  --border-radius: 14px;
+  margin-bottom: 12px;
 }
 
-.date-popover {
-  --width: min(340px, calc(100vw - 32px));
+.date-trigger h3 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1b2240;
 }
 
-.date-popover__content {
-  --background: #ffffff;
-  --padding-top: 10px;
-  --padding-bottom: 10px;
-  --padding-start: 10px;
-  --padding-end: 10px;
-}
-
-.date-trigger ion-icon {
-  color: #5f38ff;
-  font-size: 20px;
-}
-
-.date-trigger ion-label h3,
-.summary-item ion-label h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 900;
-  color: #20284a;
-}
-
-.date-trigger ion-label p,
-.summary-item ion-label p {
-  margin: 4px 0 0;
-  color: #6c7490;
-  font-size: 13px;
+.date-trigger p {
+  font-size: 12px;
+  color: #7a829d;
 }
 
 .time-slot-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .time-slot-chip {
-  border: 1px solid #e1e6f5;
-  border-radius: 16px;
-  background: #f7f8fc;
-  color: #3a4260;
-  min-height: 72px;
-  padding: 12px 10px;
+  border: 1px solid #e7eaf3;
+  border-radius: 14px;
+  background: #fafbff;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
+  gap: 4px;
   text-align: left;
-  transition:
-    transform 0.16s ease,
-    border-color 0.16s ease,
-    background 0.16s ease,
-    box-shadow 0.16s ease;
 }
 
-.time-slot-chip__top {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+.time-slot-chip ion-icon {
+  font-size: 18px;
+  color: #5f38ff;
 }
 
-.time-slot-chip__icon-wrap {
-  width: 28px;
-  height: 28px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, rgba(95, 56, 255, 0.12) 0%, rgba(217, 70, 239, 0.12) 100%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+.time-slot-chip.selected {
+  border-color: #6f55ff;
+  background: rgba(111, 85, 255, 0.08);
 }
 
-.time-slot-chip__icon {
-  font-size: 16px;
-  color: #4a35da;
-}
-
-.time-slot-chip__badge {
-  display: inline-flex;
-  align-items: center;
-  min-height: 22px;
-  padding: 0 8px;
-  border-radius: 999px;
-  background: rgba(95, 56, 255, 0.1);
-  color: #4a35da;
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-
-.time-slot-chip__check {
-  margin-left: auto;
-  font-size: 16px;
-  color: #4a35da;
+.time-slot-chip--asap.selected {
+  border-color: #ef4d75;
+  background: rgba(239, 77, 117, 0.08);
 }
 
 .time-slot-chip__label {
   font-size: 14px;
-  font-weight: 900;
-  color: #20284a;
+  font-weight: 800;
+  color: #1b2240;
 }
 
 .time-slot-chip__meta {
-  margin-top: 4px;
   font-size: 12px;
-  line-height: 1.35;
-  color: #6c7490;
-  font-weight: 700;
+  color: #7a829d;
 }
 
-.time-slot-chip.selected {
-  border-color: #5f38ff;
-  background: linear-gradient(135deg, rgba(95, 56, 255, 0.1) 0%, rgba(217, 70, 239, 0.1) 100%);
-  box-shadow: 0 8px 18px rgba(95, 56, 255, 0.14);
+.options-row {
+  width: 100%;
+  border: 1px dashed #d5daea;
+  border-radius: 14px;
+  background: #fafbff;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
 }
 
-.time-slot-chip--asap {
-  background: linear-gradient(135deg, #fff8eb 0%, #fff4fb 100%);
-  border-color: #f1d8ff;
+.options-row--invalid {
+  border-color: rgba(217, 72, 98, 0.45);
+  background: rgba(217, 72, 98, 0.04);
 }
 
-.time-slot-chip.selected .time-slot-chip__label {
-  color: #3f2ccf;
-}
-
-.time-slot-chip.selected .time-slot-chip__meta {
-  color: #564f86;
-}
-
-.time-slot-chip.selected .time-slot-chip__badge {
-  background: rgba(95, 56, 255, 0.16);
-}
-
-.time-slot-chip.selected .time-slot-chip__icon-wrap {
-  background: linear-gradient(135deg, rgba(95, 56, 255, 0.18) 0%, rgba(217, 70, 239, 0.18) 100%);
-}
-
-.time-slot-chip:active {
-  transform: scale(0.98);
-}
-
-.time-detail {
-  margin-top: 12px;
-  text-align: center;
+.options-row__copy {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  color: #39405c;
+  gap: 2px;
+  min-width: 0;
 }
 
-.time-detail strong {
-  font-size: 16px;
-  font-weight: 900;
+.options-row__copy strong {
+  font-size: 14px;
+  color: #1b2240;
 }
 
-.time-detail span {
-  font-size: 13px;
-  color: #6c7490;
-  font-weight: 700;
-}
-
-.selected-address {
-  border: 1px solid #dce4f7;
-  border-radius: 16px;
-  padding: 12px;
-  margin-bottom: 12px;
-  background: #fbfcff;
-}
-
-.address-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.address-head h3 {
-  margin: 0;
-  color: #1e2749;
-  font-size: 15px;
-  font-weight: 900;
-}
-
-.address-head p {
-  margin: 4px 0 0;
-  color: #5d6788;
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-.address-head small {
-  margin-top: 4px;
-  display: inline-block;
-  color: #303a5c;
+.options-row__copy span {
   font-size: 12px;
+  color: #5f38ff;
   font-weight: 700;
 }
 
-.address-change-btn {
+.options-row ion-icon {
+  color: #9aa0b3;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.inline-error {
+  margin: 10px 0 0;
+  color: #d94862;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.selected-address h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #1b2240;
+}
+
+.selected-address p {
+  margin: 0;
+  color: #5d6478;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.selected-address small {
+  display: block;
+  margin-top: 6px;
+  color: #7a829d;
+  font-size: 13px;
+}
+
+.text-btn {
   margin-top: 10px;
   border: 0;
-  background: #eaf2ff;
-  color: #1a56b7;
-  border-radius: 999px;
-  padding: 8px 12px;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.summary-item {
-  --background: #ffffff;
-  --border-radius: 16px;
-  border: 1px solid #e2e6f3;
-  border-radius: 16px;
-  margin-bottom: 12px;
-}
-
-.summary-item ion-note {
-  font-weight: 900;
-  color: #1b2240;
-}
-
-.note-item {
-  --background: #ffffff;
-  --border-radius: 16px;
-  border: 1px solid #e2e6f3;
-  border-radius: 16px;
-  margin-bottom: 12px;
-}
-
-.note-item ion-textarea {
-  --padding-top: 10px;
-  --padding-bottom: 10px;
+  background: transparent;
+  color: #5f38ff;
   font-size: 14px;
-}
-
-.note-item ion-label {
   font-weight: 800;
-  color: #1b2240;
-}
-
-.request-btn {
-  margin-top: 6px;
-  --background: linear-gradient(135deg, #5737f8 0%, #bc3af4 100%);
-  --box-shadow: 0 10px 20px rgba(94, 56, 255, 0.24);
-  font-weight: 900;
+  padding: 0;
 }
 
 .missing-address {
-  border: 1px dashed #cfd7ef;
-  border-radius: 16px;
+  border-radius: 14px;
+  border: 1px dashed #d5daea;
+  background: #fafbff;
   padding: 16px;
   text-align: center;
-  background: #f9fbff;
 }
 
 .missing-address ion-icon {
-  font-size: 26px;
-  color: #1860c6;
-}
-
-.missing-address h3 {
-  margin: 8px 0 0;
-  color: #1f284a;
-  font-size: 17px;
-  font-weight: 900;
+  font-size: 28px;
+  color: #5f38ff;
+  margin-bottom: 8px;
 }
 
 .missing-address p {
-  margin: 8px 0 14px;
-  color: #596283;
-  font-size: 13px;
+  margin: 0 0 12px;
+  color: #6d7590;
+  font-size: 14px;
 }
 
 .missing-address button {
   border: 0;
   border-radius: 999px;
-  background: #1f63ce;
+  background: #5f38ff;
   color: #ffffff;
-  min-height: 40px;
-  padding: 0 18px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
+  padding: 10px 16px;
 }
 
-.starting-price {
-  margin: 10px 0 0;
-  text-align: center;
-  color: #5f6681;
+.notes-input {
+  --background: #f7f8fc;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  border-radius: 14px;
+}
+
+.booking-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1px solid #eceef6;
+  backdrop-filter: blur(10px);
+}
+
+.booking-footer__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.booking-footer__summary span {
+  color: #7a829d;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
-@media (max-width: 480px) {
-  .booking-form-shell {
-    padding-top: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
+.booking-footer__summary strong {
+  font-size: 22px;
+  color: #1b2240;
+}
 
-  .step-card {
-    border-radius: 16px;
-  }
+.booking-footer__hint {
+  margin: 0 0 8px;
+  color: #d94862;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
 
-  .step-title {
-    padding: 10px 12px 4px;
-    gap: 8px;
-  }
-
-  .step-card ion-card-content {
-    padding: 6px 12px 12px;
-  }
-
-  .step-note {
-    font-size: 11px;
-  }
-
-  .step-card ion-card-title {
-    font-size: 16px;
-  }
-
-  .step-card ion-card-subtitle {
-    font-size: 12px;
-  }
-
-  .time-slot-grid {
-    gap: 8px;
-  }
-
-  .time-slot-chip {
-    min-height: 68px;
-    padding: 10px 8px;
-  }
-
-  .time-slot-chip__top {
-    margin-bottom: 6px;
-  }
-
-  .time-slot-chip__label {
-    font-size: 13px;
-  }
-
-  .time-slot-chip__meta {
-    font-size: 11px;
-  }
+.date-popover__content {
+  --background: #ffffff;
 }

@@ -6,6 +6,25 @@ import { map, shareReplay } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { BaseService } from './base.service';
 
+export interface ServiceAddonItem {
+  id: string;
+  label: string;
+  description: string | null;
+  price: number;
+  currency: string;
+}
+
+export interface ServiceAddonGroup {
+  id: string;
+  title: string;
+  helpText: string | null;
+  selectionType: 'SINGLE' | 'MULTI';
+  minSelection: number;
+  maxSelection: number | null;
+  isRequired: boolean;
+  addons: ServiceAddonItem[];
+}
+
 export interface CatalogServiceItem {
   id: string;
   slug: string;
@@ -21,6 +40,7 @@ export interface CatalogServiceItem {
   colorClass: string | null;
   tag: string | null;
   isPopular: boolean;
+  addonGroups: ServiceAddonGroup[];
 }
 
 export interface CatalogResponse {

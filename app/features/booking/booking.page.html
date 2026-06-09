@@ -13,10 +13,11 @@
     [serviceSlug]="selectedService?.slug ?? null"
     [serviceName]="serviceName"
     [startingPrice]="startingPrice"
+    [addonGroups]="addonGroups"
     [selectedAddress]="selectedAddress"
     [isSubmitting]="isSubmitting"
-    (changeAddress)="openAddressModal()"
-    (addAddress)="openAddressModal()"
+    (changeAddress)="openAddressModal('list')"
+    (addAddress)="openAddressModal('add')"
     (requestService)="onRequestService($event)"
   ></app-service-booking-form>
 </ion-content>

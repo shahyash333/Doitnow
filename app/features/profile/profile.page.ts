@@ -1,4 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
+import { ViewWillEnter } from '@ionic/angular';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Browser } from '@capacitor/browser';
@@ -27,6 +28,7 @@ import { Subscription, firstValueFrom } from 'rxjs';
 import { Address } from '../../core/models/address.model';
 import { AddressService } from '../../core/services/address.service';
 import { AuthService, AuthUser } from '../../core/services/auth.service';
+import { ProfileService } from '../../core/services/profile.service';
 import { AddressModalComponent } from '../../shared/components/address-modal/address-modal.component';
 import { environment } from '../../../environments/environment';
 
@@ -35,13 +37,18 @@ import { environment } from '../../../environments/environment';
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
 })
-export class ProfilePage implements OnDestroy {
+export class ProfilePage implements OnDestroy, ViewWillEnter {
   isLoggingOut = false;
   user: AuthUser | null = null;
   isSavingPhone = false;
   isAddressBusy = false;
   isSavedAddressesExpanded = false;
   hasAvatarLoadError = false;
+  isStatsLoading = false;
+  completedCount: number | null = null;
+  pendingCount: number | null = null;
+  rating: number | null = null;
+  totalRequests: number | null = null;
   addresses: Address[] = [];
   private readonly subscriptions = new Subscription();
 
@@ -70,6 +77,7 @@ export class ProfilePage implements OnDestroy {
     private readonly modalController: ModalController,
     private readonly toastController: ToastController,
     private readonly alertController: AlertController,
+    private readonly profileService: ProfileService,
   ) {
     addIcons(this.icons);
     this.user = this.authService.getCurrentUser();
@@ -201,8 +209,84 @@ export class ProfilePage implements OnDestroy {
     this.isSavedAddressesExpanded = !this.isSavedAddressesExpanded;
   }
 
+  ionViewWillEnter(): void {
+    void this.loadProfileSummary();
+  }
+
   openRequestHistory(): void {
     void this.router.navigate(['/home/requests']);
+  }
+
+  openHelpSupport(): void {
+    void this.router.navigate(['/home/profile/help-support']);
+  }
+
+  get completedDisplay(): string {
+    if (this.completedCount === null) {
+      return '—';
+    }
+
+    return this.completedCount > 0 ? String(this.completedCount) : 'None';
+  }
+
+  get pendingDisplay(): string {
+    if (this.pendingCount === null) {
+      return '—';
+    }
+
+    return this.pendingCount > 0 ? String(this.pendingCount) : 'None';
+  }
+
+  get ratingDisplay(): string {
+    if (this.rating === null) {
+      return 'Not rated yet';
+    }
+
+    return this.rating > 0 ? this.rating.toFixed(1) : 'Not rated yet';
+  }
+
+  get requestHistorySubtitle(): string {
+    if (this.totalRequests === null) {
+      return 'Loading...';
+    }
+
+    if (this.totalRequests === 0) {
+      return 'No requests yet';
+    }
+
+    return this.totalRequests === 1 ? '1 total' : `${this.totalRequests} total`;
+  }
+
+  get isCompletedEmpty(): boolean {
+    return this.completedCount === 0;
+  }
+
+  get isPendingEmpty(): boolean {
+    return this.pendingCount === 0;
+  }
+
+  get isRatingEmpty(): boolean {
+    return this.rating === null || this.rating <= 0;
+  }
+
+  private async loadProfileSummary(): Promise<void> {
+    this.isStatsLoading = true;
+
+    try {
+      const response = await firstValueFrom(this.profileService.getProfileSummary());
+      const summary = response.data;
+      this.completedCount = summary.completedCount ?? 0;
+      this.pendingCount = summary.pendingCount ?? 0;
+      this.rating = typeof summary.rating === 'number' ? summary.rating : null;
+      this.totalRequests = summary.totalRequests ?? 0;
+    } catch {
+      this.completedCount = 0;
+      this.pendingCount = 0;
+      this.rating = null;
+      this.totalRequests = 0;
+    } finally {
+      this.isStatsLoading = false;
+    }
   }
 
   async openAboutUs(): Promise<void> {
@@ -211,7 +295,7 @@ export class ProfilePage implements OnDestroy {
 
   async openAddressModal(event?: Event): Promise<void> {
     event?.stopPropagation();
-    await this.openAddressModalWithProps();
+    await this.openAddressModalWithProps({ openMode: 'add' });
   }
 
   async openEditAddressModal(address: Address, event?: Event): Promise<void> {
@@ -225,12 +309,14 @@ export class ProfilePage implements OnDestroy {
   private async openAddressModalWithProps(
     componentProps?: { openMode?: 'list' | 'add' | 'edit'; prefillAddress?: Address | null },
   ): Promise<void> {
+    const opensForm = componentProps?.openMode === 'add' || componentProps?.openMode === 'edit';
     const modal = await this.modalController.create({
       component: AddressModalComponent,
       componentProps,
       cssClass: 'address-modal-sheet',
-      breakpoints: [0, 0.54, 0.82, 1],
-      initialBreakpoint: 0.82,
+      breakpoints: [0, 0.55, 0.82, 1],
+      initialBreakpoint: opensForm ? 1 : 0.82,
+      expandToScroll: false,
       backdropDismiss: true,
       handle: true,
     });

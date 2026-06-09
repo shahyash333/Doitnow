@@ -1,0 +1,62 @@
+<ion-header class="help-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button type="button" (click)="back()" aria-label="Back to profile">
+        <ion-icon [icon]="icons.chevronBackOutline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Help &amp; Support</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="help-content">
+  <section class="loading-wrap" *ngIf="isLoading">
+    <ion-skeleton-text animated class="contact-skeleton"></ion-skeleton-text>
+    <ion-skeleton-text animated class="faq-skeleton"></ion-skeleton-text>
+    <ion-skeleton-text animated class="faq-skeleton"></ion-skeleton-text>
+    <ion-skeleton-text animated class="faq-skeleton"></ion-skeleton-text>
+  </section>
+
+  <section class="error-wrap" *ngIf="!isLoading && loadError">
+    <p>{{ loadError }}</p>
+    <button type="button" (click)="retryLoad()">Retry</button>
+  </section>
+
+  <ng-container *ngIf="!isLoading && !loadError">
+    <section class="contact-card">
+      <div class="contact-copy">
+        <h2>Need more help?</h2>
+        <p>Reach out to our support team and we will get back to you as soon as possible.</p>
+      </div>
+      <button
+        class="contact-btn"
+        type="button"
+        [disabled]="!supportEmail"
+        (click)="contactSupport()"
+      >
+        <ion-icon [icon]="icons.mailOutline"></ion-icon>
+        <span>{{ supportEmail ? 'Email Support' : 'Support email unavailable' }}</span>
+      </button>
+    </section>
+
+    <section class="faq-section">
+      <div class="section-head">
+        <h2>Frequently Asked Questions</h2>
+        <p>Quick answers to common questions.</p>
+      </div>
+
+      <div class="faq-empty" *ngIf="!faqs.length">
+        <p>No FAQs available right now. Please contact support if you need assistance.</p>
+      </div>
+
+      <ion-accordion-group *ngIf="faqs.length" class="faq-accordion">
+        <ion-accordion *ngFor="let faq of faqs; trackBy: trackFaq" [value]="faq.id">
+          <ion-item slot="header" lines="none" class="faq-header-item">
+            <ion-label>{{ faq.question }}</ion-label>
+          </ion-item>
+          <div slot="content" class="faq-answer">{{ faq.answer }}</div>
+        </ion-accordion>
+      </ion-accordion-group>
+    </section>
+  </ng-container>
+</ion-content>

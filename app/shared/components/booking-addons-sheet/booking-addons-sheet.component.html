@@ -1,0 +1,61 @@
+<div class="ion-page addons-sheet-page">
+  <ion-header class="addons-sheet-header">
+    <ion-toolbar>
+      <ion-title>Service options</ion-title>
+      <ion-buttons slot="end">
+        <ion-button type="button" (click)="close()" aria-label="Close">
+          <ion-icon [icon]="icons.closeOutline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="addons-sheet-content" [scrollY]="true">
+    <section class="addons-intro">
+      <p>Customize this booking. Required groups must have at least one selection.</p>
+    </section>
+
+    <section class="addon-group" *ngFor="let group of addonGroups">
+      <div class="addon-group__head">
+        <h3>{{ group.title }}</h3>
+        <span class="addon-group__badge" *ngIf="group.isRequired || group.minSelection > 0">Required</span>
+      </div>
+      <p class="addon-group__hint">{{ groupHint(group) }}</p>
+
+      <div class="addon-options">
+        <button
+          type="button"
+          class="addon-option"
+          *ngFor="let addon of group.addons"
+          [class.addon-option--selected]="isSelected(addon.id)"
+          (click)="toggleAddon(group, addon.id)"
+        >
+          <span class="addon-option__main">
+            <span class="addon-option__label">{{ addon.label }}</span>
+            <span class="addon-option__description" *ngIf="addon.description">{{ addon.description }}</span>
+          </span>
+          <span class="addon-option__price">+₹{{ addon.price }}</span>
+          <ion-icon
+            class="addon-option__check"
+            *ngIf="isSelected(addon.id)"
+            [icon]="icons.checkmarkOutline"
+          ></ion-icon>
+        </button>
+      </div>
+    </section>
+
+    <p class="validation-message" *ngIf="validationMessage">{{ validationMessage }}</p>
+  </ion-content>
+
+  <div class="addons-sheet-footer">
+    <div class="footer-total">
+      <span>Estimated total</span>
+      <strong>₹{{ estimatedTotal }}</strong>
+      <small>{{ selectedSummary }}</small>
+    </div>
+    <ion-button expand="block" class="save-btn" [disabled]="!canSave" (click)="save()">
+      Save options
+    </ion-button>
+    <p class="footer-hint" *ngIf="!canSave">{{ saveHint }}</p>
+  </div>
+</div>

@@ -164,21 +164,12 @@
 
 .google-mark {
   font-family: Arial, sans-serif;
-  font-size: 23px;
+  font-size: 26px;
   line-height: 1;
   font-weight: 800;
   letter-spacing: -0.03em;
-  background: conic-gradient(
-    from 50deg,
-    #ea4335 0deg 85deg,
-    #fbbc05 85deg 165deg,
-    #34a853 165deg 255deg,
-    #4285f4 255deg 360deg
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: none;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(10, 18, 36, 0.24);
 }
 
 .security-text {
@@ -285,7 +276,7 @@
   }
 
   .google-mark {
-    font-size: 21px;
+    font-size: 24px;
   }
 
   .security-text p {

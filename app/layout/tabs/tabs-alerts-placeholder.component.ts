@@ -20,6 +20,7 @@ interface Notification {
   isUnread: boolean;
   icon: keyof TabsAlertsPlaceholderComponent['icons'];
   colorClass: string;
+  requestId: string | null;
 }
 
 @Component({
@@ -56,7 +57,7 @@ export class TabsAlertsPlaceholderComponent {
     this.notificationsService.markAllAsRead();
   }
 
-  openNotification(notificationId: string): void {
-    void this.notificationsService.openNotification(notificationId);
+  openNotification(notification: Notification): void {
+    void this.notificationsService.openNotification(notification);
   }
 }

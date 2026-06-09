@@ -43,26 +43,44 @@
     </div>
   </section>
 
-  <section class="stats-card">
+  <section class="stats-card" [class.stats-card--loading]="isStatsLoading">
     <div class="stat">
       <div class="stat-icon success">
         <ion-icon [icon]="icons.checkmarkCircleOutline"></ion-icon>
       </div>
-      <div class="stat-value">1</div>
+      <div
+        class="stat-value"
+        [class.stat-value--empty]="isCompletedEmpty"
+        [class.stat-value--text]="isCompletedEmpty"
+      >
+        {{ completedDisplay }}
+      </div>
       <div class="stat-label">COMPLETED</div>
     </div>
     <div class="stat">
       <div class="stat-icon warning">
         <ion-icon [icon]="icons.timeOutline"></ion-icon>
       </div>
-      <div class="stat-value">1</div>
+      <div
+        class="stat-value"
+        [class.stat-value--empty]="isPendingEmpty"
+        [class.stat-value--text]="isPendingEmpty"
+      >
+        {{ pendingDisplay }}
+      </div>
       <div class="stat-label">PENDING</div>
     </div>
     <div class="stat">
       <div class="stat-icon star">
         <ion-icon [icon]="icons.starOutline"></ion-icon>
       </div>
-      <div class="stat-value">4.9</div>
+      <div
+        class="stat-value"
+        [class.stat-value--empty]="isRatingEmpty"
+        [class.stat-value--text]="isRatingEmpty"
+      >
+        {{ ratingDisplay }}
+      </div>
       <div class="stat-label">RATING</div>
     </div>
   </section>
@@ -140,13 +158,13 @@
         </div>
         <div class="item-text">
           <div class="item-title">Request History</div>
-          <div class="item-sub">3 total</div>
+          <div class="item-sub">{{ requestHistorySubtitle }}</div>
         </div>
       </div>
       <ion-icon class="chev" [icon]="icons.chevronForwardOutline"></ion-icon>
     </div>
 
-    <div class="menu-item">
+    <div class="menu-item help-support-item" (click)="openHelpSupport()">
       <div class="item-left">
         <div class="item-icon blue">
           <ion-icon [icon]="icons.helpCircleOutline"></ion-icon>

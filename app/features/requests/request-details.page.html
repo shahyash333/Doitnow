@@ -82,17 +82,44 @@
             <ion-icon [icon]="icons.star"></ion-icon>
             <span>{{ details.worker?.rating }}</span>
           </div>
+          <p class="worker-phone" *ngIf="details.worker?.phone">{{ details.worker?.phone }}</p>
         </div>
 
         <div class="worker-actions">
-          <button type="button" aria-label="Call worker" [disabled]="!details.worker?.phone">
+          <button
+            type="button"
+            aria-label="Call worker"
+            [disabled]="!details.worker?.phone"
+            (click)="onCallWorker()"
+          >
             <ion-icon [icon]="icons.callOutline"></ion-icon>
           </button>
-          <button type="button" aria-label="Message worker">
+          <button
+            type="button"
+            aria-label="Message worker"
+            [disabled]="!details.worker?.phone"
+            (click)="onMessageWorker()"
+          >
             <ion-icon [icon]="icons.chatbubbleOutline"></ion-icon>
           </button>
         </div>
       </div>
     </section>
   </ng-container>
+
+  <ion-modal
+    [isOpen]="isContactModalOpen"
+    (didDismiss)="closeContactModal()"
+    cssClass="contact-web-modal"
+    *ngIf="details?.worker?.phone"
+  >
+    <ng-template>
+      <div class="contact-modal-wrap">
+        <h3>{{ contactModalTitle }}</h3>
+        <p>{{ contactModalMessage }}</p>
+        <div class="contact-number">{{ details?.worker?.phone }}</div>
+        <button type="button" class="contact-modal-close-btn" (click)="closeContactModal()">Close</button>
+      </div>
+    </ng-template>
+  </ion-modal>
 </ion-content>

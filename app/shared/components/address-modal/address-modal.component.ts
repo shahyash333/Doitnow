@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertController, ModalController, ToastController } from '@ionic/angular';
 import { Subscription, firstValueFrom } from 'rxjs';
@@ -7,6 +7,7 @@ import { closeOutline } from 'ionicons/icons';
 
 import { Address, AddressMutationPayload } from '../../../core/models/address.model';
 import { AddressService } from '../../../core/services/address.service';
+import { AddressFormComponent } from '../address-form/address-form.component';
 
 @Component({
   selector: 'app-address-modal',
@@ -17,11 +18,14 @@ export class AddressModalComponent implements OnInit, OnDestroy {
   @Input() openMode: 'list' | 'add' | 'edit' = 'list';
   @Input() prefillAddress: Address | null = null;
 
+  @ViewChild('addressForm') addressForm?: AddressFormComponent;
+
   addresses: Address[] = [];
   selectedAddress: Address | null = null;
   currentView: 'list' | 'form' = 'list';
   editingAddress: Address | null = null;
   isBusy = false;
+  private enteredFormFromList = false;
   private readonly subscriptions = new Subscription();
 
   readonly icons = {
@@ -41,9 +45,13 @@ export class AddressModalComponent implements OnInit, OnDestroy {
     if (this.openMode === 'add') {
       this.currentView = 'form';
       this.editingAddress = null;
+      this.enteredFormFromList = false;
+      void this.expandModalForForm();
     } else if (this.openMode === 'edit' && this.prefillAddress) {
       this.currentView = 'form';
       this.editingAddress = this.prefillAddress;
+      this.enteredFormFromList = false;
+      void this.expandModalForForm();
     }
 
     this.subscriptions.add(
@@ -74,17 +82,31 @@ export class AddressModalComponent implements OnInit, OnDestroy {
 
   openAddForm(): void {
     this.editingAddress = null;
+    this.enteredFormFromList = true;
     this.currentView = 'form';
+    void this.expandModalForForm();
   }
 
   openEditForm(address: Address): void {
     this.editingAddress = address;
+    this.enteredFormFromList = true;
     this.currentView = 'form';
+    void this.expandModalForForm();
   }
 
   onCancelForm(): void {
+    if (!this.enteredFormFromList && (this.openMode === 'add' || this.openMode === 'edit')) {
+      this.close();
+      return;
+    }
+
     this.currentView = 'list';
     this.editingAddress = null;
+    void this.setModalBreakpoint(0.82);
+  }
+
+  submitForm(): void {
+    this.addressForm?.submit();
   }
 
   async onDeleteAddress(address: Address): Promise<void> {
@@ -180,6 +202,23 @@ export class AddressModalComponent implements OnInit, OnDestroy {
     }
 
     return null;
+  }
+
+  private async expandModalForForm(): Promise<void> {
+    await this.setModalBreakpoint(1);
+  }
+
+  private async setModalBreakpoint(value: number): Promise<void> {
+    const modal = await this.modalController.getTop();
+    if (!modal) {
+      return;
+    }
+
+    try {
+      await modal.setCurrentBreakpoint(value);
+    } catch {
+      // Sheet may not support breakpoints on all platforms.
+    }
   }
 
   private async presentToast(

@@ -1,10 +1,12 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import {
   calendarOutline,
   checkmarkOutline,
+  chevronForwardOutline,
   homeOutline,
-  locationOutline,
+  listOutline,
   moonOutline,
   navigateOutline,
   partlySunnyOutline,
@@ -14,6 +16,8 @@ import {
 } from 'ionicons/icons';
 
 import { Address } from '../../../core/models/address.model';
+import { ServiceAddonGroup } from '../../../core/services/catalog.service';
+import { BookingAddonsSheetComponent } from '../booking-addons-sheet/booking-addons-sheet.component';
 
 export interface TimeSlotOption {
   id: string;
@@ -32,6 +36,7 @@ export interface ServiceBookingPayload {
   timeSlotLabel: string;
   addressId: string;
   price: number;
+  selectedAddonIds: string[];
   notes?: string;
 }
 
@@ -45,6 +50,7 @@ export class ServiceBookingFormComponent implements OnInit, OnChanges {
   @Input() serviceSlug: string | null = null;
   @Input() serviceName = 'Service';
   @Input() startingPrice = 299;
+  @Input() addonGroups: ServiceAddonGroup[] = [];
   @Input() isSubmitting = false;
   @Input() selectedAddress: Address | null = null;
 
@@ -62,8 +68,9 @@ export class ServiceBookingFormComponent implements OnInit, OnChanges {
   readonly icons = {
     calendarOutline,
     checkmarkOutline,
+    chevronForwardOutline,
     homeOutline,
-    locationOutline,
+    listOutline,
     moonOutline,
     navigateOutline,
     partlySunnyOutline,
@@ -76,8 +83,10 @@ export class ServiceBookingFormComponent implements OnInit, OnChanges {
   selectedTimeSlotId = 'asap';
   isDatePickerOpen = false;
   notes = '';
+  selectedAddonIds: string[] = [];
+  addonValidationMessage = '';
 
-  constructor() {
+  constructor(private readonly modalController: ModalController) {
     addIcons(this.icons);
   }
 
@@ -97,6 +106,16 @@ export class ServiceBookingFormComponent implements OnInit, OnChanges {
         this.selectedTimeSlotId = this.timeSlots[0].id;
       }
     }
+
+    if ('addonGroups' in changes) {
+      this.selectedAddonIds = this.selectedAddonIds.filter((addonId) =>
+        this.addonGroups.some((group) => group.addons.some((addon) => addon.id === addonId)),
+      );
+    }
+  }
+
+  get hasAddonGroups(): boolean {
+    return this.addonGroups.some((group) => group.addons.length > 0);
   }
 
   get selectedTimeSlot(): TimeSlotOption | undefined {
@@ -105,6 +124,33 @@ export class ServiceBookingFormComponent implements OnInit, OnChanges {
 
   get hasAddress(): boolean {
     return Boolean(this.selectedAddress?.id);
+  }
+
+  get addonsTotal(): number {
+    return this.addonGroups.reduce((sum, group) => {
+      return (
+        sum +
+        group.addons
+          .filter((addon) => this.selectedAddonIds.includes(addon.id))
+          .reduce((groupSum, addon) => groupSum + addon.price, 0)
+      );
+    }, 0);
+  }
+
+  get totalPrice(): number {
+    return this.startingPrice + this.addonsTotal;
+  }
+
+  get selectedAddonLabels(): string {
+    const labels = this.addonGroups.flatMap((group) =>
+      group.addons.filter((addon) => this.selectedAddonIds.includes(addon.id)).map((addon) => addon.label),
+    );
+
+    if (!labels.length) {
+      return this.hasAddonGroups ? 'Tap to choose options' : '';
+    }
+
+    return labels.join(', ');
   }
 
   get selectedDateLabel(): string {
@@ -136,6 +182,36 @@ export class ServiceBookingFormComponent implements OnInit, OnChanges {
     const maxDate = new Date();
     maxDate.setDate(maxDate.getDate() + 7);
     return this.toInputDate(maxDate);
+  }
+
+  get areAddonsValid(): boolean {
+    if (!this.hasAddonGroups) {
+      return true;
+    }
+
+    return this.validateAddonSelection() === null;
+  }
+
+  get canSubmit(): boolean {
+    return (
+      this.hasAddress &&
+      Boolean(this.selectedTimeSlot) &&
+      Boolean(this.selectedDateIso) &&
+      this.areAddonsValid &&
+      !this.isSubmitting
+    );
+  }
+
+  get submitHint(): string {
+    if (!this.hasAddress) {
+      return 'Add a service address to continue.';
+    }
+
+    if (!this.areAddonsValid) {
+      return 'Choose required service options to continue.';
+    }
+
+    return '';
   }
 
   onDateSelected(event: { detail?: { value?: string | string[] | null } }): void {
@@ -170,11 +246,43 @@ export class ServiceBookingFormComponent implements OnInit, OnChanges {
     }
   }
 
+  async openAddonsSheet(): Promise<void> {
+    const modal = await this.modalController.create({
+      component: BookingAddonsSheetComponent,
+      componentProps: {
+        addonGroups: this.addonGroups,
+        startingPrice: this.startingPrice,
+        initialSelectedAddonIds: [...this.selectedAddonIds],
+      },
+      cssClass: 'booking-addons-modal',
+      breakpoints: [0, 0.6, 0.88],
+      initialBreakpoint: 0.88,
+      expandToScroll: false,
+      backdropDismiss: true,
+      handle: true,
+    });
+
+    await modal.present();
+    const { data, role } = await modal.onDidDismiss<string[]>();
+
+    if (role === 'save' && Array.isArray(data)) {
+      this.selectedAddonIds = data;
+      this.addonValidationMessage = '';
+    }
+  }
+
   submitRequest(): void {
     if (!this.selectedAddress || !this.selectedTimeSlot) {
       return;
     }
 
+    const addonError = this.validateAddonSelection();
+    if (addonError) {
+      this.addonValidationMessage = addonError;
+      return;
+    }
+
+    this.addonValidationMessage = '';
     this.requestService.emit({
       serviceId: this.serviceId ?? undefined,
       serviceSlug: this.serviceSlug ?? undefined,
@@ -184,9 +292,31 @@ export class ServiceBookingFormComponent implements OnInit, OnChanges {
       timeSlotId: this.selectedTimeSlot.id,
       timeSlotLabel: this.selectedTimeSlot.label,
       addressId: this.selectedAddress.id,
-      price: this.startingPrice,
+      price: this.totalPrice,
+      selectedAddonIds: [...this.selectedAddonIds],
       notes: this.notes.trim() ? this.notes.trim() : undefined,
     });
+  }
+
+  private validateAddonSelection(): string | null {
+    for (const group of this.addonGroups) {
+      const selectedCount = group.addons.filter((addon) => this.selectedAddonIds.includes(addon.id)).length;
+      const minRequired = group.isRequired ? Math.max(group.minSelection, 1) : group.minSelection;
+
+      if (selectedCount < minRequired) {
+        return `Please choose options for ${group.title}.`;
+      }
+
+      if (group.maxSelection !== null && selectedCount > group.maxSelection) {
+        return `Too many options selected for ${group.title}.`;
+      }
+
+      if (group.selectionType === 'SINGLE' && selectedCount > 1) {
+        return `Only one option can be selected for ${group.title}.`;
+      }
+    }
+
+    return null;
   }
 
   private toInputDate(date: Date): string {

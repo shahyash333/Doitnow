@@ -151,8 +151,9 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     const modal = await this.modalController.create({
       component: AddressModalComponent,
       cssClass: 'address-modal-sheet',
-      breakpoints: [0, 0.54, 0.82, 1],
+      breakpoints: [0, 0.55, 0.82, 1],
       initialBreakpoint: 0.82,
+      expandToScroll: false,
       backdropDismiss: true,
       handle: true,
     });

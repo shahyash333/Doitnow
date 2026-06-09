@@ -17,7 +17,7 @@
       class="notification-card"
       *ngFor="let notification of notifications"
       [class.unread]="notification.isUnread"
-      (click)="openNotification(notification.id)"
+      (click)="openNotification(notification)"
     >
       <div class="icon-circle" [ngClass]="notification.colorClass">
         <ion-icon [icon]="icons[notification.icon]"></ion-icon>

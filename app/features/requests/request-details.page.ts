@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Capacitor } from '@capacitor/core';
 import { addIcons } from 'ionicons';
 import {
   callOutline,
@@ -42,6 +43,8 @@ export class RequestDetailsPage {
   isLoading = true;
   loadError = '';
   details: RequestDetailsView | null = null;
+  isContactModalOpen = false;
+  contactModalMode: 'call' | 'sms' = 'call';
 
   readonly icons = {
     callOutline,
@@ -74,6 +77,52 @@ export class RequestDetailsPage {
 
   get showWorkerSection(): boolean {
     return Boolean(this.details?.worker) && this.details?.status !== 'pending';
+  }
+
+  onCallWorker(): void {
+    const phone = this.getWorkerPhone();
+    if (!phone) {
+      return;
+    }
+
+    if (this.isWebPlatform()) {
+      this.contactModalMode = 'call';
+      this.isContactModalOpen = true;
+      return;
+    }
+
+    window.location.href = `tel:${phone}`;
+  }
+
+  onMessageWorker(): void {
+    const phone = this.getWorkerPhone();
+    if (!phone) {
+      return;
+    }
+
+    if (this.isWebPlatform()) {
+      this.contactModalMode = 'sms';
+      this.isContactModalOpen = true;
+      return;
+    }
+
+    window.location.href = `sms:${phone}`;
+  }
+
+  closeContactModal(): void {
+    this.isContactModalOpen = false;
+  }
+
+  get contactModalTitle(): string {
+    return this.contactModalMode === 'call' ? 'Call Partner' : 'Message Partner';
+  }
+
+  get contactModalMessage(): string {
+    if (this.contactModalMode === 'call') {
+      return 'Web browsers cannot always open the phone dialer directly. Please use this number to call your assigned partner.';
+    }
+
+    return 'Web browsers cannot always open SMS apps directly. Please use this number to message your assigned partner.';
   }
 
   get progressSteps(): Array<{ label: string; state: 'done' | 'active' | 'upcoming' }> {
@@ -161,7 +210,7 @@ export class RequestDetailsPage {
               typeof request.assignedWorker?.rating === 'number'
                 ? request.assignedWorker.rating.toFixed(1)
                 : 'N/A',
-            phone: request.assignedWorker?.phone ?? null,
+            phone: this.normalizePhone(request.assignedWorker?.phone),
             avatarText: workerName.charAt(0).toUpperCase(),
           }
         : null,
@@ -238,5 +287,27 @@ export class RequestDetailsPage {
   private normalizeDescription(description: string | null | undefined): string | null {
     const value = description?.trim();
     return value ? value : null;
+  }
+
+  private getWorkerPhone(): string | null {
+    return this.details?.worker?.phone ?? null;
+  }
+
+  private normalizePhone(phone: string | null | undefined): string | null {
+    const value = phone?.trim();
+    if (!value) {
+      return null;
+    }
+
+    // Preserve leading + for international numbers, drop other non-digits.
+    const normalized = value.startsWith('+')
+      ? `+${value.slice(1).replace(/\D/g, '')}`
+      : value.replace(/\D/g, '');
+
+    return normalized || null;
+  }
+
+  private isWebPlatform(): boolean {
+    return Capacitor.getPlatform() === 'web';
   }
 }

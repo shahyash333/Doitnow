@@ -1,23 +1,30 @@
-<section class="booking-form-shell">
-  <ion-card class="step-card">
-    <ion-card-header class="step-title">
-      <div class="step-title__left">
-        <span class="step-badge">
-          <ion-icon [icon]="icons.calendarOutline"></ion-icon>
-        </span>
-        <div class="step-copy">
-          <ion-card-title>Step 1</ion-card-title>
-          <ion-card-subtitle>Select date</ion-card-subtitle>
+<div class="booking-layout">
+  <section class="booking-layout__content">
+    <div class="price-hero">
+      <p class="price-hero__service">{{ serviceName }}</p>
+      <div class="price-hero__row">
+        <span>Estimated total</span>
+        <strong>₹{{ totalPrice }}</strong>
+      </div>
+      <p class="price-hero__meta" *ngIf="hasAddonGroups">
+        Base ₹{{ startingPrice }}<span *ngIf="addonsTotal > 0"> + options ₹{{ addonsTotal }}</span>
+      </p>
+    </div>
+
+    <section class="flow-card">
+      <div class="flow-card__head">
+        <span class="flow-icon violet"><ion-icon [icon]="icons.calendarOutline"></ion-icon></span>
+        <div>
+          <h2>Schedule</h2>
+          <p>Pick a date and time slot</p>
         </div>
       </div>
-    </ion-card-header>
 
-    <ion-card-content>
       <ion-item class="date-trigger" button detail="true" lines="none" (click)="isDatePickerOpen = true">
         <ion-icon slot="start" [icon]="icons.calendarOutline"></ion-icon>
         <ion-label>
           <h3>{{ selectedDateLabel }}</h3>
-          <p>Tap to change</p>
+          <p>Tap to change date</p>
         </ion-label>
       </ion-item>
 
@@ -42,24 +49,7 @@
           </ion-content>
         </ng-template>
       </ion-popover>
-    </ion-card-content>
-  </ion-card>
 
-  <ion-card class="step-card">
-    <ion-card-header class="step-title">
-      <div class="step-title__left">
-        <span class="step-badge amber">
-          <ion-icon [icon]="icons.timeOutline"></ion-icon>
-        </span>
-        <div class="step-copy">
-          <ion-card-title>Step 2</ion-card-title>
-          <ion-card-subtitle>Select time</ion-card-subtitle>
-        </div>
-      </div>
-      <ion-note class="step-note">When should we arrive?</ion-note>
-    </ion-card-header>
-
-    <ion-card-content>
       <div class="time-slot-grid" role="radiogroup" aria-label="Select time slot">
         <button
           *ngFor="let slot of timeSlots"
@@ -67,97 +57,89 @@
           type="button"
           [class.selected]="slot.id === selectedTimeSlotId"
           [class.time-slot-chip--asap]="slot.id === 'asap'"
-          [attr.aria-checked]="slot.id === selectedTimeSlotId"
           (click)="selectTimeSlot(slot.id)"
         >
-          <span class="time-slot-chip__top">
-            <span class="time-slot-chip__icon-wrap">
-              <ion-icon class="time-slot-chip__icon" [icon]="getTimeSlotIcon(slot.id)" aria-hidden="true"></ion-icon>
-            </span>
-            <span class="time-slot-chip__badge" *ngIf="slot.id === 'asap'">Recommended</span>
-            <ion-icon
-              class="time-slot-chip__check"
-              *ngIf="slot.id === selectedTimeSlotId"
-              [icon]="icons.checkmarkOutline"
-              aria-hidden="true"
-            ></ion-icon>
-          </span>
+          <ion-icon [icon]="getTimeSlotIcon(slot.id)"></ion-icon>
           <span class="time-slot-chip__label">{{ slot.label }}</span>
           <span class="time-slot-chip__meta">{{ slot.timeText }}</span>
         </button>
       </div>
+    </section>
 
-      <div class="time-detail" *ngIf="selectedTimeSlot as slot">
-        <strong>{{ slot.timeText }}</strong>
-        <span *ngIf="slot.description">{{ slot.description }}</span>
-      </div>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card class="step-card">
-    <ion-card-header class="step-title">
-      <div class="step-title__left">
-        <span class="step-badge mint">
-          <ion-icon [icon]="icons.homeOutline"></ion-icon>
-        </span>
-        <div class="step-copy">
-          <ion-card-title>Step 3</ion-card-title>
-          <ion-card-subtitle>Address</ion-card-subtitle>
+    <section class="flow-card" *ngIf="hasAddonGroups" [class.flow-card--invalid]="!areAddonsValid">
+      <div class="flow-card__head">
+        <span class="flow-icon amber"><ion-icon [icon]="icons.listOutline"></ion-icon></span>
+        <div>
+          <h2>Service options</h2>
+          <p>{{ areAddonsValid ? 'Customize your booking' : 'Required — choose at least one option' }}</p>
         </div>
       </div>
-    </ion-card-header>
 
-    <ion-card-content>
+      <button type="button" class="options-row" [class.options-row--invalid]="!areAddonsValid" (click)="openAddonsSheet()">
+        <div class="options-row__copy">
+          <strong>{{ selectedAddonLabels }}</strong>
+          <span *ngIf="addonsTotal > 0">+₹{{ addonsTotal }} added</span>
+        </div>
+        <ion-icon [icon]="icons.chevronForwardOutline"></ion-icon>
+      </button>
+
+      <p class="inline-error" *ngIf="addonValidationMessage">{{ addonValidationMessage }}</p>
+    </section>
+
+    <section class="flow-card">
+      <div class="flow-card__head">
+        <span class="flow-icon mint"><ion-icon [icon]="icons.homeOutline"></ion-icon></span>
+        <div>
+          <h2>Service address</h2>
+          <p>Where should we come?</p>
+        </div>
+      </div>
+
       <ng-container *ngIf="selectedAddress as address; else missingAddress">
         <div class="selected-address">
-          <div class="address-head">
-            <div>
-              <h3>{{ address.label }}</h3>
-              <p>{{ address.fullAddress }}</p>
-              <small *ngIf="address.phone">{{ address.phone }}</small>
-            </div>
-            <ion-text *ngIf="address.isDefault" color="medium">Default</ion-text>
-          </div>
-
-          <button class="address-change-btn" type="button" (click)="changeAddress.emit()">
-            Change Address
-          </button>
+          <h3>{{ address.label }}</h3>
+          <p>{{ address.fullAddress }}</p>
+          <small *ngIf="address.phone">{{ address.phone }}</small>
+          <button class="text-btn" type="button" (click)="changeAddress.emit()">Change address</button>
         </div>
-
-        <ion-item class="summary-item" lines="none">
-          <ion-label>
-            <h3>Summary</h3>
-            <p>{{ selectedDateLabel }} • {{ selectedTimeSlot?.label }}</p>
-            <p>{{ address.label }}</p>
-          </ion-label>
-          <ion-note slot="end">₹{{ startingPrice }}</ion-note>
-        </ion-item>
-
-        <ion-item class="note-item" lines="none">
-          <ion-label position="stacked">Any special note? (optional)</ion-label>
-          <ion-textarea
-            [value]="notes"
-            (ionInput)="notes = $any($event.target).value || ''"
-            placeholder="e.g. Call on arrival, bring ladder, building gate code..."
-            autoGrow="true"
-          ></ion-textarea>
-        </ion-item>
-
-        <ion-button class="request-btn" expand="block" size="large" [disabled]="isSubmitting" (click)="submitRequest()">
-          Request service
-        </ion-button>
       </ng-container>
 
       <ng-template #missingAddress>
         <div class="missing-address">
           <ion-icon [icon]="icons.navigateOutline"></ion-icon>
-          <h3>Add Address to Continue</h3>
-          <p>Please add a service address before placing this booking.</p>
-          <button type="button" (click)="addAddress.emit()">Add Address</button>
+          <p>Add an address to continue with your booking.</p>
+          <button type="button" (click)="addAddress.emit()">Add address</button>
         </div>
       </ng-template>
+    </section>
 
-      <p class="starting-price">Starting from ₹{{ startingPrice }}</p>
-    </ion-card-content>
-  </ion-card>
-</section>
+    <section class="flow-card flow-card--notes">
+      <div class="flow-card__head">
+        <div>
+          <h2>Special note</h2>
+          <p>Optional instructions for the professional</p>
+        </div>
+      </div>
+
+      <ion-textarea
+        class="notes-input"
+        [value]="notes"
+        (ionInput)="notes = $any($event.target).value || ''"
+        placeholder="Gate code, parking info, pet at home, etc."
+        autoGrow="true"
+        rows="3"
+      ></ion-textarea>
+    </section>
+  </section>
+
+  <footer class="booking-footer">
+    <div class="booking-footer__summary">
+      <span>{{ selectedDateLabel }} • {{ selectedTimeSlot?.label }}</span>
+      <strong>₹{{ totalPrice }}</strong>
+    </div>
+    <p class="booking-footer__hint" *ngIf="!canSubmit && submitHint">{{ submitHint }}</p>
+    <ion-button expand="block" size="large" [disabled]="!canSubmit" (click)="submitRequest()">
+      {{ isSubmitting ? 'Submitting...' : 'Request service' }}
+    </ion-button>
+  </footer>
+</div>

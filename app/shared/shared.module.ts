@@ -11,9 +11,11 @@ import { AddressCardComponent } from './components/address-card/address-card.com
 import { AddressFormComponent } from './components/address-form/address-form.component';
 import { AddressListComponent } from './components/address-list/address-list.component';
 import { AddressModalComponent } from './components/address-modal/address-modal.component';
+import { BookingAddonsSheetComponent } from './components/booking-addons-sheet/booking-addons-sheet.component';
 
 @NgModule({
   declarations: [
+    BookingAddonsSheetComponent,
     ServiceCardComponent,
     SearchBarComponent,
     CategoryChipComponent,
@@ -22,6 +24,7 @@ import { AddressModalComponent } from './components/address-modal/address-modal.
     AddressFormComponent,
     AddressListComponent,
     AddressModalComponent,
+    BookingAddonsSheetComponent,
   ],
   imports: [CommonModule, FormsModule, ReactiveFormsModule, IonicModule],
   exports: [
@@ -29,6 +32,7 @@ import { AddressModalComponent } from './components/address-modal/address-modal.
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
+    BookingAddonsSheetComponent,
     ServiceCardComponent,
     SearchBarComponent,
     CategoryChipComponent,

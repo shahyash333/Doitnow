@@ -13,6 +13,7 @@ export interface CreateBookingRequest {
   price: number;
   phone: string;
   notes?: string;
+  selectedAddonIds?: string[];
 }
 
 export interface BookingRequestItem {

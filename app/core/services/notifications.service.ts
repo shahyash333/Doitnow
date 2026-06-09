@@ -41,6 +41,12 @@ interface NotificationsApiItem {
   status?: string;
   bookingId?: string;
   requestId?: string;
+  orderId?: string;
+  referenceId?: string;
+  booking?: string | { id?: string; _id?: string; requestId?: string };
+  payload?: string | Record<string, unknown>;
+  data?: string | Record<string, unknown>;
+  metadata?: string | Record<string, unknown>;
   isRead?: boolean;
   read?: boolean;
   createdAt?: string;
@@ -60,6 +66,7 @@ interface NotificationsApiResponse {
 interface BookingStatusPushData {
   type?: string;
   bookingId?: string;
+  requestId?: string;
   userId?: string;
   status?: BookingPushStatus;
   serviceName?: string;
@@ -279,13 +286,29 @@ export class NotificationsService {
     void this.markSingleAsReadOnServer(notificationId);
   }
 
-  async openNotification(notificationId: string): Promise<void> {
-    const target = this.notifications.find((item) => item.id === notificationId);
-    this.markAsRead(notificationId);
+  async openNotification(
+    notificationOrId: string | Pick<NotificationItem, 'id' | 'requestId'>,
+  ): Promise<void> {
+    const target =
+      typeof notificationOrId === 'string'
+        ? this.notifications.find((item) => item.id === notificationOrId)
+        : notificationOrId;
 
-    if (target?.requestId) {
-      await this.router.navigate(['/home/requests', target.requestId]);
+    if (!target) {
+      return;
     }
+
+    this.markAsRead(target.id);
+
+    const stored = this.notifications.find((item) => item.id === target.id);
+    const requestId = this.resolveNotificationRequestId(stored ?? target);
+    if (requestId) {
+      await this.router.navigate(['/home/requests', requestId]);
+      return;
+    }
+
+    console.warn(`${DBG} openNotification:missing_request_id`, { notificationId: target.id });
+    await this.presentNavigationErrorToast();
   }
 
   clearAll(): void {
@@ -312,13 +335,18 @@ export class NotificationsService {
       isUnread: true,
       icon: this.resolvePushIcon(data.status),
       colorClass: this.resolvePushColor(data.status),
-      requestId: data.bookingId ?? null,
+      requestId: this.resolvePushRequestId(data),
       status: data.status ?? null,
     };
 
     const nextNotifications = [notificationItem, ...this.notifications].slice(0, this.maxStoredNotifications);
     this.updateNotifications(nextNotifications);
     void this.presentForegroundToast(notificationItem);
+  }
+
+  private resolvePushRequestId(data: BookingStatusPushData): string | null {
+    const requestId = data.requestId?.trim() || data.bookingId?.trim();
+    return requestId || null;
   }
 
   private shouldGenerateStatusNotification(status: string): boolean {
@@ -363,8 +391,9 @@ export class NotificationsService {
       this.markAsRead(notificationId);
     }
 
-    if (data.bookingId) {
-      void this.router.navigate(['/home/requests', data.bookingId]);
+    const requestId = this.resolvePushRequestId(data);
+    if (requestId) {
+      void this.router.navigate(['/home/requests', requestId]);
     }
   }
 
@@ -670,7 +699,8 @@ export class NotificationsService {
         .map((item) => this.mapApiNotificationToUi(item))
         .filter((item): item is NotificationItem => item !== null);
 
-      this.updateNotifications(mapped.slice(0, this.maxStoredNotifications));
+      const merged = this.mergeNotifications(mapped, this.notifications);
+      this.updateNotifications(merged.slice(0, this.maxStoredNotifications));
     } catch (error) {
       console.error(`${DBG} refreshInboxFromServer:failed`, this.toErrorLog(error));
     }
@@ -682,11 +712,12 @@ export class NotificationsService {
       return null;
     }
 
-    const status = (item.status ?? '').toUpperCase();
+    const payload = this.parseNotificationPayload(item.payload);
+    const status = String(item.status ?? payload?.['status'] ?? '').toUpperCase();
     const title = item.title?.trim() || this.resolvePushTitle(status);
     const description = item.message?.trim() || item.description?.trim() || item.body?.trim() || 'Notification update';
     const createdAt = item.createdAt ?? item.timestamp ?? new Date().toISOString();
-    const requestId = item.bookingId ?? item.requestId ?? null;
+    const requestId = this.extractRequestIdFromApiItem(item);
     const isUnread = item.isRead === true || item.read === true ? false : true;
 
     return {
@@ -710,12 +741,20 @@ export class NotificationsService {
     );
     this.updateNotifications(updated);
 
+    if (this.isClientGeneratedNotificationId(notificationId)) {
+      return;
+    }
+
     try {
       await firstValueFrom(this.http.patch(`${environment.apiUrl}/notifications/${notificationId}/read`, {}));
     } catch (error) {
       console.error(`${DBG} markSingleAsReadOnServer:failed`, this.toErrorLog(error));
       await this.refreshInboxFromServer();
     }
+  }
+
+  private isClientGeneratedNotificationId(notificationId: string): boolean {
+    return /^\d{4}-\d{2}-\d{2}T[\d:.]+Z-.+$/.test(notificationId.trim());
   }
 
   private async markAllAsReadOnServer(): Promise<void> {
@@ -730,6 +769,116 @@ export class NotificationsService {
     } catch (error) {
       console.error(`${DBG} markAllAsReadOnServer:failed`, this.toErrorLog(error));
       await this.refreshInboxFromServer();
+    }
+  }
+
+  private resolveNotificationRequestId(
+    notification: Pick<NotificationItem, 'id' | 'requestId'>,
+  ): string | null {
+    const direct = notification.requestId?.trim();
+    if (direct) {
+      return direct;
+    }
+
+    return this.parseRequestIdFromNotificationId(notification.id);
+  }
+
+  private extractRequestIdFromApiItem(item: NotificationsApiItem): string | null {
+    const direct = item.requestId ?? item.bookingId ?? item.orderId ?? item.referenceId;
+    if (typeof direct === 'string' && direct.trim()) {
+      return direct.trim();
+    }
+
+    const payload = this.parseNotificationPayload(item.payload);
+    if (payload) {
+      const fromPayload =
+        payload['requestId'] ?? payload['bookingId'] ?? payload['orderId'] ?? payload['referenceId'];
+      if (typeof fromPayload === 'string' && fromPayload.trim()) {
+        return fromPayload.trim();
+      }
+    }
+
+    if (item.booking) {
+      if (typeof item.booking === 'string' && item.booking.trim()) {
+        return item.booking.trim();
+      }
+
+      if (typeof item.booking === 'object') {
+        const nested = item.booking.id ?? item.booking._id ?? item.booking.requestId;
+        if (typeof nested === 'string' && nested.trim()) {
+          return nested.trim();
+        }
+      }
+    }
+
+    const data = this.parseNotificationPayload(item.data) ?? this.parseNotificationPayload(item.metadata);
+    if (data) {
+      const fromData = data['bookingId'] ?? data['requestId'] ?? data['orderId'] ?? data['referenceId'];
+      if (typeof fromData === 'string' && fromData.trim()) {
+        return fromData.trim();
+      }
+    }
+
+    return null;
+  }
+
+  private parseNotificationPayload(payload: unknown): Record<string, unknown> | null {
+    if (!payload) {
+      return null;
+    }
+
+    if (typeof payload === 'string') {
+      try {
+        const parsed = JSON.parse(payload) as unknown;
+        return parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    if (typeof payload === 'object') {
+      return payload as Record<string, unknown>;
+    }
+
+    return null;
+  }
+
+  private parseRequestIdFromNotificationId(notificationId: string): string | null {
+    const match = notificationId.match(/^\d{4}-\d{2}-\d{2}T[\d:.]+Z-(.+)$/);
+    const parsed = match?.[1]?.trim();
+    return parsed || null;
+  }
+
+  private mergeNotifications(
+    serverNotifications: NotificationItem[],
+    localNotifications: NotificationItem[],
+  ): NotificationItem[] {
+    const byId = new Map<string, NotificationItem>();
+
+    for (const notification of localNotifications) {
+      byId.set(notification.id, notification);
+    }
+
+    for (const notification of serverNotifications) {
+      byId.set(notification.id, notification);
+    }
+
+    return Array.from(byId.values()).sort(
+      (left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime(),
+    );
+  }
+
+  private async presentNavigationErrorToast(): Promise<void> {
+    try {
+      const toast = await this.toastController.create({
+        message: 'Unable to open this request. Please open it from Request History.',
+        duration: 2600,
+        position: 'bottom',
+        color: 'warning',
+      });
+      await toast.present();
+    } catch (error) {
+      console.error(`${DBG} presentNavigationErrorToast:failed`, error);
     }
   }
 

@@ -7,7 +7,11 @@ import { Subscription, firstValueFrom } from 'rxjs';
 import { Address } from '../../core/models/address.model';
 import { AddressService } from '../../core/services/address.service';
 import { BookingService } from '../../core/services/booking.service';
-import { CatalogService, CatalogServiceItem } from '../../core/services/catalog.service';
+import {
+  CatalogService,
+  CatalogServiceItem,
+  ServiceAddonGroup,
+} from '../../core/services/catalog.service';
 import { ServiceBookingPayload } from '../../shared/components/service-booking-form/service-booking-form.component';
 import { AddressModalComponent } from '../../shared/components/address-modal/address-modal.component';
 
@@ -19,6 +23,7 @@ import { AddressModalComponent } from '../../shared/components/address-modal/add
 export class BookingPage implements OnDestroy {
   serviceName = 'Service Booking';
   startingPrice = 299;
+  addonGroups: ServiceAddonGroup[] = [];
   selectedService: CatalogServiceItem | null = null;
   selectedAddress: Address | null = null;
   isServiceLoading = false;
@@ -51,12 +56,14 @@ export class BookingPage implements OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  async openAddressModal(): Promise<void> {
+  async openAddressModal(openMode: 'list' | 'add' = 'list'): Promise<void> {
     const modal = await this.modalController.create({
       component: AddressModalComponent,
+      componentProps: openMode === 'add' ? { openMode: 'add' } : undefined,
       cssClass: 'address-modal-sheet',
-      breakpoints: [0, 0.54, 0.82, 1],
-      initialBreakpoint: 0.82,
+      breakpoints: [0, 0.55, 0.82, 1],
+      initialBreakpoint: openMode === 'add' ? 1 : 0.82,
+      expandToScroll: false,
       backdropDismiss: true,
       handle: true,
     });
@@ -110,6 +117,7 @@ export class BookingPage implements OnDestroy {
           price: payload.price,
           phone,
           notes: payload.notes,
+          selectedAddonIds: payload.selectedAddonIds,
         }),
       );
       sessionStorage.setItem('bookingSuccessToast', 'Booking request submitted successfully.');
@@ -147,6 +155,7 @@ export class BookingPage implements OnDestroy {
     }
 
     this.selectedService = null;
+    this.addonGroups = [];
     const serviceNameFromQuery = this.asStringOrNull(params['service']);
 
     if (serviceNameFromQuery) {
@@ -185,6 +194,7 @@ export class BookingPage implements OnDestroy {
   private applyServiceData(service: CatalogServiceItem): void {
     this.selectedService = service;
     this.serviceName = service.title || 'Service Booking';
+    this.addonGroups = service.addonGroups ?? [];
     this.startingPrice =
       Number.isFinite(service.startingPrice) && service.startingPrice > 0
         ? service.startingPrice

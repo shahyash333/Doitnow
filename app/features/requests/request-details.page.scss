@@ -292,6 +292,13 @@
   font-size: 18px;
 }
 
+.worker-phone {
+  margin: 8px 0 0;
+  color: #4e566a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
 .worker-actions {
   display: flex;
   gap: 8px;
@@ -357,6 +364,61 @@
   font-weight: 800;
 }
 
+:host ::ng-deep ion-modal.contact-web-modal {
+  --width: min(92vw, 520px);
+  --height: auto;
+  --border-radius: 20px;
+}
+
+:host ::ng-deep ion-modal.contact-web-modal::part(content) {
+  border-radius: 20px;
+}
+
+.contact-modal-wrap {
+  padding: 24px;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f9ff 100%);
+}
+
+.contact-modal-wrap h3 {
+  margin: 0;
+  font-size: 24px;
+  color: #1a2238;
+  font-weight: 900;
+}
+
+.contact-modal-wrap p {
+  margin: 10px 0 0;
+  color: #5f6880;
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.contact-number {
+  margin-top: 18px;
+  border: 1px dashed #ccd7ff;
+  background: #f1f5ff;
+  color: #1d2b59;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-align: center;
+}
+
+.contact-modal-close-btn {
+  margin-top: 18px;
+  width: 100%;
+  min-height: 46px;
+  border-radius: 999px;
+  border: 0;
+  background: linear-gradient(135deg, #2853f2 0%, #0f65d8 100%);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
 @media (max-width: 520px) {
   .hero {
     padding: calc(14px + env(safe-area-inset-top)) 16px 26px;
@@ -398,5 +460,17 @@
   .worker-actions {
     width: 100%;
     justify-content: flex-end;
+  }
+
+  .contact-modal-wrap {
+    padding: 18px;
+  }
+
+  .contact-modal-wrap h3 {
+    font-size: 21px;
+  }
+
+  .contact-number {
+    font-size: 18px;
   }
 }
